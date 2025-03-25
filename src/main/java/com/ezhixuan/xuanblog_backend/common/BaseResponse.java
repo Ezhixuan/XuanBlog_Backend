@@ -2,7 +2,7 @@ package com.ezhixuan.xuanblog_backend.common;
 
 import java.io.Serializable;
 
-import org.ezhixuan.xuan_picture_backend.exception.ErrorCode;
+import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
 
 import lombok.Data;
 
@@ -29,4 +29,3 @@ public class BaseResponse<T> implements Serializable {
         this(errorCode.getCode(), null, errorCode.getMessage());
     }
 }
-

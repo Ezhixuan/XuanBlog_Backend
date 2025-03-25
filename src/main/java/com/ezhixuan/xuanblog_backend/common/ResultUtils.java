@@ -1,6 +1,6 @@
 package com.ezhixuan.xuanblog_backend.common;
 
-import org.ezhixuan.xuan_picture_backend.exception.ErrorCode;
+import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
 
 public class ResultUtils {
 
