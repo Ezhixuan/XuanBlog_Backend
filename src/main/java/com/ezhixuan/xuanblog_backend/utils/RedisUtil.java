@@ -1,18 +1,21 @@
-package org.ezhixuan.xuan_picture_backend.utils;
+package com.ezhixuan.xuanblog_backend.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import jakarta.annotation.Resource;
 
 @Component
 public class RedisUtil {
 
-    @Autowired
+    @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     // =============================common============================

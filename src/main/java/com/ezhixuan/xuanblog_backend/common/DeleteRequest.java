@@ -1,8 +1,8 @@
-package org.ezhixuan.xuan_picture_backend.common;
-
-import lombok.Data;
+package com.ezhixuan.xuanblog_backend.common;
 
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * @author ezhixuan

@@ -1,4 +1,4 @@
-package org.ezhixuan.xuan_picture_backend.common;
+package com.ezhixuan.xuanblog_backend.common;
 
 import org.ezhixuan.xuan_picture_backend.exception.ErrorCode;
 

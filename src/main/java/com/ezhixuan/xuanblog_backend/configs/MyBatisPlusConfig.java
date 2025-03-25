@@ -1,14 +1,15 @@
-package org.ezhixuan.xuan_picture_backend.config;
+package com.ezhixuan.xuanblog_backend.configs;
 
-import com.baomidou.mybatisplus.annotation.DbType;
-import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+
 @Configuration
-@MapperScan("org.ezhixuan.xuan_picture_backend.mapper")
+@MapperScan("com.ezhixuan.xuanblog_backend.mapper")
 public class MyBatisPlusConfig {
 
     /**

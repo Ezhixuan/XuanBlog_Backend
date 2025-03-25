@@ -1,9 +1,10 @@
-package org.ezhixuan.xuan_picture_backend.common;
-
-import lombok.Data;
-import org.ezhixuan.xuan_picture_backend.exception.ErrorCode;
+package com.ezhixuan.xuanblog_backend.common;
 
 import java.io.Serializable;
+
+import org.ezhixuan.xuan_picture_backend.exception.ErrorCode;
+
+import lombok.Data;
 
 @Data
 public class BaseResponse<T> implements Serializable {

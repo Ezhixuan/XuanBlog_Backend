@@ -1,4 +1,4 @@
-package org.ezhixuan.xuan_picture_backend.annotation;
+package com.ezhixuan.xuanblog_backend.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
