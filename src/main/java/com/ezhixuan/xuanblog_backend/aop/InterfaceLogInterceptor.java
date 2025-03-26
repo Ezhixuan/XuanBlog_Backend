@@ -14,6 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.alibaba.fastjson2.JSON;
 import com.ezhixuan.xuanblog_backend.domain.InterfaceLog;
+import com.ezhixuan.xuanblog_backend.domain.constant.InterfaceLogStatusConstant;
 import com.ezhixuan.xuanblog_backend.service.InterfaceLogService;
 
 import jakarta.annotation.Resource;
@@ -30,6 +31,8 @@ public class InterfaceLogInterceptor {
     @Resource
     private InterfaceLogService logService;
 
+    private static final Long TIMEOUT_THRESHOLD = 5000L;
+
     @SneakyThrows
     @Around("execution(* com.ezhixuan.xuanblog_backend.controller..*.*(..))")
     public Object logAspect(ProceedingJoinPoint joinPoint) {
@@ -42,8 +45,8 @@ public class InterfaceLogInterceptor {
             HttpServletRequest request = requestAttributes.getRequest();
             String remoteAddr = request.getRemoteAddr();
             interfaceLog.setClientIp(remoteAddr);
-            /**
-             * todo Ezhixuan : user
+            /*
+              todo Ezhixuan : user
              */
         }
 
@@ -51,14 +54,20 @@ public class InterfaceLogInterceptor {
         try {
             Object res = joinPoint.proceed();
             interfaceLog.setResponseData(JSON.toJSONString(res));
-            interfaceLog.setStatus("success");
+            interfaceLog.setStatus(InterfaceLogStatusConstant.SUCCESS);
             return res;
         }catch (Exception e) {
-            interfaceLog.setStatus("failure");
+            interfaceLog.setStatus(InterfaceLogStatusConstant.FAILURE);
             throw e;
         }finally {
             long endTime = System.currentTimeMillis();
             long exTime = endTime - startTime;
+            /*
+            如果此时方法执行成功并返回了，但是整体方法执行超过了超时阈值，整体接口是需要进行优化的
+             */
+            if (exTime >= TIMEOUT_THRESHOLD) {
+                interfaceLog.setStatus(InterfaceLogStatusConstant.TIMEOUT);
+            }
             interfaceLog.setExecutionTime(new BigDecimal(exTime));
             logService.save(interfaceLog);
         }
