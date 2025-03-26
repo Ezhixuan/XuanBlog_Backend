@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Aspect
 @Slf4j
+@Order(0)
 public class InterfaceLogInterceptor {
 
     @Resource
