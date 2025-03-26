@@ -1,7 +1,7 @@
 package com.ezhixuan.xuanblog_backend.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ezhixuan.xuanblog_backend.domain.InterfaceLog;
+import com.ezhixuan.xuanblog_backend.domain.entity.InterfaceLog;
 import com.ezhixuan.xuanblog_backend.mapper.InterfaceLogMapper;
 import com.ezhixuan.xuanblog_backend.service.InterfaceLogService;
 import org.springframework.stereotype.Service;

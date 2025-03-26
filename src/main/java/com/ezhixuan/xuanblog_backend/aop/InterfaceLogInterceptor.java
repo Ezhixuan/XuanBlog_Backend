@@ -13,8 +13,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.alibaba.fastjson2.JSON;
-import com.ezhixuan.xuanblog_backend.domain.InterfaceLog;
 import com.ezhixuan.xuanblog_backend.domain.constant.InterfaceLogStatusConstant;
+import com.ezhixuan.xuanblog_backend.domain.entity.InterfaceLog;
 import com.ezhixuan.xuanblog_backend.service.InterfaceLogService;
 
 import jakarta.annotation.Resource;

@@ -1,4 +1,4 @@
-package com.ezhixuan.xuanblog_backend.domain;
+package com.ezhixuan.xuanblog_backend.domain.entity;
 
 import java.io.Serial;
 import java.io.Serializable;
