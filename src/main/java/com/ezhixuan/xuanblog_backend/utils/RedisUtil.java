@@ -1,14 +1,15 @@
 package com.ezhixuan.xuanblog_backend.utils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+
+import com.alibaba.fastjson2.JSON;
 
 import jakarta.annotation.Resource;
 
@@ -759,5 +760,56 @@ public class RedisUtil {
 
     // endregion
 
+    public <T> T getHash(String key, Class<T> clazz) {
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(key);
+        if (ObjectUtils.isEmpty(entries)) {
+            return null;
+        }
+        String jsonString = JSON.toJSONString(entries);
+        jsonString = jsonString.replace("\\", "");
+        jsonString = jsonString.replace("\"\"", "\"");
+        return JSON.parseObject(jsonString, clazz);
+    }
+
+    public <T> List<T> getHashList(Collection<String> keys, Class<T> clazz) {
+        return keys.stream().map(item -> getHash(item, clazz)).collect(Collectors.toList());
+    }
+
+    /**
+     * 通过scan模糊查询keys并删除
+     *
+     * @param pattern 模糊查询的key
+     * @return Long
+     */
+    public Long cleanCaches(String pattern) {
+        List<String> keys = scan(pattern);
+        return redisTemplate.delete(keys);
+    }
+
+    /**
+     * 模糊匹配
+     * @param pattern key？
+     * @return List<String> keys
+     */
+    public List<String> scan(String pattern) {
+        List<String> result = new ArrayList<>();
+        try (Cursor<byte[]> cursor = (Cursor<byte[]>) redisTemplate.execute(
+                (RedisCallback<Cursor<byte[]>>) redisConnection ->
+                        redisConnection.scan(
+                                ScanOptions.scanOptions().match(pattern + "*").count(1000).build()
+                        )
+        )) {
+            while (cursor.hasNext()) {
+                result.add(new String(cursor.next(), StandardCharsets.UTF_8));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public RedisTemplate getRedisTemplate() {
+        return redisTemplate;
+    }
 
 }
