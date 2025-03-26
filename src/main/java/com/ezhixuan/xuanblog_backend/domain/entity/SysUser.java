@@ -20,14 +20,8 @@ public class SysUser implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 用户名
-     */
-    @TableField(value = "username")
-    private String username;
 
     /**
      * 密码
@@ -36,10 +30,28 @@ public class SysUser implements Serializable {
     private String password;
 
     /**
+     * 用户账号
+     */
+    @TableField(value = "user_account")
+    private String userAccount;
+
+    /**
+     * 用户名
+     */
+    @TableField(value = "username")
+    private String username;
+
+    /**
      * 头像地址
      */
     @TableField(value = "avatar")
     private String avatar;
+
+    /**
+     * 个人简介
+     */
+    @TableField(value = "profile")
+    private String profile;
 
     /**
      * 邮箱
@@ -70,6 +82,12 @@ public class SysUser implements Serializable {
      */
     @TableField(value = "deleted")
     private Integer deleted;
+
+    /**
+     * 用户角色
+     */
+    @TableField(value = "role")
+    private String role;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

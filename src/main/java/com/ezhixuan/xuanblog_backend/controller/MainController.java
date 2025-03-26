@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
-import com.ezhixuan.xuanblog_backend.common.ResultUtils;
+import com.ezhixuan.xuanblog_backend.common.R;
 
 @RestController
 @RequestMapping("/")
@@ -16,6 +16,6 @@ public class MainController {
      */
     @GetMapping("/health")
     public BaseResponse<String> health() {
-        return ResultUtils.success("ok");
+        return R.success("ok");
     }
 }

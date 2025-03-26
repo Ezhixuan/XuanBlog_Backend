@@ -6,18 +6,22 @@
 
     <resultMap id="BaseResultMap" type="com.ezhixuan.xuanblog_backend.domain.entity.SysUser">
             <id property="id" column="id" />
-            <result property="username" column="username" />
             <result property="password" column="password" />
+            <result property="userAccount" column="user_account" />
+            <result property="username" column="username" />
             <result property="avatar" column="avatar" />
+            <result property="profile" column="profile" />
             <result property="email" column="email" />
             <result property="status" column="status" />
             <result property="createTime" column="create_time" />
             <result property="updateTime" column="update_time" />
             <result property="deleted" column="deleted" />
+            <result property="role" column="role" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,username,password,avatar,email,status,
-        create_time,update_time,deleted
+        id,password,user_account,username,avatar,profile,
+        email,status,create_time,update_time,deleted,
+        role
     </sql>
 </mapper>

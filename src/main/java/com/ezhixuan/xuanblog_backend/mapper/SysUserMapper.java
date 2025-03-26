@@ -1,7 +1,7 @@
 package com.ezhixuan.xuanblog_backend.mapper;
 
-import com.ezhixuan.xuanblog_backend.domain.entity.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ezhixuan.xuanblog_backend.domain.entity.SysUser;
 
 /**
 * @author ezhixuan

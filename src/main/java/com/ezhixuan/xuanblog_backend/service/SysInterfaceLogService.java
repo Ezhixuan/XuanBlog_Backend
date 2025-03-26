@@ -1,6 +1,6 @@
 package com.ezhixuan.xuanblog_backend.service;
 
-import com.ezhixuan.xuanblog_backend.domain.entity.InterfaceLog;
+import com.ezhixuan.xuanblog_backend.domain.entity.SysInterfaceLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -8,6 +8,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @description 针对表【interface_log(接口调用日志表)】的数据库操作Service
 * @createDate 2025-03-26 09:16:24
 */
-public interface InterfaceLogService extends IService<InterfaceLog> {
+public interface SysInterfaceLogService extends IService<SysInterfaceLog> {
 
 }

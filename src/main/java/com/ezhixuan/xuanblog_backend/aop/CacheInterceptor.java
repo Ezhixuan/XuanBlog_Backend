@@ -12,7 +12,7 @@ import org.springframework.util.DigestUtils;
 import com.alibaba.fastjson2.JSON;
 import com.ezhixuan.xuanblog_backend.annotation.Cache;
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
-import com.ezhixuan.xuanblog_backend.common.ResultUtils;
+import com.ezhixuan.xuanblog_backend.common.R;
 import com.ezhixuan.xuanblog_backend.utils.RedisUtil;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
@@ -49,7 +49,7 @@ public class CacheInterceptor {
             if (o instanceof BaseResponse) {
                 return o;
             } else {
-                return ResultUtils.success(o);
+                return R.success(o);
             }
         } else {
             o = redisUtil.get(key);
@@ -58,7 +58,7 @@ public class CacheInterceptor {
             if (o instanceof BaseResponse) {
                 return o;
             } else {
-                return ResultUtils.success(o);
+                return R.success(o);
             }
         }
 

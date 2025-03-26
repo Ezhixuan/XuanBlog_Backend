@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezhixuan.xuanblog_backend.mapper.InterfaceLogMapper">
 
-    <resultMap id="BaseResultMap" type="com.ezhixuan.xuanblog_backend.domain.entity.InterfaceLog">
+    <resultMap id="BaseResultMap" type="com.ezhixuan.xuanblog_backend.domain.entity.SysInterfaceLog">
             <id property="id" column="id" />
             <result property="requestTime" column="request_time" />
             <result property="interfaceName" column="interface_name" />

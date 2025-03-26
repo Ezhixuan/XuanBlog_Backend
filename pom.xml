@@ -34,6 +34,7 @@
         <caffeine.version>3.2.0</caffeine.version>
         <fastjson2.version>2.0.56</fastjson2.version>
         <hutool-all.version>5.8.26</hutool-all.version>
+        <sa-token.version>1.41.0</sa-token.version>
     </properties>
     <dependencies>
         <dependency>
@@ -107,6 +108,14 @@
             <artifactId>hutool-all</artifactId>
             <version>${hutool-all.version}</version>
         </dependency>
+
+        <!-- Sa-Token 权限认证，在线文档：https://sa-token.cc -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot3-starter</artifactId>
+            <version>${sa-token.version}</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>

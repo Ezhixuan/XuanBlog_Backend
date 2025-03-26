@@ -1,10 +1,27 @@
 package com.ezhixuan.xuanblog_backend.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ezhixuan.xuanblog_backend.domain.entity.SysUser;
-import com.ezhixuan.xuanblog_backend.service.SysUserService;
-import com.ezhixuan.xuanblog_backend.mapper.SysUserMapper;
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
+
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ezhixuan.xuanblog_backend.configs.propertites.BlogProp;
+import com.ezhixuan.xuanblog_backend.domain.dto.UserEditDTO;
+import com.ezhixuan.xuanblog_backend.domain.dto.UserLoginDTO;
+import com.ezhixuan.xuanblog_backend.domain.dto.UserRegisterDTO;
+import com.ezhixuan.xuanblog_backend.domain.entity.SysUser;
+import com.ezhixuan.xuanblog_backend.domain.vo.UserInfoVO;
+import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
+import com.ezhixuan.xuanblog_backend.exception.ThrowUtils;
+import com.ezhixuan.xuanblog_backend.mapper.SysUserMapper;
+import com.ezhixuan.xuanblog_backend.service.SysUserService;
+
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.bean.BeanUtil;
+import lombok.RequiredArgsConstructor;
 
 /**
 * @author ezhixuan
@@ -12,9 +29,137 @@ import org.springframework.stereotype.Service;
 * @createDate 2025-03-26 16:38:17
 */
 @Service
+@RequiredArgsConstructor
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     implements SysUserService{
 
+    private final BlogProp blogProp;
+
+    /**
+     * 用户注册
+     *
+     * @param userRegisterDTO 用户注册信息
+     * @author Ezhixuan
+     */
+    @Override
+    public void doRegister(UserRegisterDTO userRegisterDTO) {
+        userRegisterDTO.check();
+        String encryptedPassword = checkAndSupplyEncPwd(userRegisterDTO);
+
+        SysUser sysUser = new SysUser();
+        sysUser.setUserAccount(userRegisterDTO.getUserAccount());
+        sysUser.setPassword(encryptedPassword);
+        sysUser.setRole("user");
+        sysUser.setUsername(userRegisterDTO.getUserAccount());
+        this.save(sysUser);
+    }
+
+    /**
+     * 用户登录
+     *
+     * @param userLoginDTO 用户登录信息
+     * @author Ezhixuan
+     */
+    @Override
+    public void doLogin(UserLoginDTO userLoginDTO) {
+        userLoginDTO.check();
+        String encryptedPassword = checkAndSupplyEncPwd(userLoginDTO);
+        SysUser user = this.getOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getUserAccount, userLoginDTO.getUserAccount()).eq(SysUser::getPassword, encryptedPassword));
+        StpUtil.login(user.getId());
+    }
+
+    /**
+     * 内部方法 校验并返回加密后的密码
+     * @author Ezhixuan
+     * @param dto 用户登录/注册信息
+     * @return String
+     */
+    private <T extends UserLoginDTO> String checkAndSupplyEncPwd(T dto) {
+        String userAccount = dto.getUserAccount();
+        String password = dto.getPassword();
+        // 是否已经存在
+        String saltPwd = blogProp.getSalt() + password;
+        String encPwd = DigestUtils.md5DigestAsHex(saltPwd.getBytes());
+        if (dto instanceof UserRegisterDTO) {
+            ThrowUtils.throwIf(this.lambdaQuery().eq(SysUser::getUserAccount, userAccount).exists(), ErrorCode.OPERATION_ERROR, "用户名已存在");
+        }else {
+            ThrowUtils.throwIf(!this.lambdaQuery().eq(SysUser::getUserAccount, userAccount).eq(SysUser::getPassword, encPwd).exists(), ErrorCode.OPERATION_ERROR, "用户名或密码错误");
+        }
+        return encPwd;
+    }
+
+    /**
+     * 获取用户信息Vo
+     *
+     * @return 脱敏后的用户信息
+     * @author Ezhixuan
+     */
+    @Override
+    public UserInfoVO getLoginUserInfoVO() {
+        long userId = StpUtil.getLoginIdAsLong();
+        return getUserInfoVo(userId);
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @return 用户信息
+     * @author Ezhixuan
+     */
+    @Override
+    public SysUser getLoginUserInfo() {
+        long userId = StpUtil.getLoginIdAsLong();
+        return getUserInfo(userId);
+    }
+
+    /**
+     * 根据用户id获取用户信息Vo
+     *
+     * @param userId 用户id
+     * @return 脱敏后的用户信息
+     * @author Ezhixuan
+     */
+    @Override
+    public UserInfoVO getUserInfoVo(Long userId) {
+        return new UserInfoVO(getUserInfo(userId));
+    }
+
+    /**
+     * 根据用户id获取用户信息
+     *
+     * @param userId 用户id
+     * @return 用户信息
+     * @author Ezhixuan
+     */
+    @Override
+    public SysUser getUserInfo(Long userId) {
+        ThrowUtils.throwIf(Objects.isNull(userId), ErrorCode.PARAMS_ERROR, "必要参数不能为null");
+        return this.getById(userId);
+    }
+
+    /**
+     * 用户信息编辑
+     *
+     * @param userEditDTO 用户编辑
+     * @author Ezhixuan
+     */
+    @Override
+    public void updateUserInfo(UserEditDTO userEditDTO) {
+        ThrowUtils.throwIf(Objects.isNull(userEditDTO) || Objects.isNull(userEditDTO.getId()), ErrorCode.PARAMS_ERROR);
+        SysUser user = this.getById(userEditDTO.getId());
+        ThrowUtils.throwIf(Objects.isNull(user), ErrorCode.NOT_LOGIN_ERROR);
+
+        SysUser sysUser = BeanUtil.copyProperties(userEditDTO, SysUser.class);
+        if (StringUtils.hasText(userEditDTO.getPassword())) {
+            UserLoginDTO userLoginDTO = new UserLoginDTO();
+            userLoginDTO.setUserAccount(user.getUserAccount());
+            userLoginDTO.setPassword(userEditDTO.getPassword());
+            String encPwd = checkAndSupplyEncPwd(userLoginDTO);
+            sysUser.setPassword(encPwd);
+        }
+
+        this.updateById(sysUser);
+    }
 }
 
 

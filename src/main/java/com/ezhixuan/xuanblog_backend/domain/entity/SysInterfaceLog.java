@@ -16,9 +16,9 @@ import lombok.Data;
  * 接口调用日志表
  * @TableName interface_log
  */
-@TableName(value ="interface_log")
+@TableName(value ="sys_interface_log")
 @Data
-public class InterfaceLog implements Serializable {
+public class SysInterfaceLog implements Serializable {
     /**
      * 日志ID
      */

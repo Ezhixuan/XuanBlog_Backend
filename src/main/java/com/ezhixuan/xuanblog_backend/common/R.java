@@ -2,7 +2,16 @@ package com.ezhixuan.xuanblog_backend.common;
 
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
 
-public class ResultUtils {
+public class R {
+
+    /**
+     * 成功
+     *
+     * @return 响应
+     */
+    public static <T> BaseResponse<T> success() {
+        return new BaseResponse<>(0, null, "ok");
+    }
 
     /**
      * 成功
