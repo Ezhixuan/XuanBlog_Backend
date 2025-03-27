@@ -30,10 +30,10 @@ public class Article implements Serializable {
     private String title;
 
     /**
-     * 文章内容
+     * 作者ID
      */
-    @TableField(value = "content")
-    private String content;
+    @TableField(value = "user_id")
+    private Long userId;
 
     /**
      * 文章摘要
@@ -54,10 +54,16 @@ public class Article implements Serializable {
     private Long categoryId;
 
     /**
-     * 作者ID
+     * 标签id列表
      */
-    @TableField(value = "user_id")
-    private Long userId;
+    @TableField(value = "tag_ids")
+    private String tagIds;
+
+    /**
+     * 文章字数
+     */
+    @TableField(value = "word_count")
+    private Integer wordCount;
 
     /**
      * 浏览量
