@@ -1,5 +1,8 @@
 package com.ezhixuan.xuanblog_backend.common;
 
+import java.util.List;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
 
 public class R {
@@ -54,4 +57,19 @@ public class R {
     public static BaseResponse<?> error(ErrorCode errorCode, String message) {
         return new BaseResponse<>(errorCode.getCode(), null, message);
     }
+
+    public static <T> BaseResponse<PageResponse<T>> list(List<T> data) {
+        PageResponse<T> tPageResponse = new PageResponse<>();
+        tPageResponse.setData(data);
+        tPageResponse.setTotal(data.size());
+        return success(tPageResponse);
+    }
+
+    public static <T> BaseResponse<PageResponse<T>> list(IPage<T> page) {
+        PageResponse<T> tPageResponse = new PageResponse<>();
+        tPageResponse.setData(page.getRecords());
+        tPageResponse.setTotal(page.getTotal());
+        return success(tPageResponse);
+    }
+
 }
