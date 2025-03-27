@@ -1,5 +1,7 @@
 package com.ezhixuan.xuanblog_backend.domain.dto;
 
+import java.util.Objects;
+
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
 import com.ezhixuan.xuanblog_backend.exception.ThrowUtils;
 
@@ -29,6 +31,7 @@ public class UserLoginDTO {
      * @throws com.ezhixuan.xuanblog_backend.exception.BusinessException
      */
     public boolean check() {
+        ThrowUtils.throwIf(Objects.isNull(userAccount) || Objects.isNull(password), ErrorCode.PARAMS_ERROR);
         int length = this.userAccount.length();
         ThrowUtils.throwIf(length < 6 || length > 18, ErrorCode.PARAMS_ERROR);
         length = this.password.length();

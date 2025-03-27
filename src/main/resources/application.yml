@@ -46,3 +46,4 @@ sa-token:
   token-style: uuid
   # 是否输出操作日志
   is-log: true
+  token-prefix: Bearer

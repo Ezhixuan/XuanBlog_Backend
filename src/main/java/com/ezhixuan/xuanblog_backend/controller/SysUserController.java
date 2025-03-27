@@ -1,6 +1,8 @@
 package com.ezhixuan.xuanblog_backend.controller;
 
+import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import com.ezhixuan.xuanblog_backend.annotation.Cache;
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
 import com.ezhixuan.xuanblog_backend.common.R;
 import com.ezhixuan.xuanblog_backend.domain.dto.UserLoginDTO;
@@ -24,12 +26,13 @@ public class SysUserController {
     }
 
     @PostMapping("/login")
-    public BaseResponse<String> doLogin(@RequestBody UserLoginDTO userLoginDTO) {
+    public BaseResponse<SaTokenInfo> doLogin(@RequestBody UserLoginDTO userLoginDTO) {
         userService.doLogin(userLoginDTO);
-        return R.success();
+        return R.success(StpUtil.getTokenInfo());
     }
 
     @GetMapping("/linfo")
+    @Cache
     public BaseResponse<UserInfoVO> getLoginUserInfo() {
         StpUtil.checkLogin();
         return R.success(userService.getLoginUserInfoVO());
