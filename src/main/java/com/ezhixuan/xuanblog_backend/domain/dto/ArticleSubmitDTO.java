@@ -37,4 +37,9 @@ public class ArticleSubmitDTO {
      * 状态：1-已发布，0-草稿
      */
     private Integer status;
+
+    /**
+     * 文章内容
+     */
+    private String content;
 }

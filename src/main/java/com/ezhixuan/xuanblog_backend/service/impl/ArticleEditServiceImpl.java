@@ -3,11 +3,16 @@ package com.ezhixuan.xuanblog_backend.service.impl;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleSubmitDTO;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.Article;
+import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleContent;
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
 import com.ezhixuan.xuanblog_backend.exception.ThrowUtils;
+import com.ezhixuan.xuanblog_backend.service.ArticleContentService;
 import com.ezhixuan.xuanblog_backend.service.ArticleEditService;
 import com.ezhixuan.xuanblog_backend.service.ArticleService;
 
@@ -15,12 +20,16 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ArticleEditServiceImpl implements ArticleEditService {
 
     final ArticleService articleService;
+    final ArticleContentService contentService;
+    final PlatformTransactionManager transactionManager;
 
     /**
      * 上传博客
@@ -47,6 +56,19 @@ public class ArticleEditServiceImpl implements ArticleEditService {
         }
         Article article = BeanUtil.copyProperties(articleSubmitDTO, Article.class);
         article.setUserId(StpUtil.getLoginIdAsLong());
-        articleService.save(article);
+        TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        try {
+            articleService.save(article);
+            ArticleContent articleContent = new ArticleContent();
+            articleContent.setArticleId(article.getId());
+            articleContent.setContent(articleSubmitDTO.getContent());
+            contentService.save(articleContent);
+            transactionManager.commit(transaction);
+        }catch (Exception e) {
+            log.error("事务回滚 {}", e.getMessage());
+            transactionManager.rollback(transaction);
+            throw e;
+        }
+
     }
 }
