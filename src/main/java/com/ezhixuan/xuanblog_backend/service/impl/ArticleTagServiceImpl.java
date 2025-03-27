@@ -1,10 +1,14 @@
 package com.ezhixuan.xuanblog_backend.service.impl;
 
+import java.util.Collection;
+
+import org.springframework.stereotype.Service;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleTag;
-import com.ezhixuan.xuanblog_backend.service.ArticleTagService;
 import com.ezhixuan.xuanblog_backend.mapper.ArticleTagMapper;
-import org.springframework.stereotype.Service;
+import com.ezhixuan.xuanblog_backend.service.ArticleTagService;
 
 /**
 * @author ezhixuan
@@ -15,6 +19,31 @@ import org.springframework.stereotype.Service;
 public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, ArticleTag>
     implements ArticleTagService{
 
+    /**
+     * 通过tag名模糊搜索符合的标签id
+     *
+     * @param tagName 标签名
+     * @return ids
+     */
+    public Collection<Long> getIdsByTagName(String tagName) {
+        LambdaQueryWrapper<ArticleTag> qw = queryWrapper(tagName);
+        qw.select(ArticleTag::getId);
+        return listObjs(qw, o -> (long)o);
+    }
+
+    /**
+     * 内部方法
+     * 本服务只提供根据名称模糊搜索
+     * @param tagName 标签名
+     * @return qw
+     */
+    private LambdaQueryWrapper<ArticleTag> queryWrapper(String tagName) {
+        LambdaQueryWrapper<ArticleTag> qw = new LambdaQueryWrapper<>();
+
+        qw.like(ArticleTag::getName, tagName);
+
+        return qw;
+    }
 }
 
 
