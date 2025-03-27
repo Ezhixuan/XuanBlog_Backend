@@ -11,7 +11,7 @@
  Target Server Version : 80032 (8.0.32)
  File Encoding         : 65001
 
- Date: 26/03/2025 15:14:29
+ Date: 27/03/2025 10:00:33
 */
 
 SET NAMES utf8mb4;
@@ -102,6 +102,22 @@ BEGIN;
 COMMIT;
 
 -- ----------------------------
+-- Table structure for article_content
+-- ----------------------------
+DROP TABLE IF EXISTS `article_content`;
+CREATE TABLE `article_content` (
+  `article_id` bigint NOT NULL COMMENT '文章id',
+  `content` text NOT NULL COMMENT '文章内容',
+  PRIMARY KEY (`article_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文章内容';
+
+-- ----------------------------
+-- Records of article_content
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
 -- Table structure for article_tag
 -- ----------------------------
 DROP TABLE IF EXISTS `article_tag`;
@@ -131,11 +147,9 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `article_tag_link`;
 CREATE TABLE `article_tag_link` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `article_id` bigint NOT NULL COMMENT '文章ID',
   `tag_id` bigint NOT NULL COMMENT '标签ID',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`article_id`) USING BTREE,
   UNIQUE KEY `uk_article_tag` (`article_id`,`tag_id`),
   KEY `tag_id` (`tag_id`),
   CONSTRAINT `article_tag_link_ibfk_1` FOREIGN KEY (`article_id`) REFERENCES `article` (`id`),
@@ -167,7 +181,7 @@ CREATE TABLE `sys_interface_log` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
   PRIMARY KEY (`id`),
   KEY `idx_interface_time` (`interface_name`,`request_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='接口调用日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='接口调用日志表';
 
 -- ----------------------------
 -- Records of sys_interface_log
@@ -176,14 +190,6 @@ BEGIN;
 INSERT INTO `sys_interface_log` (`id`, `request_time`, `interface_name`, `request_params`, `response_data`, `status`, `error_info`, `execution_time`, `client_ip`, `user_id`, `request_id`, `created_at`) VALUES (1, '2025-03-26 10:02:18', 'MainController.health()', '[]', '{\"code\":0,\"data\":\"ok\",\"message\":\"ok\"}', 'success', NULL, 0.000, '127.0.0.1', NULL, NULL, '2025-03-26 10:02:18');
 INSERT INTO `sys_interface_log` (`id`, `request_time`, `interface_name`, `request_params`, `response_data`, `status`, `error_info`, `execution_time`, `client_ip`, `user_id`, `request_id`, `created_at`) VALUES (2, '2025-03-26 10:03:13', 'MainController.health()', '[]', '{\"code\":0,\"data\":\"ok\",\"message\":\"ok\"}', 'success', NULL, 1.000, '127.0.0.1', NULL, NULL, '2025-03-26 10:03:13');
 INSERT INTO `sys_interface_log` (`id`, `request_time`, `interface_name`, `request_params`, `response_data`, `status`, `error_info`, `execution_time`, `client_ip`, `user_id`, `request_id`, `created_at`) VALUES (3, '2025-03-26 10:07:53', 'MainController.health()', '[]', '{\"code\":0,\"data\":\"ok\",\"message\":\"ok\"}', 'success', NULL, 1773.000, '127.0.0.1', NULL, NULL, '2025-03-26 10:08:02');
-INSERT INTO `sys_interface_log` (`id`, `request_time`, `interface_name`, `request_params`, `response_data`, `status`, `error_info`, `execution_time`, `client_ip`, `user_id`, `request_id`, `created_at`) VALUES (4, '2025-03-26 10:08:10', 'MainController.health()', '[]', '{\"code\":0,\"data\":\"ok\",\"message\":\"ok\"}', 'success', NULL, 0.000, '127.0.0.1', NULL, NULL, '2025-03-26 10:08:10');
-INSERT INTO `sys_interface_log` (`id`, `request_time`, `interface_name`, `request_params`, `response_data`, `status`, `error_info`, `execution_time`, `client_ip`, `user_id`, `request_id`, `created_at`) VALUES (5, '2025-03-26 10:08:13', 'MainController.health()', '[]', '{\"code\":0,\"data\":\"ok\",\"message\":\"ok\"}', 'success', NULL, 0.000, '127.0.0.1', NULL, NULL, '2025-03-26 10:08:12');
-INSERT INTO `sys_interface_log` (`id`, `request_time`, `interface_name`, `request_params`, `response_data`, `status`, `error_info`, `execution_time`, `client_ip`, `user_id`, `request_id`, `created_at`) VALUES (6, '2025-03-26 10:08:19', 'MainController.health()', '[]', '{\"code\":0,\"data\":\"ok\",\"message\":\"ok\"}', 'success', NULL, 0.000, '127.0.0.1', NULL, NULL, '2025-03-26 10:08:25');
-INSERT INTO `sys_interface_log` (`id`, `request_time`, `interface_name`, `request_params`, `response_data`, `status`, `error_info`, `execution_time`, `client_ip`, `user_id`, `request_id`, `created_at`) VALUES (7, '2025-03-26 10:32:10', 'MainController.health()', '[]', '{\"code\":0,\"data\":\"ok\",\"message\":\"ok\"}', 'success', NULL, 11.000, '127.0.0.1', NULL, NULL, '2025-03-26 10:32:10');
-INSERT INTO `sys_interface_log` (`id`, `request_time`, `interface_name`, `request_params`, `response_data`, `status`, `error_info`, `execution_time`, `client_ip`, `user_id`, `request_id`, `created_at`) VALUES (8, '2025-03-26 10:32:21', 'MainController.health()', '[]', '{\"code\":0,\"data\":\"ok\",\"message\":\"ok\"}', 'success', NULL, 10.000, '127.0.0.1', NULL, NULL, '2025-03-26 10:32:21');
-INSERT INTO `sys_interface_log` (`id`, `request_time`, `interface_name`, `request_params`, `response_data`, `status`, `error_info`, `execution_time`, `client_ip`, `user_id`, `request_id`, `created_at`) VALUES (9, '2025-03-26 10:32:40', 'MainController.health()', '[]', '{\"code\":0,\"data\":\"ok\",\"message\":\"ok\"}', 'success', NULL, 1553.000, '127.0.0.1', NULL, NULL, '2025-03-26 10:32:41');
-INSERT INTO `sys_interface_log` (`id`, `request_time`, `interface_name`, `request_params`, `response_data`, `status`, `error_info`, `execution_time`, `client_ip`, `user_id`, `request_id`, `created_at`) VALUES (10, '2025-03-26 10:32:51', 'MainController.health()', '[]', '{\"code\":0,\"data\":\"ok\",\"message\":\"ok\"}', 'success', NULL, 6827.000, '127.0.0.1', NULL, NULL, '2025-03-26 10:32:59');
-COMMIT;
 
 -- ----------------------------
 -- Table structure for sys_user
@@ -205,13 +211,13 @@ CREATE TABLE `sys_user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表';
 
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_user` (`id`, `password`, `user_account`, `username`, `avatar`, `profile`, `email`, `status`, `create_time`, `update_time`, `deleted`, `role`) VALUES (1, '$2a$10$Y4hVlZ2rSQez.I4XhLgMT.Rw5Pj.xkS/9hOncUeBxO6JIqL7.YgxC', '', 'admin', NULL, NULL, 'admin@example.com', 1, '2025-03-25 22:53:00', '2025-03-25 22:53:00', 0, '');
+INSERT INTO `sys_user` (`id`, `password`, `user_account`, `username`, `avatar`, `profile`, `email`, `status`, `create_time`, `update_time`, `deleted`, `role`) VALUES (1, '0e039d030b9ba451310bb48d213ddd69', 'ezhixuan', 'ezhixuan', NULL, NULL, NULL, 1, '2025-03-26 23:14:10', '2025-03-26 23:14:10', 0, 'admin');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

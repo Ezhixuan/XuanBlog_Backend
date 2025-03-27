@@ -2,7 +2,7 @@ package com.ezhixuan.xuanblog_backend.domain.vo;
 
 import java.util.Date;
 
-import com.ezhixuan.xuanblog_backend.domain.entity.SysUser;
+import com.ezhixuan.xuanblog_backend.domain.entity.sys.SysUser;
 
 import lombok.Data;
 

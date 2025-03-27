@@ -1,6 +1,6 @@
 package com.ezhixuan.xuanblog_backend.mapper;
 
-import com.ezhixuan.xuanblog_backend.domain.entity.SysInterfaceLog;
+import com.ezhixuan.xuanblog_backend.domain.entity.sys.SysInterfaceLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2025-03-26 09:16:24
 * @Entity com.ezhixuan.xuanblog_backend.domain.entity.InterfaceLog
 */
-public interface InterfaceLogMapper extends BaseMapper<SysInterfaceLog> {
+public interface SysInterfaceLogMapper extends BaseMapper<SysInterfaceLog> {
 
 }
 

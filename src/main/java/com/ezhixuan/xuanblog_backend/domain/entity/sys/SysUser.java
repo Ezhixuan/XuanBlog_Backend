@@ -1,4 +1,4 @@
-package com.ezhixuan.xuanblog_backend.domain.entity;
+package com.ezhixuan.xuanblog_backend.domain.entity.sys;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -20,7 +20,7 @@ public class SysUser implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

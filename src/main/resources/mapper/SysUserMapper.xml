@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezhixuan.xuanblog_backend.mapper.SysUserMapper">
 
-    <resultMap id="BaseResultMap" type="com.ezhixuan.xuanblog_backend.domain.entity.SysUser">
+    <resultMap id="BaseResultMap" type="com.ezhixuan.xuanblog_backend.domain.entity.sys.SysUser">
             <id property="id" column="id" />
             <result property="password" column="password" />
             <result property="userAccount" column="user_account" />

@@ -12,7 +12,7 @@ import com.ezhixuan.xuanblog_backend.configs.propertites.BlogProp;
 import com.ezhixuan.xuanblog_backend.domain.dto.UserEditDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.UserLoginDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.UserRegisterDTO;
-import com.ezhixuan.xuanblog_backend.domain.entity.SysUser;
+import com.ezhixuan.xuanblog_backend.domain.entity.sys.SysUser;
 import com.ezhixuan.xuanblog_backend.domain.vo.UserInfoVO;
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
 import com.ezhixuan.xuanblog_backend.exception.ThrowUtils;

@@ -1,6 +1,6 @@
 package com.ezhixuan.xuanblog_backend.service;
 
-import com.ezhixuan.xuanblog_backend.domain.entity.SysInterfaceLog;
+import com.ezhixuan.xuanblog_backend.domain.entity.sys.SysInterfaceLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

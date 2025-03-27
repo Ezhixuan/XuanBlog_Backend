@@ -1,4 +1,4 @@
-package com.ezhixuan.xuanblog_backend.domain.entity;
+package com.ezhixuan.xuanblog_backend.domain.entity.sys;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -22,7 +22,7 @@ public class SysInterfaceLog implements Serializable {
     /**
      * 日志ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

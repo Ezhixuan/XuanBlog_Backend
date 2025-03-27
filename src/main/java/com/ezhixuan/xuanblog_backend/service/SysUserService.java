@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.ezhixuan.xuanblog_backend.domain.dto.UserEditDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.UserLoginDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.UserRegisterDTO;
-import com.ezhixuan.xuanblog_backend.domain.entity.SysUser;
+import com.ezhixuan.xuanblog_backend.domain.entity.sys.SysUser;
 import com.ezhixuan.xuanblog_backend.domain.vo.UserInfoVO;
 
 /**
