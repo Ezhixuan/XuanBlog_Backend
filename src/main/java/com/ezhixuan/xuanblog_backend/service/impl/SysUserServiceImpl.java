@@ -12,6 +12,7 @@ import com.ezhixuan.xuanblog_backend.configs.propertites.BlogProp;
 import com.ezhixuan.xuanblog_backend.domain.dto.UserEditDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.UserLoginDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.UserRegisterDTO;
+import com.ezhixuan.xuanblog_backend.domain.dto.UserUpdatePasswordDTO;
 import com.ezhixuan.xuanblog_backend.domain.entity.sys.SysUser;
 import com.ezhixuan.xuanblog_backend.domain.vo.UserInfoVO;
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
@@ -78,14 +79,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         String userAccount = dto.getUserAccount();
         String password = dto.getPassword();
         // 是否已经存在
-        String saltPwd = blogProp.getSalt() + password;
-        String encPwd = DigestUtils.md5DigestAsHex(saltPwd.getBytes());
-        if (dto instanceof UserRegisterDTO) {
+        String encPwd = encryptByMd5(password);
+
+        if (dto instanceof UserUpdatePasswordDTO) {
+            String confirmPassword = ((UserUpdatePasswordDTO) dto).getConfirmPassword();
+            String oldEncPwd = encryptByMd5(confirmPassword);
+            ThrowUtils.throwIf(!this.lambdaQuery().eq(SysUser::getUserAccount, userAccount).eq(SysUser::getPassword, oldEncPwd).exists(), ErrorCode.OPERATION_ERROR, "密码错误");
+        } else if (dto instanceof UserRegisterDTO) {
             ThrowUtils.throwIf(this.lambdaQuery().eq(SysUser::getUserAccount, userAccount).exists(), ErrorCode.OPERATION_ERROR, "用户名已存在");
         }else {
             ThrowUtils.throwIf(!this.lambdaQuery().eq(SysUser::getUserAccount, userAccount).eq(SysUser::getPassword, encPwd).exists(), ErrorCode.OPERATION_ERROR, "用户名或密码错误");
         }
         return encPwd;
+    }
+
+    private String encryptByMd5(String password) {
+        String saltPwd = blogProp.getSalt() + password;
+        return DigestUtils.md5DigestAsHex(saltPwd.getBytes());
     }
 
     /**
@@ -145,16 +155,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
      */
     @Override
     public void updateUserInfo(UserEditDTO userEditDTO) {
-        ThrowUtils.throwIf(Objects.isNull(userEditDTO) || Objects.isNull(userEditDTO.getId()), ErrorCode.PARAMS_ERROR);
-        SysUser user = this.getById(userEditDTO.getId());
+        Long userId = StpUtil.getLoginIdAsLong();
+        SysUser user = this.getById(userId);
         ThrowUtils.throwIf(Objects.isNull(user), ErrorCode.NOT_LOGIN_ERROR);
 
         SysUser sysUser = BeanUtil.copyProperties(userEditDTO, SysUser.class);
+        sysUser.setId(userId);
         if (StringUtils.hasText(userEditDTO.getPassword())) {
-            UserLoginDTO userLoginDTO = new UserLoginDTO();
-            userLoginDTO.setUserAccount(user.getUserAccount());
-            userLoginDTO.setPassword(userEditDTO.getPassword());
-            String encPwd = checkAndSupplyEncPwd(userLoginDTO);
+            UserUpdatePasswordDTO userUpdatePasswordDTO = new UserUpdatePasswordDTO();
+            userUpdatePasswordDTO.setUserAccount(user.getUserAccount());
+            userUpdatePasswordDTO.setPassword(userEditDTO.getPassword());
+            userUpdatePasswordDTO.setConfirmPassword(userEditDTO.getOldPassword());
+            String encPwd = checkAndSupplyEncPwd(userUpdatePasswordDTO);
             sysUser.setPassword(encPwd);
         }
 

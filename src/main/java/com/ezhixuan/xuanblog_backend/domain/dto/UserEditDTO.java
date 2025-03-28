@@ -9,14 +9,14 @@ import lombok.Data;
 public class UserEditDTO {
 
     /**
-     * 主键
-     */
-    private Long id;
-
-    /**
      * 密码
      */
     private String password;
+
+    /**
+     * 旧密码
+     */
+    private String oldPassword;
 
     /**
      * 用户名

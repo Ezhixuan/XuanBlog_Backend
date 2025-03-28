@@ -13,4 +13,19 @@ public @interface Cache {
      * 过期时间 默认5分钟
      */
     long expireTime() default 60L * 5;
+
+    /**
+     * 操作类型 默认插入
+     */
+    String operateType() default CacheOperateType.INSERT;
+
+    /**
+     * 用户自行设置key
+     */
+    String key();
+
+    interface CacheOperateType {
+        String INSERT = "insert";
+        String UPDATE = "update";
+    }
 }

@@ -50,15 +50,18 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
         ArticlePageVO articlePageVO = BeanUtil.copyProperties(articlePageDTO, ArticlePageVO.class);
 
         // 处理
-        List<Long> tagIds =
-            Arrays.stream(articlePageDTO.getTagIds().split(",")).toList().stream().map(Long::parseLong).toList();
-        Map<Long, String> tag =
-            tagService.listByIds(tagIds).stream().collect(Collectors.toMap(ArticleTag::getId, ArticleTag::getName));
-        articlePageVO.setTagMap(tag);
-
-        ArticleCategory categoryById = categoryService.getById(articlePageDTO.getCategoryId());
-        articlePageVO.setCategoryId(articlePageDTO.getCategoryId());
-        articlePageVO.setCategoryName(categoryById.getName());
+        if (!ObjectUtils.isEmpty(articlePageDTO.getTagIds())) {
+            List<Long> tagIds =
+                    Arrays.stream(articlePageDTO.getTagIds().split(",")).toList().stream().map(Long::parseLong).toList();
+            Map<Long, String> tag =
+                    tagService.listByIds(tagIds).stream().collect(Collectors.toMap(ArticleTag::getId, ArticleTag::getName));
+            articlePageVO.setTagMap(tag);
+        }
+        if (!Objects.isNull(articlePageDTO.getCategoryId())) {
+            ArticleCategory categoryById = categoryService.getById(articlePageDTO.getCategoryId());
+            articlePageVO.setCategoryId(articlePageDTO.getCategoryId());
+            articlePageVO.setCategoryName(categoryById.getName());
+        }
         return articlePageVO;
     }
 
