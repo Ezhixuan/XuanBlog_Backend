@@ -53,30 +53,35 @@ public class ArticleController {
     @GetMapping("/tags")
     @Cache(key = "tags")
     public BaseResponse<List<ArticleTagVO>> getArticleTagList() {
-        List<ArticleTagVO> tagVOList = tagService.list().stream().map(item -> BeanUtil.copyProperties(item, ArticleTagVO.class)).toList();
+        List<ArticleTagVO> tagVOList =
+            tagService.list().stream().map(item -> BeanUtil.copyProperties(item, ArticleTagVO.class)).toList();
         return R.success(tagVOList);
     }
 
     @GetMapping("/categories")
     @Cache(key = "categories")
     public BaseResponse<List<ArticleCategoryVO>> getArticleCategoryList() {
-        List<ArticleCategoryVO> categoryVOList = categoryService.list().stream().map(item -> BeanUtil.copyProperties(item, ArticleCategoryVO.class)).toList();
+        List<ArticleCategoryVO> categoryVOList = categoryService.list().stream()
+            .map(item -> BeanUtil.copyProperties(item, ArticleCategoryVO.class)).toList();
         return R.success(categoryVOList);
     }
 
-    @GetMapping("/blogs/{id}")
-    public BaseResponse<ArticleInfoVO> getArticleInfo(@PathVariable Long id) {
+    @PostMapping("/blogs")
+    public BaseResponse<ArticleInfoVO> getArticleInfo(String id) {
         ThrowUtils.throwIf(Objects.isNull(id), ErrorCode.PARAMS_ERROR);
         // 构建查询条件
         ArticleQueryDTO articleQueryDTO = new ArticleQueryDTO();
-        articleQueryDTO.setIds(Collections.singleton(id));
+        articleQueryDTO.setIds(Collections.singleton(Long.parseLong(id)));
         IPage<ArticlePageVO> articlePageVOList = queryService.getArticlePageVOList(articleQueryDTO);
         ArticleInfoVO articleInfoVO = new ArticleInfoVO();
-        articlePageVOList.getRecords().stream().findAny().ifPresent(item -> BeanUtil.copyProperties(item, articleInfoVO));
+        articlePageVOList.getRecords().stream().findAny()
+            .ifPresent(item -> BeanUtil.copyProperties(item, articleInfoVO));
 
         // 补充文章内容
         ArticleContent content = contentService.getById(id);
-        articleInfoVO.setContent(content.getContent());
+        if (Objects.nonNull(content)) {
+            articleInfoVO.setContent(content.getContent());
+        }
         return R.success(articleInfoVO);
     }
 
