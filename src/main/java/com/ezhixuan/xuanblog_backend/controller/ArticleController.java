@@ -1,6 +1,5 @@
 package com.ezhixuan.xuanblog_backend.controller;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,8 +13,8 @@ import com.ezhixuan.xuanblog_backend.common.PageResponse;
 import com.ezhixuan.xuanblog_backend.common.R;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleQueryDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleSubmitDTO;
+import com.ezhixuan.xuanblog_backend.domain.entity.article.Article;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleCategory;
-import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleContent;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleTag;
 import com.ezhixuan.xuanblog_backend.domain.vo.*;
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
@@ -35,7 +34,7 @@ public class ArticleController {
     final ArticleEditService editService;
     final ArticleTagService tagService;
     final ArticleCategoryService categoryService;
-    final ArticleContentService contentService;
+    final ArticleService articleService;
 
     @PostMapping("/list")
     public BaseResponse<PageResponse<ArticlePageVO>> getArticlePageList(@RequestBody ArticleQueryDTO articleQueryDTO) {
@@ -67,22 +66,19 @@ public class ArticleController {
     }
 
     @PostMapping("/blogs")
-    public BaseResponse<ArticleInfoVO> getArticleInfo(String id) {
+    public BaseResponse<?> getArticleInfo(String id) {
         ThrowUtils.throwIf(Objects.isNull(id), ErrorCode.PARAMS_ERROR);
         // 构建查询条件
-        ArticleQueryDTO articleQueryDTO = new ArticleQueryDTO();
-        articleQueryDTO.setIds(Collections.singleton(Long.parseLong(id)));
-        IPage<ArticlePageVO> articlePageVOList = queryService.getArticlePageVOList(articleQueryDTO);
-        ArticleInfoVO articleInfoVO = new ArticleInfoVO();
-        articlePageVOList.getRecords().stream().findAny()
-            .ifPresent(item -> BeanUtil.copyProperties(item, articleInfoVO));
-
-        // 补充文章内容
-        ArticleContent content = contentService.getById(id);
-        if (Objects.nonNull(content)) {
-            articleInfoVO.setContent(content.getContent());
-        }
-        return R.success(articleInfoVO);
+        long articleId = Long.parseLong(id);
+        Article article = new Article();
+        /*
+        内部查询调用了缓存，所以这里额外进行单字段查询操作
+         */
+        Integer viewCount = articleService.getObj(Wrappers.<Article>lambdaQuery().select(Article::getViewCount).eq(Article::getId, articleId), o -> (Integer) o) + 1;
+        article.setId(articleId);
+        article.setViewCount(viewCount);
+        articleService.updateById(article);
+        return R.success(queryService.getArticleInfo(articleId));
     }
 
     @PostMapping("/tag/add")

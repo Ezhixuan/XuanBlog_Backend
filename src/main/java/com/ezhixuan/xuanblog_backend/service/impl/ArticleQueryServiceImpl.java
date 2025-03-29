@@ -8,20 +8,20 @@ import org.springframework.util.ObjectUtils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ezhixuan.xuanblog_backend.annotation.Cache;
 import com.ezhixuan.xuanblog_backend.common.PageRequest;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticlePageDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleQueryDTO;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.Article;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleCategory;
+import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleContent;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleTag;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticleCategoryCountVO;
+import com.ezhixuan.xuanblog_backend.domain.vo.ArticleInfoVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticlePageVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticleTagCountVO;
-import com.ezhixuan.xuanblog_backend.mapper.ArticleCategoryMapper;
-import com.ezhixuan.xuanblog_backend.service.ArticleCategoryService;
-import com.ezhixuan.xuanblog_backend.service.ArticleQueryService;
-import com.ezhixuan.xuanblog_backend.service.ArticleService;
-import com.ezhixuan.xuanblog_backend.service.ArticleTagService;
+import com.ezhixuan.xuanblog_backend.service.*;
+import com.ezhixuan.xuanblog_backend.utils.RedisUtil;
 
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,8 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
     final ArticleService articleService;
     final ArticleCategoryService categoryService;
     final ArticleTagService tagService;
-    private final ArticleCategoryMapper articleCategoryMapper;
+    final ArticleContentService contentService;
+    private final RedisUtil redisUtil;
 
     @Override
     public IPage<ArticlePageVO> getArticlePageVOList(ArticleQueryDTO articleQueryDTO) {
@@ -170,5 +171,29 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
             tagCountVOList.add(countVO);
         });
         return tagCountVOList;
+    }
+
+    /**
+     * 查询文章详情
+     *
+     * @param articleId 文章id
+     * @return 文章内容vo
+     * @author Ezhixuan
+     */
+    @Override
+    @Cache
+    public ArticleInfoVO getArticleInfo(long articleId) {
+        ArticleQueryDTO articleQueryDTO = new ArticleQueryDTO();
+        articleQueryDTO.setIds(Collections.singleton(articleId));
+        IPage<ArticlePageVO> articlePageVOList = getArticlePageVOList(articleQueryDTO);
+        ArticleInfoVO articleInfoVO = new ArticleInfoVO();
+        articlePageVOList.getRecords().stream().findAny()
+                .ifPresent(item -> BeanUtil.copyProperties(item, articleInfoVO));
+        // 补充文章内容
+        ArticleContent content = contentService.getById(articleId);
+        if (Objects.nonNull(content)) {
+            articleInfoVO.setContent(content.getContent());
+        }
+        return articleInfoVO;
     }
 }

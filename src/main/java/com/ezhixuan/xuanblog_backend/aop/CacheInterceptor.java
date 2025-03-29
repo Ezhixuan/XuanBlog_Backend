@@ -12,7 +12,6 @@ import org.springframework.util.DigestUtils;
 import com.alibaba.fastjson2.JSON;
 import com.ezhixuan.xuanblog_backend.annotation.Cache;
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
-import com.ezhixuan.xuanblog_backend.common.R;
 import com.ezhixuan.xuanblog_backend.utils.RedisUtil;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
@@ -46,20 +45,12 @@ public class CacheInterceptor {
         Object o = LOCAL_CACHE.getIfPresent(key);
 
         if (Objects.nonNull(o)) {
-            if (o instanceof BaseResponse) {
-                return o;
-            } else {
-                return R.success(o);
-            }
+            return o;
         } else {
             o = redisUtil.get(key);
         }
         if (Objects.nonNull(o)) {
-            if (o instanceof BaseResponse) {
-                return o;
-            } else {
-                return R.success(o);
-            }
+            return o;
         }
 
         Object res = joinPoint.proceed();

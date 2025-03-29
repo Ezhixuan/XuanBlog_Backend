@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticlePageDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleQueryDTO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticleCategoryCountVO;
+import com.ezhixuan.xuanblog_backend.domain.vo.ArticleInfoVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticlePageVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticleTagCountVO;
 
@@ -52,4 +53,12 @@ public interface ArticleQueryService {
      * @return 统计列表
      */
     List<ArticleTagCountVO> getTagCount();
+
+    /**
+     * 查询文章详情
+     * @author Ezhixuan
+     * @param articleId 文章id
+     * @return 文章内容vo
+     */
+    ArticleInfoVO getArticleInfo(long articleId);
 }

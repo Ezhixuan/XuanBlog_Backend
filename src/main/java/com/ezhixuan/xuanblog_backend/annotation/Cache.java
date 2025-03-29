@@ -22,7 +22,7 @@ public @interface Cache {
     /**
      * 用户自行设置key
      */
-    String key();
+    String key() default "";
 
     interface CacheOperateType {
         String INSERT = "insert";
