@@ -39,7 +39,22 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         qw.like(Objects.nonNull(queryDTO.getTitle()), Article::getTitle, queryDTO.getTitle());
         qw.like(Objects.nonNull(queryDTO.getSummary()), Article::getSummary, queryDTO.getSummary());
         qw.in(!ObjectUtils.isEmpty(queryDTO.getCategoryIds()), Article::getCategoryId, queryDTO.getCategoryIds());
-        qw.in(!ObjectUtils.isEmpty(queryDTO.getTagIds()), Article::getTagIds, queryDTO.getTagIds());
+        if (!ObjectUtils.isEmpty(queryDTO.getTagIds())) {
+            StringBuilder tagIdsStr = new StringBuilder();
+            boolean isFirst = true;
+            for (Long tagId : queryDTO.getTagIds()) {
+                if (!isFirst) {
+                    tagIdsStr.append(",");
+                }
+                tagIdsStr.append(tagId);
+                isFirst = false;
+            }
+            qw.and(wrapper -> {
+                for (String tagId : tagIdsStr.toString().split(",")) {
+                    wrapper.or().apply("FIND_IN_SET({0}, tag_ids)", tagId);
+                }
+            });
+        }
         qw.in(!ObjectUtils.isEmpty(queryDTO.getIds()), Article::getId, queryDTO.getIds());
         qw.orderBy(Objects.nonNull(queryDTO.getSortOrder()), !Objects.equals(queryDTO.getSortOrder(), "descend"), Article::getCreateTime);
 
