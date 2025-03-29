@@ -1,12 +1,11 @@
 package com.ezhixuan.xuanblog_backend.domain.dto;
 
+import java.util.Collection;
+
 import com.ezhixuan.xuanblog_backend.common.PageRequest;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.Collection;
 
 /**
  * 文章分页 DTO
@@ -43,12 +42,10 @@ public class ArticleQueryDTO extends PageRequest {
     /**
      * 标签id
      */
-    @JsonIgnore
     private Collection<Long> tagIds;
 
     /**
      * 菜单id
      */
-    @JsonIgnore
     private Collection<Long> categoryIds;
 }

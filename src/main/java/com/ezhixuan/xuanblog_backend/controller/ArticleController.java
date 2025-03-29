@@ -7,17 +7,17 @@ import java.util.Objects;
 import org.springframework.web.bind.annotation.*;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.xuanblog_backend.annotation.Cache;
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
 import com.ezhixuan.xuanblog_backend.common.PageResponse;
 import com.ezhixuan.xuanblog_backend.common.R;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleQueryDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleSubmitDTO;
+import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleCategory;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleContent;
-import com.ezhixuan.xuanblog_backend.domain.vo.ArticleCategoryVO;
-import com.ezhixuan.xuanblog_backend.domain.vo.ArticleInfoVO;
-import com.ezhixuan.xuanblog_backend.domain.vo.ArticlePageVO;
-import com.ezhixuan.xuanblog_backend.domain.vo.ArticleTagVO;
+import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleTag;
+import com.ezhixuan.xuanblog_backend.domain.vo.*;
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
 import com.ezhixuan.xuanblog_backend.exception.ThrowUtils;
 import com.ezhixuan.xuanblog_backend.service.*;
@@ -83,6 +83,40 @@ public class ArticleController {
             articleInfoVO.setContent(content.getContent());
         }
         return R.success(articleInfoVO);
+    }
+
+    @PostMapping("/tag/add")
+    public BaseResponse<ArticleTagVO> submitTag(@RequestBody String tagName) {
+        ArticleTag articleTag = new ArticleTag();
+        ArticleTag tag = this.tagService.getOne(Wrappers.<ArticleTag>lambdaQuery().eq(ArticleTag::getName, tagName));
+        if (Objects.isNull(tag)) {
+            articleTag.setName(tagName);
+            this.tagService.save(articleTag);
+        }
+        ArticleTagVO articleTagVO = BeanUtil.copyProperties(articleTag, ArticleTagVO.class);
+        return R.success(articleTagVO);
+    }
+
+    @PostMapping("/category/add")
+    public BaseResponse<ArticleCategoryVO> submitCategory(@RequestBody String categoryName) {
+        ArticleCategory articleCategory = new ArticleCategory();
+        ArticleCategory category = this.categoryService.getOne(Wrappers.<ArticleCategory>lambdaQuery().eq(ArticleCategory::getName, categoryName));
+        if (Objects.isNull(category)) {
+            articleCategory.setName(categoryName);
+            this.categoryService.save(articleCategory);
+        }
+        ArticleCategoryVO articleCategoryVO = BeanUtil.copyProperties(articleCategory, ArticleCategoryVO.class);
+        return R.success(articleCategoryVO);
+    }
+
+    @GetMapping("/tags/count")
+    public BaseResponse<List<ArticleTagCountVO>> getTagCount() {
+        return R.success(queryService.getTagCount());
+    }
+
+    @GetMapping("/categories/count")
+    public BaseResponse<List<ArticleCategoryCountVO>> getCategoryCount() {
+        return R.success(queryService.getCategoryCount());
     }
 
 }

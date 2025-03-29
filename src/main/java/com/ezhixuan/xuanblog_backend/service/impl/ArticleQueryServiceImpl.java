@@ -7,12 +7,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.xuanblog_backend.common.PageRequest;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticlePageDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleQueryDTO;
+import com.ezhixuan.xuanblog_backend.domain.entity.article.Article;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleCategory;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleTag;
+import com.ezhixuan.xuanblog_backend.domain.vo.ArticleCategoryCountVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticlePageVO;
+import com.ezhixuan.xuanblog_backend.domain.vo.ArticleTagCountVO;
+import com.ezhixuan.xuanblog_backend.mapper.ArticleCategoryMapper;
 import com.ezhixuan.xuanblog_backend.service.ArticleCategoryService;
 import com.ezhixuan.xuanblog_backend.service.ArticleQueryService;
 import com.ezhixuan.xuanblog_backend.service.ArticleService;
@@ -28,6 +33,7 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
     final ArticleService articleService;
     final ArticleCategoryService categoryService;
     final ArticleTagService tagService;
+    private final ArticleCategoryMapper articleCategoryMapper;
 
     @Override
     public IPage<ArticlePageVO> getArticlePageVOList(ArticleQueryDTO articleQueryDTO) {
@@ -109,5 +115,60 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
         }
 
         return pageVOList;
+    }
+
+    /**
+     * 菜单数量使用情况统计
+     *
+     * @return 统计列表
+     * @author Ezhixuan
+     */
+    @Override
+    public List<ArticleCategoryCountVO> getCategoryCount() {
+        List<Long> categoryList =
+            articleService.listObjs(Wrappers.<Article>lambdaQuery().select(Article::getCategoryId), o -> (Long)o);
+        if (ObjectUtils.isEmpty(categoryList))
+            return new ArrayList<>();
+        Map<Long, Integer> count = categoryList.stream().collect(Collectors.toMap(id -> id, id -> 1, Integer::sum));
+
+        Map<Long, String> categoryMap = categoryService.listByIds(count.keySet()).stream()
+            .collect(Collectors.toMap(ArticleCategory::getId, ArticleCategory::getName));
+        List<ArticleCategoryCountVO> cateCountVOList = new ArrayList<>(categoryMap.size());
+        count.forEach((key, value) -> {
+            ArticleCategoryCountVO countVO = new ArticleCategoryCountVO();
+            countVO.setId(key);
+            countVO.setName(categoryMap.get(key));
+            countVO.setCount(value);
+            cateCountVOList.add(countVO);
+        });
+        return cateCountVOList;
+    }
+
+    /**
+     * 标签数量使用情况统计
+     *
+     * @return 统计列表
+     * @author Ezhixuan
+     */
+    @Override
+    public List<ArticleTagCountVO> getTagCount() {
+        List<String> tagList =
+            articleService.listObjs(Wrappers.<Article>lambdaQuery().select(Article::getTagIds), o -> (String)o);
+        if (ObjectUtils.isEmpty(tagList))
+            return new ArrayList<>();
+        Map<Long, Integer> count = tagList.stream().flatMap(id -> Arrays.stream(id.split(","))).map(Long::parseLong)
+            .collect(Collectors.toMap(id -> id, id -> 1, Integer::sum));
+
+        Map<Long, String> tagMap = tagService.listByIds(count.keySet()).stream()
+            .collect(Collectors.toMap(ArticleTag::getId, ArticleTag::getName));
+        List<ArticleTagCountVO> tagCountVOList = new ArrayList<>(tagMap.size());
+        count.forEach((key, value) -> {
+            ArticleTagCountVO countVO = new ArticleTagCountVO();
+            countVO.setId(key);
+            countVO.setName(tagMap.get(key));
+            countVO.setCount(value);
+            tagCountVOList.add(countVO);
+        });
+        return tagCountVOList;
     }
 }
