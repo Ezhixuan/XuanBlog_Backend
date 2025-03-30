@@ -6,12 +6,14 @@ import java.util.concurrent.TimeUnit;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
 import com.alibaba.fastjson2.JSON;
 import com.ezhixuan.xuanblog_backend.annotation.Cache;
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
+import com.ezhixuan.xuanblog_backend.common.R;
 import com.ezhixuan.xuanblog_backend.utils.RedisUtil;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
@@ -41,15 +43,22 @@ public class CacheInterceptor {
         String name = joinPoint.getSignature().getName();
         String key = DigestUtils.md5DigestAsHex(JSON.toJSONString(args).getBytes());
         key = preKey + name + ":" + key;
-
+        String resTypeName = ((MethodSignature) joinPoint.getSignature()).getReturnType().getName();
+        Class<?> aClass = Class.forName(resTypeName);
         Object o = LOCAL_CACHE.getIfPresent(key);
 
         if (Objects.nonNull(o)) {
-            return o;
+            if (aClass.equals(BaseResponse.class)) {
+                return R.success(o);
+            }
+            return aClass.cast(o);
         } else {
             o = redisUtil.get(key);
         }
         if (Objects.nonNull(o)) {
+            if (aClass.equals(BaseResponse.class)) {
+                return R.success(o);
+            }
             return o;
         }
 
