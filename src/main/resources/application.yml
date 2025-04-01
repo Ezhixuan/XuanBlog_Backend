@@ -2,6 +2,7 @@ spring:
   profiles:
     active: @profiles.active@
 
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
@@ -47,3 +48,5 @@ sa-token:
   # 是否输出操作日志
   is-log: true
   token-prefix: Bearer
+server:
+  port: 8901

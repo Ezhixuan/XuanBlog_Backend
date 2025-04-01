@@ -66,7 +66,7 @@ public class ArticleController {
     }
 
     @PostMapping("/blogs")
-    public BaseResponse<?> getArticleInfo(String id) {
+    public BaseResponse<ArticleInfoVO> getArticleInfo(String id) {
         ThrowUtils.throwIf(Objects.isNull(id), ErrorCode.PARAMS_ERROR);
         // 构建查询条件
         long articleId = Long.parseLong(id);
@@ -82,11 +82,11 @@ public class ArticleController {
     }
 
     @PostMapping("/tag/add")
-    public BaseResponse<ArticleTagVO> submitTag(@RequestBody String tagName) {
+    public BaseResponse<ArticleTagVO> submitTag(@RequestParam String name) {
         ArticleTag articleTag = new ArticleTag();
-        ArticleTag tag = this.tagService.getOne(Wrappers.<ArticleTag>lambdaQuery().eq(ArticleTag::getName, tagName));
+        ArticleTag tag = this.tagService.getOne(Wrappers.<ArticleTag>lambdaQuery().eq(ArticleTag::getName, name));
         if (Objects.isNull(tag)) {
-            articleTag.setName(tagName);
+            articleTag.setName(name);
             this.tagService.save(articleTag);
         }
         ArticleTagVO articleTagVO = BeanUtil.copyProperties(articleTag, ArticleTagVO.class);
@@ -94,11 +94,11 @@ public class ArticleController {
     }
 
     @PostMapping("/category/add")
-    public BaseResponse<ArticleCategoryVO> submitCategory(@RequestBody String categoryName) {
+    public BaseResponse<ArticleCategoryVO> submitCategory(@RequestParam String name) {
         ArticleCategory articleCategory = new ArticleCategory();
-        ArticleCategory category = this.categoryService.getOne(Wrappers.<ArticleCategory>lambdaQuery().eq(ArticleCategory::getName, categoryName));
+        ArticleCategory category = this.categoryService.getOne(Wrappers.<ArticleCategory>lambdaQuery().eq(ArticleCategory::getName, name));
         if (Objects.isNull(category)) {
-            articleCategory.setName(categoryName);
+            articleCategory.setName(name);
             this.categoryService.save(articleCategory);
         }
         ArticleCategoryVO articleCategoryVO = BeanUtil.copyProperties(articleCategory, ArticleCategoryVO.class);
