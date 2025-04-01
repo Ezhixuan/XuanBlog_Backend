@@ -36,6 +36,7 @@
         <hutool-all.version>5.8.26</hutool-all.version>
         <sa-token.version>1.41.0</sa-token.version>
         <lombok.version>1.18.32</lombok.version>
+        <unirest.version>1.4.9</unirest.version>
     </properties>
     <dependencies>
         <dependency>
@@ -115,6 +116,13 @@
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot3-starter</artifactId>
             <version>${sa-token.version}</version>
+        </dependency>
+
+        <!--unirest-->
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>${unirest.version}</version>
         </dependency>
 
     </dependencies>

@@ -13,6 +13,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.alibaba.fastjson2.JSON;
+import com.ezhixuan.xuanblog_backend.annotation.Log;
 import com.ezhixuan.xuanblog_backend.domain.constant.InterfaceLogStatusConstant;
 import com.ezhixuan.xuanblog_backend.domain.entity.sys.SysInterfaceLog;
 import com.ezhixuan.xuanblog_backend.service.SysInterfaceLogService;
@@ -35,8 +36,8 @@ public class InterfaceLogInterceptor {
     private static final Long TIMEOUT_THRESHOLD = 5000L;
 
     @SneakyThrows
-    @Around("execution(* com.ezhixuan.xuanblog_backend.controller..*.*(..))")
-    public Object logAspect(ProceedingJoinPoint joinPoint) {
+    @Around("@annotation(log)")
+    public Object logAspect(ProceedingJoinPoint joinPoint, Log log) {
         SysInterfaceLog interfaceLog = new SysInterfaceLog();
         interfaceLog.setRequestTime(new Date());
         interfaceLog.setInterfaceName(joinPoint.getSignature().toShortString());

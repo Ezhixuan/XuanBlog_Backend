@@ -18,3 +18,8 @@ spring:
 
 blog:
   salt: blog # 加密盐
+  upload:
+    type: github
+    repo: # userName/repoName
+    branch: # your branch
+    token: # your token

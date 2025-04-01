@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.xuanblog_backend.annotation.Cache;
+import com.ezhixuan.xuanblog_backend.annotation.Log;
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
 import com.ezhixuan.xuanblog_backend.common.PageResponse;
 import com.ezhixuan.xuanblog_backend.common.R;
@@ -42,6 +43,7 @@ public class ArticleController {
         return R.list(articlePageVOList);
     }
 
+    @Log
     @PostMapping("/add")
     @SaCheckLogin
     public BaseResponse<String> doSubmitArticle(@RequestBody ArticleSubmitDTO articleSubmitDTO) {
@@ -81,6 +83,7 @@ public class ArticleController {
         return R.success(queryService.getArticleInfo(articleId));
     }
 
+    @Log
     @PostMapping("/tag/add")
     public BaseResponse<ArticleTagVO> submitTag(@RequestParam String name) {
         ArticleTag articleTag = new ArticleTag();
@@ -93,6 +96,7 @@ public class ArticleController {
         return R.success(articleTagVO);
     }
 
+    @Log
     @PostMapping("/category/add")
     public BaseResponse<ArticleCategoryVO> submitCategory(@RequestParam String name) {
         ArticleCategory articleCategory = new ArticleCategory();
