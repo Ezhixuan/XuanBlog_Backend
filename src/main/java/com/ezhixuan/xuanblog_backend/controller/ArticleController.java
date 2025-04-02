@@ -97,6 +97,24 @@ public class ArticleController {
     }
 
     @Log
+    @DeleteMapping("/tag/{id}")
+    public BaseResponse<String> deleteTag(@PathVariable Long id) {
+        boolean exists = articleService.lambdaQuery().apply("FIND_IN_SET({0}, tag_ids)", id).exists();
+        ThrowUtils.throwIf(exists, ErrorCode.PARAMS_ERROR, "该标签已存在绑定文章,请先前往文章解绑");
+        tagService.removeById(id);
+        return R.success();
+    }
+
+    @Log
+    @DeleteMapping("/category/{id}")
+    public BaseResponse<String> deleteCategory(@PathVariable Long id) {
+        boolean exists = articleService.lambdaQuery().apply("FIND_IN_SET({0}, category_ids)", id).exists();
+        ThrowUtils.throwIf(exists, ErrorCode.PARAMS_ERROR, "该分类已存在绑定文章,请先前往文章解绑");
+        categoryService.removeById(id);
+        return R.success();
+    }
+
+    @Log
     @PostMapping("/category/add")
     public BaseResponse<ArticleCategoryVO> submitCategory(@RequestParam String name) {
         ArticleCategory articleCategory = new ArticleCategory();
