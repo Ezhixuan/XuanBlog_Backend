@@ -1,6 +1,10 @@
 spring:
   profiles:
     active: @profiles.active@
+  servlet:
+    multipart:
+      max-request-size: 50MB
+      max-file-size: 50MB
 
 
 mybatis-plus:
