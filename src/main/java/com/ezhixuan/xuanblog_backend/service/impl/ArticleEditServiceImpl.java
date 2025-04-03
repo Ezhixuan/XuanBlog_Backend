@@ -54,15 +54,20 @@ public class ArticleEditServiceImpl implements ArticleEditService {
         if (Objects.isNull(articleSubmitDTO.getCategoryId())) {
             articleSubmitDTO.setCategoryId(1L);
         }
+        long userId = StpUtil.getLoginIdAsLong();
+        if (Objects.nonNull(articleSubmitDTO.getId())) {
+            boolean exists = articleService.lambdaQuery().eq(Article::getId, articleSubmitDTO.getId()).eq(Article::getUserId, userId).exists();
+            ThrowUtils.throwIf(!exists, ErrorCode.NOT_FOUND_ERROR);
+        }
         Article article = BeanUtil.copyProperties(articleSubmitDTO, Article.class);
-        article.setUserId(StpUtil.getLoginIdAsLong());
+        article.setUserId(userId);
         TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
         try {
-            articleService.save(article);
+            articleService.saveOrUpdate(article);
             ArticleContent articleContent = new ArticleContent();
             articleContent.setArticleId(article.getId());
             articleContent.setContent(articleSubmitDTO.getContent());
-            contentService.save(articleContent);
+            contentService.saveOrUpdate(articleContent);
             transactionManager.commit(transaction);
         }catch (Exception e) {
             log.error("事务回滚 {}", e.getMessage());

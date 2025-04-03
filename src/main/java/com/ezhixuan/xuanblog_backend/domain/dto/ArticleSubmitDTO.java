@@ -9,6 +9,11 @@ import lombok.Data;
 public class ArticleSubmitDTO {
 
     /**
+     * 文章 id 如果存在则表示本次提交为文章更新
+     */
+    private String id;
+
+    /**
      * 文章标题
      */
     private String title;
