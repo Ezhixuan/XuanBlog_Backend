@@ -1,9 +1,8 @@
 package com.ezhixuan.xuanblog_backend.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import com.ezhixuan.xuanblog_backend.common.PageResponse;
+import com.ezhixuan.xuanblog_backend.domain.vo.PictureUploadVO;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
@@ -23,5 +22,10 @@ public class PictureController {
     @PostMapping("/upload")
     public BaseResponse<String> upload(@RequestPart("file") MultipartFile file, PictureUploadDTO uploadDTO) {
         return R.success(pictureService.doUpload(file, uploadDTO));
+    }
+
+    @GetMapping("/list")
+    public BaseResponse<PageResponse<PictureUploadVO>> getPictureList() {
+        return R.list(pictureService.getPictureVOList());
     }
 }

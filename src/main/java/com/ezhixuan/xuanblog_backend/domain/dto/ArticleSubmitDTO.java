@@ -47,4 +47,9 @@ public class ArticleSubmitDTO {
      * 文章内容
      */
     private String content;
+
+    /**
+     * 字数统计
+     */
+    private Integer wordCount;
 }

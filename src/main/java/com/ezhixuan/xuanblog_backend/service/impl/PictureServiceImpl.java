@@ -3,11 +3,13 @@ package com.ezhixuan.xuanblog_backend.service.impl;
 import static com.ezhixuan.xuanblog_backend.exception.ThrowUtils.throwIf;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.xuanblog_backend.domain.dto.PictureUploadDTO;
 import com.ezhixuan.xuanblog_backend.domain.entity.sys.SysPicture;
@@ -53,5 +55,13 @@ public class PictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPicture
         }
         boolean resultSave = this.saveOrUpdate(picture);
         throwIf(!resultSave, ErrorCode.OPERATION_ERROR, "图片上传失败");
+    }
+
+    @Override
+    public List<PictureUploadVO> getPictureVOList() {
+        return list(Wrappers.<SysPicture>lambdaQuery().eq(SysPicture::getUserId, StpUtil.getLoginId())
+            .orderByDesc(SysPicture::getUpdateTime)).stream()
+            .map(pic -> PictureUploadVO.builder().id(pic.getId()).name(pic.getName()).url(pic.getUrl()).build())
+            .toList();
     }
 }
