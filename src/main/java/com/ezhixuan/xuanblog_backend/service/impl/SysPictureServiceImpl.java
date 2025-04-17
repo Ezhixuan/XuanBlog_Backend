@@ -17,7 +17,7 @@ import com.ezhixuan.xuanblog_backend.domain.vo.PictureUploadVO;
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
 import com.ezhixuan.xuanblog_backend.factory.PictureFactory;
 import com.ezhixuan.xuanblog_backend.mapper.SysPictureMapper;
-import com.ezhixuan.xuanblog_backend.service.PictureService;
+import com.ezhixuan.xuanblog_backend.service.SysPictureService;
 import com.ezhixuan.xuanblog_backend.utils.PictureCommonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class PictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPicture> implements PictureService {
+public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPicture> implements SysPictureService {
 
     final PictureFactory factory;
 

@@ -9,7 +9,7 @@ import com.ezhixuan.xuanblog_backend.domain.dto.PictureUploadDTO;
 
 import java.util.List;
 
-public interface PictureService extends IService<SysPicture> {
+public interface SysPictureService extends IService<SysPicture> {
 
     String doUpload(MultipartFile file, PictureUploadDTO uploadDTO);
 

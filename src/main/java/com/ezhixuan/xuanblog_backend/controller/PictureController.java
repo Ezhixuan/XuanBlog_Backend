@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
 import com.ezhixuan.xuanblog_backend.common.R;
 import com.ezhixuan.xuanblog_backend.domain.dto.PictureUploadDTO;
-import com.ezhixuan.xuanblog_backend.service.PictureService;
+import com.ezhixuan.xuanblog_backend.service.SysPictureService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 public class PictureController {
 
-    final PictureService pictureService;
+    final SysPictureService pictureService;
 
     @PostMapping("/upload")
     public BaseResponse<String> upload(@RequestPart("file") MultipartFile file, PictureUploadDTO uploadDTO) {

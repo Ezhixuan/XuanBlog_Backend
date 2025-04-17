@@ -21,7 +21,6 @@ import com.ezhixuan.xuanblog_backend.domain.vo.ArticleInfoVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticlePageVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticleTagCountVO;
 import com.ezhixuan.xuanblog_backend.service.*;
-import com.ezhixuan.xuanblog_backend.utils.RedisUtil;
 
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +33,6 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
     final ArticleCategoryService categoryService;
     final ArticleTagService tagService;
     final ArticleContentService contentService;
-    private final RedisUtil redisUtil;
 
     @Override
     public IPage<ArticlePageVO> getArticlePageVOList(ArticleQueryDTO articleQueryDTO) {

@@ -123,7 +123,6 @@ public class GitHubPictureServiceImpl implements PictureManager {
         }
         JSONObject jsonResponse = JSONUtil.parseObj(response.getBody());
         String downloadUrl = jsonResponse.getJSONObject("content").getStr("download_url");
-        // 使用CDN加速
-        return "https://cdn.jsdelivr.net/gh/" + repo + "@" + branch + "/" + filename;
+        return "https://raw.githubusercontent.com/" + repo + "@" + branch + "/" + filename;
     }
 }
