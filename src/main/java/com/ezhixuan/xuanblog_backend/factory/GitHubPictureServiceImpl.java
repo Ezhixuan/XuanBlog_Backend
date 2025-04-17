@@ -123,6 +123,6 @@ public class GitHubPictureServiceImpl implements PictureManager {
         }
         JSONObject jsonResponse = JSONUtil.parseObj(response.getBody());
         String downloadUrl = jsonResponse.getJSONObject("content").getStr("download_url");
-        return "https://raw.githubusercontent.com/" + repo + "@" + branch + "/" + filename;
+        return "https://raw.githubusercontent.com/" + repo + "/" + branch + "/" + filename;
     }
 }

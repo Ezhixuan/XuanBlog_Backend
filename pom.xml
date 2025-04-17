@@ -37,6 +37,7 @@
         <sa-token.version>1.41.0</sa-token.version>
         <lombok.version>1.18.32</lombok.version>
         <unirest.version>1.4.9</unirest.version>
+        <commonmarkdown.version>0.24.0</commonmarkdown.version>
     </properties>
     <dependencies>
         <dependency>
@@ -125,6 +126,12 @@
             <version>${unirest.version}</version>
         </dependency>
 
+        <!--Markdown https://github.com/commonmark/commonmark-java -->
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>${commonmarkdown.version}</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
