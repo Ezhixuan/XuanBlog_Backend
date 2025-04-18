@@ -36,6 +36,7 @@ public class ArticleController {
     final ArticleTagService tagService;
     final ArticleCategoryService categoryService;
     final ArticleService articleService;
+    private final ArticleThumbService articleThumbService;
 
     @PostMapping("/list")
     public BaseResponse<PageResponse<ArticlePageVO>> getArticlePageList(@RequestBody ArticleQueryDTO articleQueryDTO) {
@@ -135,6 +136,11 @@ public class ArticleController {
     @GetMapping("/categories/count")
     public BaseResponse<List<ArticleCategoryCountVO>> getCategoryCount() {
         return R.success(queryService.getCategoryCount());
+    }
+
+    @GetMapping("/thumb/{id}")
+    public BaseResponse<Boolean> doThumb(@PathVariable Long id) {
+        return R.success(articleThumbService.doThumb(id));
     }
 
 }

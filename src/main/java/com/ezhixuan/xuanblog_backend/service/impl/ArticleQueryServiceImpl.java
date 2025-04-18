@@ -33,6 +33,7 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
     final ArticleCategoryService categoryService;
     final ArticleTagService tagService;
     final ArticleContentService contentService;
+    final ArticleThumbService thumbService;
 
     @Override
     public IPage<ArticlePageVO> getArticlePageVOList(ArticleQueryDTO articleQueryDTO) {
@@ -47,6 +48,9 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
             articleQueryDTO.setCategoryIds(categoryService.getIdsByCategoryName(articleQueryDTO.getCategoryName()));
         }
         IPage<ArticlePageDTO> paged = articleService.getArticlePageList(articleQueryDTO);
+        paged.getRecords().forEach(articlePageDTO -> {
+            articlePageDTO.setLikeCount(thumbService.get(articlePageDTO.getId()));
+        });
         return PageRequest.convert(paged, toPageVOList(paged.getRecords()));
     }
 
