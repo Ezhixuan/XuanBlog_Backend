@@ -48,9 +48,6 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
             articleQueryDTO.setCategoryIds(categoryService.getIdsByCategoryName(articleQueryDTO.getCategoryName()));
         }
         IPage<ArticlePageDTO> paged = articleService.getArticlePageList(articleQueryDTO);
-        paged.getRecords().forEach(articlePageDTO -> {
-            articlePageDTO.setLikeCount(thumbService.get(articlePageDTO.getId()));
-        });
         return PageRequest.convert(paged, toPageVOList(paged.getRecords()));
     }
 

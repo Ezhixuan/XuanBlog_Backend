@@ -1,14 +1,17 @@
 package com.ezhixuan.xuanblog_backend.service;
 
+import java.util.Collection;
+import java.util.Map;
+
 public interface ArticleThumbService {
 
     /**
      * 获取博客的点赞数
+     * @param blogIds 博客 id 集合
+     * @return 点赞集合 (id,点赞数)
      * @author Ezhixuan
-     * @param blogId 博客 id
-     * @return 点赞数
      */
-    int get(Long blogId);
+    Map<Long, Integer> get(Collection<Long> blogIds);
 
     /**
      * 对文章进行点赞

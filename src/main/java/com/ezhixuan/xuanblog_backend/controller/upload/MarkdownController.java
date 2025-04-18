@@ -1,4 +1,4 @@
-package com.ezhixuan.xuanblog_backend.controller;
+package com.ezhixuan.xuanblog_backend.controller.upload;
 
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
 import com.ezhixuan.xuanblog_backend.service.MarkdownService;

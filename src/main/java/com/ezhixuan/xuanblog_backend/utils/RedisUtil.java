@@ -27,6 +27,7 @@ public class RedisUtil {
 
     /**
      * 设置缓存
+     *
      * @param key key
      * @param value 值
      */
@@ -71,7 +72,7 @@ public class RedisUtil {
      * @return 值
      */
     public Object get(String key) {
-        RedisInnerData innerData = (RedisInnerData) redisTemplate.opsForValue().get(key);
+        RedisInnerData innerData = (RedisInnerData)redisTemplate.opsForValue().get(key);
         if (Objects.nonNull(innerData)) {
             String objJsonString = innerData.getObj();
             String className = innerData.getClassName();
@@ -81,7 +82,7 @@ public class RedisUtil {
                     TypeReference<List<?>> typeReference = new TypeReference<>() {};
                     List<?> list = JSON.parseObject(objJsonString, typeReference.getType());
                     return list.stream().map(item -> {
-                        JSONObject item1 = (JSONObject) item;
+                        JSONObject item1 = (JSONObject)item;
                         return item1.toJavaObject(elementClass);
                     }).toList();
                 } else {
@@ -99,10 +100,10 @@ public class RedisUtil {
         String name = value.getClass().getName();
         if (value instanceof List) {
             tRedisInnerData.setList(true);
-            ((List<?>) value).stream().findAny().ifPresent(o -> {
+            ((List<?>)value).stream().findAny().ifPresent(o -> {
                 tRedisInnerData.setClassName(o.getClass().getName());
             });
-        }else {
+        } else {
             tRedisInnerData.setClassName(name);
         }
         tRedisInnerData.setObj(JSON.toJSONString(value));
@@ -111,17 +112,15 @@ public class RedisUtil {
 
     /**
      * 模糊匹配
+     *
      * @param pattern key？
      * @return List<String> keys
      */
     public List<String> scan(String pattern) {
         List<String> result = new ArrayList<>();
-        try (Cursor<byte[]> cursor = (Cursor<byte[]>) redisTemplate.execute(
-                (RedisCallback<Cursor<byte[]>>) redisConnection ->
-                        redisConnection.scan(
-                                ScanOptions.scanOptions().match(pattern + "*").count(1000).build()
-                        )
-        )) {
+        try (Cursor<byte[]> cursor =
+            (Cursor<byte[]>)redisTemplate.execute((RedisCallback<Cursor<byte[]>>)redisConnection -> redisConnection
+                .scan(ScanOptions.scanOptions().match(pattern + "*").count(1000).build()))) {
             while (cursor.hasNext()) {
                 result.add(new String(cursor.next(), StandardCharsets.UTF_8));
             }
@@ -135,6 +134,20 @@ public class RedisUtil {
         return redisTemplate;
     }
 
+    public <T> T hGet(String key, String hKey) {
+        Object value = redisTemplate.opsForHash().get(key, hKey);
+        return (T)value;
+    }
+
+    public boolean hSet(String key, String hKey, Object value) {
+        try {
+            redisTemplate.opsForHash().put(key, hKey, value);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     @Data
     public static class RedisInnerData {

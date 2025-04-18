@@ -1,4 +1,4 @@
-package com.ezhixuan.xuanblog_backend.controller;
+package com.ezhixuan.xuanblog_backend.controller.upload;
 
 import com.ezhixuan.xuanblog_backend.common.PageResponse;
 import com.ezhixuan.xuanblog_backend.domain.vo.PictureUploadVO;

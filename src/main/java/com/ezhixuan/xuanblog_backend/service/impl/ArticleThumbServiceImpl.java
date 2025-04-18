@@ -1,10 +1,14 @@
 package com.ezhixuan.xuanblog_backend.service.impl;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.Article;
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
@@ -29,15 +33,14 @@ public class ArticleThumbServiceImpl implements ArticleThumbService {
     /**
      * 获取博客的点赞数
      *
-     * @param blogId 博客 id
-     * @return 点赞数
+     * @param blogIds 博客 id 集合
+     * @return 点赞集合 (id,点赞数)
      * @author Ezhixuan
      */
     @Override
-    public int get(Long blogId) {
-        ThrowUtils.throwIf(Objects.isNull(blogId), ErrorCode.PARAMS_ERROR);
-        return articleService.getObj(
-            Wrappers.<Article>lambdaQuery().select(Article::getLikeCount).eq(Article::getId, blogId), o -> (int)o);
+    public Map<Long, Integer> get(Collection<Long> blogIds) {
+        ThrowUtils.throwIf(CollectionUtils.isEmpty(blogIds), ErrorCode.PARAMS_ERROR);
+        return articleService.list(Wrappers.<Article>lambdaQuery().in(Article::getId, blogIds)).stream().collect(Collectors.toMap(Article::getId, Article::getLikeCount));
     }
 
     /**
@@ -74,16 +77,16 @@ public class ArticleThumbServiceImpl implements ArticleThumbService {
         if (!StpUtil.isLogin()) {
             return false;
         }
-        long userId = StpUtil.getLoginIdAsLong();
-        String key = getThumbKey(blogId, userId);
+        String userId = StpUtil.getLoginIdAsString();
+        String key = getThumbKey(blogId);
 
-        Object thumbObj = redisUtil.get(key);
-        if (Objects.nonNull(thumbObj)) {
-            thumbObj = !(boolean)thumbObj;
+        Boolean thumb = redisUtil.hGet(key, userId);
+        if (Objects.nonNull(thumb)) {
+            thumb = !(boolean)thumb;
         } else {
-            thumbObj = true;
+            thumb = true;
         }
-        return (boolean)thumbObj;
+        return thumb;
     }
 
     private void setThumb(Long blogId, boolean thumb) {
@@ -94,14 +97,14 @@ public class ArticleThumbServiceImpl implements ArticleThumbService {
         synchronized (loginUserId.intern()) {
             transactionTemplate.execute(status -> {
                 boolean update = articleService.update(Wrappers.<Article>lambdaUpdate().eq(Article::getId, blogId).setSql(sql));
-                boolean success = update && redisUtil.set(getThumbKey(blogId, loginUserId), thumb);
+                boolean success = update && redisUtil.hSet(getThumbKey(blogId), loginUserId, thumb);
                 ThrowUtils.throwIf(!success, ErrorCode.OPERATION_ERROR);
                 return null;
             });
         }
     }
 
-    private String getThumbKey(Long blogId, Object id) {
-        return THUMB + blogId + ":" + id;
+    private String getThumbKey(Long blogId) {
+        return THUMB + blogId + ":";
     }
 }
