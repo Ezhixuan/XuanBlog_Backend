@@ -33,6 +33,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return PageRequest.convert(iPage, item -> BeanUtil.copyProperties(item, ArticlePageDTO.class));
     }
 
+    @Override
+    public ArticlePageDTO getArticleById(Long id) {
+        Article article = getById(id);
+        return BeanUtil.copyProperties(article, ArticlePageDTO.class);
+    }
+
     private LambdaQueryWrapper<Article> queryWrapper(ArticleQueryDTO queryDTO) {
         LambdaQueryWrapper<Article> qw = new LambdaQueryWrapper<>();
 

@@ -15,4 +15,6 @@ public interface ArticleService extends IService<Article> {
 
     IPage<ArticlePageDTO> getArticlePageList(ArticleQueryDTO articlePageDTO);
 
+    ArticlePageDTO getArticleById(Long id);
+
 }

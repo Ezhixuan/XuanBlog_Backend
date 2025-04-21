@@ -10,6 +10,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ezhixuan.xuanblog_backend.domain.constant.RedisKeyConstant;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.Article;
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
 import com.ezhixuan.xuanblog_backend.exception.ThrowUtils;
@@ -27,8 +28,6 @@ public class ArticleThumbServiceImpl implements ArticleThumbService {
     private final ArticleService articleService;
     private final RedisUtil redisUtil;
     private final TransactionTemplate transactionTemplate;
-
-    private final static String THUMB = "blog:thumb:";
 
     /**
      * 获取博客的点赞数
@@ -105,6 +104,6 @@ public class ArticleThumbServiceImpl implements ArticleThumbService {
     }
 
     private String getThumbKey(Long blogId) {
-        return THUMB + blogId + ":";
+        return RedisKeyConstant.ARTICLE_THUMB_PRE_KEY + blogId + ":";
     }
 }

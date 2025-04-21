@@ -3,6 +3,9 @@ package com.ezhixuan.xuanblog_backend.service.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.springframework.aop.framework.AopContext;
+import org.springframework.beans.BeanUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -10,6 +13,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.xuanblog_backend.annotation.Cache;
 import com.ezhixuan.xuanblog_backend.common.PageRequest;
+import com.ezhixuan.xuanblog_backend.domain.constant.RedisKeyConstant;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticlePageDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleQueryDTO;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.Article;
@@ -24,8 +28,10 @@ import com.ezhixuan.xuanblog_backend.service.*;
 
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ArticleQueryServiceImpl implements ArticleQueryService {
 
@@ -172,6 +178,28 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
         return tagCountVOList;
     }
 
+
+    /**
+     * 获取文章详情,会进行缓存
+     * @author Ezhixuan
+     * @param articleId 文章 id
+     * @return ArticleInfoVO
+     */
+    @Cache(key = RedisKeyConstant.ARTICLE_INFO_PRE_KEY + "#articleId")
+    @Override
+    public ArticleInfoVO getArticleInfo(long articleId) {
+        ArticlePageDTO articlePageDTO = articleService.getArticleById(articleId);
+        if (ObjectUtils.isEmpty(articlePageDTO)) {
+            return null;
+        }
+        ArticlePageVO articlePageVO = toPageVO(articlePageDTO);
+        ArticleContent articleContent = contentService.getById(articleId);
+        ArticleInfoVO articleInfoVO = new ArticleInfoVO();
+        BeanUtils.copyProperties(articlePageVO, articleInfoVO);
+        articleInfoVO.setContent(articleContent.getContent());
+        return articleInfoVO;
+    }
+
     /**
      * 查询文章详情
      *
@@ -180,19 +208,26 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
      * @author Ezhixuan
      */
     @Override
-    @Cache
-    public ArticleInfoVO getArticleInfo(long articleId) {
-        ArticleQueryDTO articleQueryDTO = new ArticleQueryDTO();
-        articleQueryDTO.setIds(Collections.singleton(articleId));
-        IPage<ArticlePageVO> articlePageVOList = getArticlePageVOList(articleQueryDTO);
-        ArticleInfoVO articleInfoVO = new ArticleInfoVO();
-        articlePageVOList.getRecords().stream().findAny()
-                .ifPresent(item -> BeanUtil.copyProperties(item, articleInfoVO));
-        // 补充文章内容
-        ArticleContent content = contentService.getById(articleId);
-        if (Objects.nonNull(content)) {
-            articleInfoVO.setContent(content.getContent());
+    public ArticleInfoVO getArticleInfoVO(long articleId) {
+        ArticleInfoVO articleInfoVO = ((ArticleQueryService)AopContext.currentProxy()).getArticleInfo(articleId);
+        if (ObjectUtils.isEmpty(articleInfoVO)) {
+            return null;
         }
+        Integer viewCount = articleInfoVO.getViewCount() + 1;
+        articleInfoVO.setViewCount(viewCount);
+        ((ArticleQueryService)AopContext.currentProxy()).asyncUpdateViewCount(articleId, viewCount);
         return articleInfoVO;
+    }
+
+    /**
+     * 异步执行更新操作
+     * @author Ezhixuan
+     * @param articleId 文章 id
+     * @param viewCount 查看次数
+     */
+    @Async
+    @Override
+    public void asyncUpdateViewCount(long articleId, Integer viewCount) {
+        articleService.update(Wrappers.<Article>lambdaUpdate().eq(Article::getId, articleId).set(Article::getViewCount, viewCount));
     }
 }

@@ -10,6 +10,7 @@ import com.ezhixuan.xuanblog_backend.domain.vo.ArticleCategoryCountVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticleInfoVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticlePageVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticleTagCountVO;
+import org.springframework.scheduling.annotation.Async;
 
 /**
  * 文章查询
@@ -55,10 +56,21 @@ public interface ArticleQueryService {
     List<ArticleTagCountVO> getTagCount();
 
     /**
+     * 获取文章详情
+     * @author Ezhixuan
+     * @param articleId
+     * @return ArticleInfoVO
+     */
+    ArticleInfoVO getArticleInfo(long articleId);
+
+    /**
      * 查询文章详情
      * @author Ezhixuan
      * @param articleId 文章id
      * @return 文章内容vo
      */
-    ArticleInfoVO getArticleInfo(long articleId);
+    ArticleInfoVO getArticleInfoVO(long articleId);
+
+    @Async
+    void asyncUpdateViewCount(long articleId, Integer viewCount);
 }
