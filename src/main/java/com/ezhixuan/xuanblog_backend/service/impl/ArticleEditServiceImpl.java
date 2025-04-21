@@ -7,6 +7,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import com.ezhixuan.xuanblog_backend.aop.CacheInterceptor;
+import com.ezhixuan.xuanblog_backend.domain.constant.RedisKeyConstant;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleSubmitDTO;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.Article;
 import com.ezhixuan.xuanblog_backend.domain.entity.article.ArticleContent;
@@ -30,6 +32,7 @@ public class ArticleEditServiceImpl implements ArticleEditService {
     final ArticleService articleService;
     final ArticleContentService contentService;
     final PlatformTransactionManager transactionManager;
+    final CacheInterceptor cacheInterceptor;
 
     /**
      * 上传博客
@@ -69,11 +72,11 @@ public class ArticleEditServiceImpl implements ArticleEditService {
             articleContent.setContent(articleSubmitDTO.getContent());
             contentService.saveOrUpdate(articleContent);
             transactionManager.commit(transaction);
+            cacheInterceptor.cleanLocalCache(RedisKeyConstant.ARTICLE_INFO_PRE_KEY + article.getId());
         }catch (Exception e) {
             log.error("事务回滚 {}", e.getMessage());
             transactionManager.rollback(transaction);
             throw e;
         }
-
     }
 }

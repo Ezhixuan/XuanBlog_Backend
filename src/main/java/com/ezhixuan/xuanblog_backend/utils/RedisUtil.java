@@ -130,12 +130,15 @@ public class RedisUtil {
         return result;
     }
 
-    public RedisTemplate getRedisTemplate() {
+    public RedisTemplate<String, Object> getRedisTemplate() {
         return redisTemplate;
     }
 
     public <T> T hGet(String key, String hKey) {
         Object value = redisTemplate.opsForHash().get(key, hKey);
+        if (Objects.isNull(value)) {
+            return null;
+        }
         return (T)value;
     }
 
@@ -147,6 +150,27 @@ public class RedisUtil {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * 清除缓存
+     *
+     * @param key redis键
+     * @return Boolean
+     */
+    public Boolean cleanCache(String... key) {
+        if (key != null && key.length > 0) {
+            if (key.length == 1) {
+                return redisTemplate.delete(key[0]);
+            } else {
+                List<String> keys = new ArrayList<>();
+                for (String s : key) {
+                    keys.add(s);
+                }
+                return redisTemplate.delete(keys) > 0;
+            }
+        }
+        return false;
     }
 
     @Data

@@ -215,6 +215,10 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
         }
         Integer viewCount = articleInfoVO.getViewCount() + 1;
         articleInfoVO.setViewCount(viewCount);
+
+        int thumbToday = thumbService.getThumbToday(articleId);
+        articleInfoVO.setLikeCount(articleInfoVO.getLikeCount() + thumbToday);
+
         ((ArticleQueryService)AopContext.currentProxy()).asyncUpdateViewCount(articleId, viewCount);
         return articleInfoVO;
     }

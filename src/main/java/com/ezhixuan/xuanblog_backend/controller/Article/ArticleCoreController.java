@@ -49,7 +49,7 @@ public class ArticleCoreController {
 
     @PostMapping("/blogs")
     @Operation(summary = "获取文章详情")
-    public BaseResponse<ArticleInfoVO> getArticleInfo(String id) {
-        return R.success(queryService.getArticleInfoVO(Long.parseLong(id)));
+    public BaseResponse<ArticleInfoVO> getArticleInfo(Long id) {
+        return R.success(queryService.getArticleInfoVO(id));
     }
 }

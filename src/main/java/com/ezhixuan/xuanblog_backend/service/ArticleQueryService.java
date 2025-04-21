@@ -3,6 +3,8 @@ package com.ezhixuan.xuanblog_backend.service;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Async;
+
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticlePageDTO;
 import com.ezhixuan.xuanblog_backend.domain.dto.ArticleQueryDTO;
@@ -10,7 +12,6 @@ import com.ezhixuan.xuanblog_backend.domain.vo.ArticleCategoryCountVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticleInfoVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticlePageVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticleTagCountVO;
-import org.springframework.scheduling.annotation.Async;
 
 /**
  * 文章查询
@@ -71,6 +72,12 @@ public interface ArticleQueryService {
      */
     ArticleInfoVO getArticleInfoVO(long articleId);
 
+    /**
+     * 更新 viewCount
+     * @author Ezhixuan
+     * @param articleId 文章 id
+     * @param viewCount 数量
+     */
     @Async
     void asyncUpdateViewCount(long articleId, Integer viewCount);
 }

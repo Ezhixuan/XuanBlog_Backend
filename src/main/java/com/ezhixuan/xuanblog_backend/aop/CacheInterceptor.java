@@ -34,7 +34,7 @@ public class CacheInterceptor {
     @Resource
     private RedisUtil redisUtil;
 
-    private final com.github.benmanes.caffeine.cache.Cache<String, Object> LOCAL_CACHE =
+    private final static com.github.benmanes.caffeine.cache.Cache<String, Object> LOCAL_CACHE =
         Caffeine.newBuilder().initialCapacity(1024).maximumSize(10000L).expireAfterWrite(5L, TimeUnit.MINUTES).build();
 
     @SneakyThrows
@@ -99,5 +99,10 @@ public class CacheInterceptor {
     public boolean validKey(String key) {
         String[] split = key.split(":");
         return split.length > 1;
+    }
+
+    public void cleanLocalCache(String key) {
+        LOCAL_CACHE.invalidate(key);
+        redisUtil.cleanCache(key);
     }
 }
