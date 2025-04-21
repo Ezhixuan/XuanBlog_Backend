@@ -130,6 +130,17 @@ public class RedisUtil {
         return result;
     }
 
+    /**
+     * 通过scan模糊查询keys并删除
+     *
+     * @param pattern 模糊查询的key
+     * @return Long
+     */
+    public Long cleanCaches( String pattern) {
+        List<String> keys = scan(pattern);
+        return redisTemplate.delete(keys);
+    }
+
     public RedisTemplate<String, Object> getRedisTemplate() {
         return redisTemplate;
     }
