@@ -40,29 +40,7 @@ public class CacheInterceptor {
     @SneakyThrows
     @Around("@annotation(cache)")
     public Object doInterceptor(ProceedingJoinPoint joinPoint, Cache cache) {
-        Object[] args = joinPoint.getArgs();
-        String name = joinPoint.getSignature().getName();
-        /*
-        如果 key 为 xxx 的形式,则采用内部拼接方法进行构造
-        如果 key 为 xxx:xxx...的形式,则直接采用提供的 key
-         */
-        String key;
-        if (StringUtils.hasText(cache.key())) {
-            SpELExplainUtil spELExplainUtil = new SpELExplainUtil();
-            String inputKey = cache.key();
-            if (validKey(inputKey)){
-                String[] splitKey = inputKey.split(":");
-                for (int i = 0; i < splitKey.length; i++) {
-                    splitKey[i] = spELExplainUtil.explain(splitKey[i], joinPoint);
-                }
-                key = String.join(":", splitKey);
-            }else {
-                key = new SpELExplainUtil().explain(inputKey, joinPoint);
-            }
-        }else {
-            key = DigestUtils.md5DigestAsHex(JSON.toJSONString(args).getBytes());
-        }
-        key = validKey(key) ? key : RedisKeyConstant.BLOG_PREFIX + name + ":" + key;
+        String key = getKey(joinPoint, cache);
         String resTypeName = ((MethodSignature) joinPoint.getSignature()).getReturnType().getName();
         Class<?> aClass = Class.forName(resTypeName);
         Object o = LOCAL_CACHE.getIfPresent(key);
@@ -94,6 +72,33 @@ public class CacheInterceptor {
             redisUtil.set(key, res, expireTime);
         }
         return res;
+    }
+
+    private String getKey(ProceedingJoinPoint joinPoint, Cache cache) {
+        String key = cache.key();
+        if (StringUtils.hasText(key)) {
+            return spELSupport(joinPoint, key);
+        }
+
+        Object[] args = joinPoint.getArgs();
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        String suffix = DigestUtils.md5DigestAsHex(JSON.toJSONBytes(args));
+        key = RedisKeyConstant.BLOG_PREFIX + signature.getName() + ":" + suffix;
+        return key;
+    }
+
+    private String spELSupport(ProceedingJoinPoint joinPoint, String key) {
+        SpELExplainUtil spELExplainUtil = new SpELExplainUtil();
+        if (validKey(key)) {
+            String[] split = key.split(":");
+            for (int i = 0; i < split.length; i++) {
+                split[i] = spELExplainUtil.explain(split[i], joinPoint);
+            }
+            key = String.join(":", split);
+        } else {
+            key = spELExplainUtil.explain(key, joinPoint);
+        }
+        return key;
     }
 
     public boolean validKey(String key) {

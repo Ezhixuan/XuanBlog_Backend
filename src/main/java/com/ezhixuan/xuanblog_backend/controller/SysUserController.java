@@ -34,7 +34,7 @@ public class SysUserController {
         return R.success(StpUtil.getTokenInfo());
     }
 
-    @GetMapping("/linfo")
+    @GetMapping("/info")
     @SaCheckLogin
     public BaseResponse<UserInfoVO> getLoginUserInfo() {
         StpUtil.checkLogin();

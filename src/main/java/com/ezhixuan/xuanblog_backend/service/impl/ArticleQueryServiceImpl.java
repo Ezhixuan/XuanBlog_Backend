@@ -137,13 +137,15 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
             return new ArrayList<>();
         Map<Long, Integer> count = categoryList.stream().collect(Collectors.toMap(id -> id, id -> 1, Integer::sum));
 
-        Map<Long, String> categoryMap = categoryService.listByIds(count.keySet()).stream()
-            .collect(Collectors.toMap(ArticleCategory::getId, ArticleCategory::getName));
+        Map<Long, ArticleCategory> categoryMap = categoryService.listByIds(count.keySet()).stream()
+            .collect(Collectors.toMap(ArticleCategory::getId,t -> t));
         List<ArticleCategoryCountVO> cateCountVOList = new ArrayList<>(categoryMap.size());
         count.forEach((key, value) -> {
             ArticleCategoryCountVO countVO = new ArticleCategoryCountVO();
+            ArticleCategory articleCategory = categoryMap.get(key);
             countVO.setId(key);
-            countVO.setName(categoryMap.get(key));
+            countVO.setName(articleCategory.getName());
+            countVO.setDescription(articleCategory.getDescription());
             countVO.setCount(value);
             cateCountVOList.add(countVO);
         });

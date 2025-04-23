@@ -8,4 +8,6 @@ public class ArticleCategoryVO {
     private Long id;
 
     private String name;
+
+    private String description;
 }

@@ -16,7 +16,6 @@ import com.ezhixuan.xuanblog_backend.domain.vo.ArticleInfoVO;
 import com.ezhixuan.xuanblog_backend.domain.vo.ArticlePageVO;
 import com.ezhixuan.xuanblog_backend.service.ArticleEditService;
 import com.ezhixuan.xuanblog_backend.service.ArticleQueryService;
-import com.ezhixuan.xuanblog_backend.service.ArticleService;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +28,6 @@ public class ArticleCoreController {
 
     private final ArticleQueryService queryService;
     private final ArticleEditService editService;
-    private final ArticleService articleService;
 
     @PostMapping("/list")
     @Operation(summary = "获取分页文章列表")

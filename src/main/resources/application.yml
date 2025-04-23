@@ -5,7 +5,18 @@ spring:
     multipart:
       max-request-size: 50MB
       max-file-size: 50MB
-
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
+      timeout: 10s
+      lettuce:
+        pool:
+          max-active: 200
+          max-wait: -1ms
+          max-idle: 10
+          min-idle: 0
 
 mybatis-plus:
   configuration:
