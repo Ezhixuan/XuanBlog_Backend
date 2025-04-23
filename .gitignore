@@ -34,3 +34,4 @@ build/
 /src/main/resources/application-dev.yaml
 /src/main/java/generator/
 /src/main/resources/generator/mapper/
+/.lingma/rules/project_rule.md
