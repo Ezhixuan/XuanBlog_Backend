@@ -8,7 +8,7 @@ import lombok.Data;
  * @author ezhixuan
  */
 @Data
-public class DeleteRequest implements Serializable {
+public class OperationById implements Serializable {
 
     private static final long serialVersionUID = -4920382884094083728L;
 

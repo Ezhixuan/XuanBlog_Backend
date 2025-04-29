@@ -1,12 +1,10 @@
 package com.ezhixuan.xuanblog_backend.controller.Article;
 
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
+import com.ezhixuan.xuanblog_backend.common.OperationById;
 import com.ezhixuan.xuanblog_backend.common.R;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ezhixuan.xuanblog_backend.service.ArticleThumbService;
 
@@ -19,9 +17,9 @@ public class ArticleThumbController {
 
     private final ArticleThumbService thumbService;
 
-    @GetMapping("/thumb/{id}")
+    @PostMapping("/thumb")
     @Operation(summary = "点赞/取消点赞")
-    public BaseResponse<Boolean> doThumb(@PathVariable Long id) {
-        return R.success(thumbService.doThumb(id));
+    public BaseResponse<Boolean> doThumb(@RequestBody OperationById request) {
+        return R.success(thumbService.doThumb(request.getId()));
     }
 }
