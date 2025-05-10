@@ -9,13 +9,14 @@
             <result property="url" column="url" />
             <result property="name" column="name" />
             <result property="userId" column="user_id" />
+            <result property="type" column="type"/>
             <result property="createTime" column="create_time" />
             <result property="updateTime" column="update_time" />
             <result property="deleted" column="deleted" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,url,name,user_id,create_time,update_time,
+        id,url,name,user_id,type,create_time,update_time,
         deleted
     </sql>
 </mapper>

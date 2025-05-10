@@ -53,6 +53,6 @@ public class SysUserController {
     @SaCheckLogin
     public BaseResponse<UserInfoVO> editUserInfo(@RequestBody UserEditDTO userEditDTO) {
         userService.updateUserInfo(userEditDTO);
-        return R.success();
+        return R.success(userService.getUserInfoVo(StpUtil.getLoginIdAsLong()));
     }
 }

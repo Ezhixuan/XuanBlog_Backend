@@ -39,17 +39,19 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
             String name = PictureCommonUtil.reName(file.getOriginalFilename());
             String url = factory.getInstance().doUpload(file.getInputStream(), targetPath, name);
             PictureUploadVO result = PictureUploadVO.builder().url(url).name(name).build();
-            doUpload2Sys(userId, result, uploadDTO.getId());
+            doUpload2Sys(userId, result, uploadDTO);
             return url;
         } catch (IOException | UnirestException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void doUpload2Sys(long userId, PictureUploadVO uploadResult, Long picId) {
+    private void doUpload2Sys(long userId, PictureUploadVO uploadResult, PictureUploadDTO uploadDTO) {
         // 内部方法 传入的参数都经过验证 不需要对uploadResult进行二次验证
         SysPicture picture = BeanUtil.copyProperties(uploadResult, SysPicture.class);
+        picture.setType(uploadDTO.getType());
         picture.setUserId(userId);
+        Long picId = uploadDTO.getId();
         if (Objects.nonNull(picId)) {
             picture.setId(picId);
         }

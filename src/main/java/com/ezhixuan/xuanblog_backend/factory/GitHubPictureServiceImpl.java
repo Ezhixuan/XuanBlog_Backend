@@ -21,7 +21,6 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -121,8 +120,6 @@ public class GitHubPictureServiceImpl implements PictureManager {
             ThrowUtils.throwIf(response.getBody().contains("Invalid request"), ErrorCode.PARAMS_ERROR, "文件名已存在");
             ThrowUtils.exception(ErrorCode.SYSTEM_ERROR.getCode(), "上传失败 response={}", response.toString());
         }
-        JSONObject jsonResponse = JSONUtil.parseObj(response.getBody());
-        String downloadUrl = jsonResponse.getJSONObject("content").getStr("download_url");
-        return "https://raw.githubusercontent.com/" + repo + "/" + branch + "/" + filename;
+        return "https://cdn.jsdelivr.net/gh/" + repo + "@" + branch + "/" + filename;
     }
 }
