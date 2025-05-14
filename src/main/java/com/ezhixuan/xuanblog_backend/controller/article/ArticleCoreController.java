@@ -1,4 +1,4 @@
-package com.ezhixuan.xuanblog_backend.controller.Article;
+package com.ezhixuan.xuanblog_backend.controller.article;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

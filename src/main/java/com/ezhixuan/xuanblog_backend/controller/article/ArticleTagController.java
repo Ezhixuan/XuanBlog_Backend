@@ -1,4 +1,4 @@
-package com.ezhixuan.xuanblog_backend.controller.Article;
+package com.ezhixuan.xuanblog_backend.controller.article;
 
 import java.util.List;
 import java.util.Objects;
