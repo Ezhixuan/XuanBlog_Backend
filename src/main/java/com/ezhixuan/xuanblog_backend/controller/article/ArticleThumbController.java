@@ -1,4 +1,4 @@
-package com.ezhixuan.xuanblog_backend.controller.Article;
+package com.ezhixuan.xuanblog_backend.controller.article;
 
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
 import com.ezhixuan.xuanblog_backend.common.OperationById;
