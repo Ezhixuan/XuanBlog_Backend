@@ -1,7 +1,7 @@
 package com.ezhixuan.xuanblog_backend.domain.entity.memo;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -26,7 +26,7 @@ public class MemoCard implements Serializable {
     /**
      * 卡片集
      */
-    @TableId(value = "deck_id")
+    @TableField(value = "deck_id")
     private Long deckId;
 
     /**
@@ -45,13 +45,13 @@ public class MemoCard implements Serializable {
      * 创建时间
      */
     @TableField(value = "create_time")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
     @TableField(value = "update_time")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 重复间隔
@@ -60,10 +60,10 @@ public class MemoCard implements Serializable {
     private Long reviewInterval;
 
     /**
-     * 上次复习时间
+     * 下次复习时间
      */
-    @TableField(value = "last_review_date")
-    private Date lastReviewDate;
+    @TableField(value = "next_review_date")
+    private LocalDateTime nextReviewDate;
 
     /**
      * 已经被复习的次数

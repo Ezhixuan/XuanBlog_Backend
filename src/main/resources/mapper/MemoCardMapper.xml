@@ -12,7 +12,7 @@
             <result property="createTime" column="create_time" />
             <result property="updateTime" column="update_time" />
             <result property="reviewInterval" column="review_interval" />
-            <result property="lastReviewDate" column="last_review_date" />
+        <result property="nextReviewDate" column="next_review_date"/>
             <result property="repetitions" column="repetitions" />
             <result property="quality" column="quality" />
             <result property="easeFactor" column="ease_factor" />
@@ -20,6 +20,6 @@
 
     <sql id="Base_Column_List">
         id,deck_id,front,back,create_time,update_time,
-        review_interval,last_review_date,repetitions,quality,ease_factor
+        review_interval,next_review_date,repetitions,quality,ease_factor
     </sql>
 </mapper>
