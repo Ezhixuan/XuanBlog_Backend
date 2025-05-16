@@ -3,6 +3,7 @@ package com.ezhixuan.xuanblog_backend.service.impl;
 import static com.ezhixuan.xuanblog_backend.domain.constant.MemoConstant.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.xuanblog_backend.common.PageRequest;
 import com.ezhixuan.xuanblog_backend.domain.dto.MemoCardOperateDTO;
@@ -32,14 +34,13 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 /**
-* @author ezhixuan
-* @description 针对表【memo_card】的数据库操作Service实现
-* @createDate 2025-05-14 11:13:15
-*/
+ * @author ezhixuan
+ * @description 针对表【memo_card】的数据库操作Service实现
+ * @createDate 2025-05-14 11:13:15
+ */
 @Service
 @Slf4j
-public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard>
-    implements MemoCardService{
+public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard> implements MemoCardService {
 
     @Resource
     private MemoDecksService decksService;
@@ -77,7 +78,8 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard>
         IPage<MemoCard> iPage = queryDTO.toIPage();
         page(iPage, lqw);
         Set<Long> deckIds = iPage.getRecords().stream().map(MemoCard::getDeckId).collect(Collectors.toSet());
-        Map<Long, String> nameMap = decksService.listByIds(deckIds).stream().collect(Collectors.toMap(MemoDecks::getId, MemoDecks::getName));
+        Map<Long, String> nameMap =
+            decksService.listByIds(deckIds).stream().collect(Collectors.toMap(MemoDecks::getId, MemoDecks::getName));
         return PageRequest.convert(iPage, item -> {
             MemoCardVO memoCardVO = BeanUtil.copyProperties(item, MemoCardVO.class);
             memoCardVO.setDeckName(nameMap.get(item.getDeckId()));
@@ -85,10 +87,24 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard>
         });
     }
 
+    /**
+     * 卡片测试 每次 10 张
+     *
+     * @return 测验卡片
+     * @author Ezhixuan
+     */
+    @Override
+    public List<MemoCardVO> test(Long deckId) {
+        List<MemoCard> list = list(Wrappers.<MemoCard>lambdaQuery().le(MemoCard::getNextReviewDate, LocalDateTime.now())
+            .eq(Objects.nonNull(deckId), MemoCard::getDeckId, deckId).last("limit 10"));
+        return list.stream().map(item -> BeanUtil.copyProperties(item, MemoCardVO.class)).toList();
+    }
+
     private LambdaQueryWrapper<MemoCard> queryWrapper(MemoQueryDTO queryDTO) {
         LambdaQueryWrapper<MemoCard> lqw = new LambdaQueryWrapper<>();
         lqw.eq(queryDTO.getDeckId() != null, MemoCard::getDeckId, queryDTO.getDeckId());
 
+        lqw.orderByDesc(MemoCard::getUpdateTime);
         return lqw;
     }
 
@@ -108,7 +124,8 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard>
         Double currentEaseFactor = memoCard.getEaseFactor(); // 卡片当前的EF
         Long currentReviewInterval = memoCard.getReviewInterval(); // 卡片当前的间隔
 
-        ThrowUtils.throwIf(Objects.isNull(id) || Objects.isNull(repetitions) || Objects.isNull(currentEaseFactor) || Objects.isNull(currentReviewInterval), ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(Objects.isNull(id) || Objects.isNull(repetitions) || Objects.isNull(currentEaseFactor)
+            || Objects.isNull(currentReviewInterval), ErrorCode.PARAMS_ERROR);
 
         // 1. 无论回忆质量如何，都先根据本次回忆质量更新易度因子EF
         double calculatedNewEF = currentEaseFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
@@ -140,9 +157,11 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard>
                 newInterval = reviewIntervalEnum.getReViewInterval();
             }
 
-            if (repetitions > 0 && newInterval <= currentReviewInterval && Objects.isNull(reviewIntervalEnum) && quality >=3) { // 只有在动态计算且质量较好时才强制增加
+            if (repetitions > 0 && newInterval <= currentReviewInterval && Objects.isNull(reviewIntervalEnum)
+                && quality >= 3) { // 只有在动态计算且质量较好时才强制增加
                 newInterval = Math.round(currentReviewInterval * MIN_EASE_FACTOR); // 保证至少有最小幅度的增长
-                if (newInterval <= currentReviewInterval) newInterval = currentReviewInterval +1; // 确保至少增加1分钟
+                if (newInterval <= currentReviewInterval)
+                    newInterval = currentReviewInterval + 1; // 确保至少增加1分钟
             }
 
             if (newInterval >= MAX_REVIEW_INTERVAL) {
@@ -216,7 +235,3 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard>
         return currentQuality;
     }
 }
-
-
-
-

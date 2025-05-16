@@ -7,6 +7,8 @@ import com.ezhixuan.xuanblog_backend.domain.entity.memo.MemoCard;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ezhixuan.xuanblog_backend.domain.vo.MemoCardVO;
 
+import java.util.List;
+
 /**
 * @author ezhixuan
 * @description 针对表【memo_card】的数据库操作Service
@@ -29,4 +31,13 @@ public interface MemoCardService extends IService<MemoCard> {
      * @return 已筛选的卡片集信息
      */
     IPage<MemoCardVO> getMemoPageVOList(MemoQueryDTO queryDTO);
+
+    /**
+     * 卡片测试 每次 10 张
+     * @author Ezhixuan
+     * @param deckId 测试组 id 为空时随机抽取 10 张
+     * @return 测验卡片
+     */
+    List<MemoCardVO> test(Long deckId);
+
 }
