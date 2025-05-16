@@ -1,10 +1,16 @@
 package com.ezhixuan.xuanblog_backend.service.impl;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.xuanblog_backend.domain.entity.memo.MemoDecks;
-import com.ezhixuan.xuanblog_backend.service.MemoDecksService;
+import com.ezhixuan.xuanblog_backend.domain.vo.MemoDeckVO;
 import com.ezhixuan.xuanblog_backend.mapper.MemoDecksMapper;
-import org.springframework.stereotype.Service;
+import com.ezhixuan.xuanblog_backend.service.MemoDecksService;
+
+import cn.hutool.core.bean.BeanUtil;
 
 /**
 * @author ezhixuan
@@ -15,6 +21,17 @@ import org.springframework.stereotype.Service;
 public class MemoDecksServiceImpl extends ServiceImpl<MemoDecksMapper, MemoDecks>
     implements MemoDecksService{
 
+    /**
+     * 获取 vo 数据
+     *
+     * @param list
+     * @return List<MemoDeckVO>
+     * @author Ezhixuan
+     */
+    @Override
+    public List<MemoDeckVO> getMemoVOList(List<MemoDecks> list) {
+        return BeanUtil.copyToList(list, MemoDeckVO.class);
+    }
 }
 
 

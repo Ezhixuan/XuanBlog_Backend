@@ -2,6 +2,9 @@ package com.ezhixuan.xuanblog_backend.service;
 
 import com.ezhixuan.xuanblog_backend.domain.entity.memo.MemoDecks;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ezhixuan.xuanblog_backend.domain.vo.MemoDeckVO;
+
+import java.util.List;
 
 /**
 * @author ezhixuan
@@ -10,4 +13,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface MemoDecksService extends IService<MemoDecks> {
 
+    /**
+     * 获取 vo 数据
+     *
+     * @author Ezhixuan
+     * @param list
+     * @return List<MemoDeckVO>
+     */
+    List<MemoDeckVO> getMemoVOList(List<MemoDecks> list);
 }
