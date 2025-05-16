@@ -3,10 +3,7 @@ package com.ezhixuan.xuanblog_backend.service.impl;
 import static com.ezhixuan.xuanblog_backend.domain.constant.MemoConstant.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -30,6 +27,7 @@ import com.ezhixuan.xuanblog_backend.service.MemoCardService;
 import com.ezhixuan.xuanblog_backend.service.MemoDecksService;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.RandomUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,8 +93,23 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard> i
      */
     @Override
     public List<MemoCardVO> test(Long deckId) {
-        List<MemoCard> list = list(Wrappers.<MemoCard>lambdaQuery().le(MemoCard::getNextReviewDate, LocalDateTime.now())
-            .eq(Objects.nonNull(deckId), MemoCard::getDeckId, deckId).last("limit 10"));
+        // 随机抽取 10 张卡片
+        List<Long> ids = listObjs(Wrappers.<MemoCard>lambdaQuery().le(MemoCard::getNextReviewDate, LocalDateTime.now()).eq(Objects.nonNull(deckId), MemoCard::getDeckId, deckId).select(MemoCard::getId), o -> (long)o);
+        HashSet<Long> idSet = new HashSet<>(10);
+        if (ids.size() <= 10) {
+            idSet.addAll(ids);
+        }else {
+            while (idSet.size() < 10) {
+                Long id = ids.get(RandomUtil.randomInt(ids.size()));
+                idSet.add(id);
+            }
+        }
+
+        if (idSet.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<MemoCard> list = list(Wrappers.<MemoCard>lambdaQuery().in(MemoCard::getId, idSet));
         return list.stream().map(item -> BeanUtil.copyProperties(item, MemoCardVO.class)).toList();
     }
 
