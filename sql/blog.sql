@@ -440,7 +440,7 @@ CREATE TABLE `memo_card`
     `create_time`      datetime NOT NULL COMMENT '创建时间',
     `update_time`      datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `review_interval`  bigint   NOT NULL COMMENT '重复间隔',
-    `last_review_date` datetime NOT NULL COMMENT '上次复习时间',
+    `next_review_date` datetime NOT NULL COMMENT '下次复习时间',
     `repetitions`      bigint   NOT NULL DEFAULT '0' COMMENT '已经被复习的次数',
     `quality`          bigint   NOT NULL COMMENT '复习情况',
     `ease_factor`      float    NOT NULL DEFAULT '2.5' COMMENT '用于动态调整复习间隔',

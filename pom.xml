@@ -38,6 +38,7 @@
         <lombok.version>1.18.32</lombok.version>
         <unirest.version>1.4.9</unirest.version>
         <commonmarkdown.version>0.24.0</commonmarkdown.version>
+        <minio.version>8.5.7</minio.version>
     </properties>
     <dependencies>
         <dependency>
@@ -142,6 +143,13 @@
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
             <version>${commonmarkdown.version}</version>
+        </dependency>
+
+        <!--Minio-->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
         </dependency>
     </dependencies>
 
