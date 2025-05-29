@@ -11,9 +11,17 @@ public class BlogUploadProp {
 
     private String type;
 
-    private String token;
+    private String githubToken;
 
-    private String branch;
+    private String githubBranch;
 
-    private String repo;
+    private String githubRepo;
+
+    private String minioEndpoint;
+
+    private String minioBucket;
+
+    private String minioAccessKey;
+
+    private String minioSecretKey;
 }

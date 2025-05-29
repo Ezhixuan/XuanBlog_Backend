@@ -56,8 +56,8 @@ public class GitHubPictureServiceImpl implements PictureManager {
     @Override
     public String doUpload(InputStream inputStream, String targetPath, String fileName) {
         ThrowUtils.throwIf(
-            Objects.isNull(gitHubConfig) || Objects.isNull(gitHubConfig.getRepo())
-                || Objects.isNull(gitHubConfig.getBranch()) || Objects.isNull(gitHubConfig.getToken()),
+            Objects.isNull(gitHubConfig) || Objects.isNull(gitHubConfig.getGithubRepo())
+                || Objects.isNull(gitHubConfig.getGithubBranch()) || Objects.isNull(gitHubConfig.getGithubToken()),
             ErrorCode.SYSTEM_ERROR, "检查github配置");
         return uploadImage(toBase64Code(inputStream), pathName(targetPath, fileName));
     }
@@ -97,9 +97,9 @@ public class GitHubPictureServiceImpl implements PictureManager {
      * @return url
      */
     private String uploadImage(String base64Code, String filename) {
-        String repo = gitHubConfig.getRepo();
-        String branch = gitHubConfig.getBranch();
-        String token = gitHubConfig.getToken();
+        String repo = gitHubConfig.getGithubRepo();
+        String branch = gitHubConfig.getGithubBranch();
+        String token = gitHubConfig.getGithubToken();
 
         String apiUrl = "https://api.github.com/repos/" + repo + "/contents/" + filename;
 

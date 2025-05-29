@@ -13,7 +13,12 @@ public enum UploadModelEnum {
     /**
      * github
      */
-    GIT_HUB("github", "github");
+    GIT_HUB("github", "github"),
+    /**
+     * minio
+     */
+    MINIO("minio", "minio");
+    ;
 
     private final String desc;
 
