@@ -1,0 +1,63 @@
+CREATE TABLE `message_task` (
+                                `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                `task_id` varchar(64) NOT NULL COMMENT '任务唯一ID',
+                                `message_type` varchar(20) NOT NULL COMMENT '消息类型',
+                                `business_id` varchar(100) DEFAULT NULL COMMENT '业务ID',
+                                `business_type` varchar(50) DEFAULT NULL COMMENT '业务类型',
+                                `sender` varchar(100) DEFAULT NULL COMMENT '发送者',
+                                `recipients` text NOT NULL COMMENT '接收者列表(JSON)',
+                                `subject` varchar(500) DEFAULT NULL COMMENT '消息主题',
+                                `content` longtext NOT NULL COMMENT '消息内容',
+                                `extra_data` json DEFAULT NULL COMMENT '扩展数据',
+                                `priority` int DEFAULT '5' COMMENT '优先级(1-10，数字越大优先级越高)',
+                                `status` varchar(20) NOT NULL DEFAULT 'PENDING' COMMENT '状态(PENDING/PROCESSING/SUCCESS/FAILED/CANCELLED)',
+                                `retry_count` int DEFAULT '0' COMMENT '重试次数',
+                                `max_retry` int DEFAULT '3' COMMENT '最大重试次数',
+                                `next_retry_time` datetime DEFAULT NULL COMMENT '下次重试时间',
+                                `error_message` text COMMENT '错误信息',
+                                `execute_time` datetime DEFAULT NULL COMMENT '执行时间',
+                                `complete_time` datetime DEFAULT NULL COMMENT '完成时间',
+                                `expired_time` datetime DEFAULT NULL COMMENT '过期时间',
+                                `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                PRIMARY KEY (`id`),
+                                UNIQUE KEY `uk_task_id` (`task_id`),
+                                KEY `idx_status_priority` (`status`, `priority` DESC),
+                                KEY `idx_next_retry_time` (`next_retry_time`),
+                                KEY `idx_business` (`business_type`, `business_id`),
+                                KEY `idx_created_time` (`created_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息任务表';
+
+CREATE TABLE `message_execution_log` (
+                                         `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                         `task_id` varchar(64) NOT NULL COMMENT '任务ID',
+                                         `execution_id` varchar(64) NOT NULL COMMENT '执行ID',
+                                         `status` varchar(20) NOT NULL COMMENT '执行状态(PROCESSING/SUCCESS/FAILED)',
+                                         `start_time` datetime NOT NULL COMMENT '开始时间',
+                                         `end_time` datetime DEFAULT NULL COMMENT '结束时间',
+                                         `duration` int DEFAULT NULL COMMENT '执行时长(毫秒)',
+                                         `error_message` text COMMENT '错误信息',
+                                         `worker_thread` varchar(100) DEFAULT NULL COMMENT '执行线程',
+                                         `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                         PRIMARY KEY (`id`),
+                                         KEY `idx_task_id` (`task_id`),
+                                         KEY `idx_execution_id` (`execution_id`),
+                                         KEY `idx_created_time` (`created_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息执行日志表';
+
+CREATE TABLE `websocket_session` (
+                                     `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                     `session_id` varchar(100) NOT NULL COMMENT '会话ID',
+                                     `user_id` bigint DEFAULT NULL COMMENT '用户ID',
+                                     `user_type` varchar(20) DEFAULT NULL COMMENT '用户类型',
+                                     `client_ip` varchar(50) DEFAULT NULL COMMENT '客户端IP',
+                                     `user_agent` text COMMENT '用户代理',
+                                     `status` varchar(20) NOT NULL DEFAULT 'ACTIVE' COMMENT '状态(ACTIVE/INACTIVE)',
+                                     `last_heartbeat` datetime DEFAULT NULL COMMENT '最后心跳时间',
+                                     `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                     `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                     PRIMARY KEY (`id`),
+                                     UNIQUE KEY `uk_session_id` (`session_id`),
+                                     KEY `idx_user_id` (`user_id`),
+                                     KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='WebSocket会话表';
