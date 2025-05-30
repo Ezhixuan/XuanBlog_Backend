@@ -2,10 +2,7 @@ package com.ezhixuan.xuanblog_backend.controller.memo;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
@@ -26,7 +23,7 @@ class MemoCardCoreController {
     private MemoCardService memoCardService;
 
     @PostMapping("/operate")
-    public BaseResponse<String> operate(MemoCardOperateDTO operateDTO) {
+    public BaseResponse<String> operate(@RequestBody MemoCardOperateDTO operateDTO) {
         memoCardService.operate(operateDTO);
         return R.success();
     }

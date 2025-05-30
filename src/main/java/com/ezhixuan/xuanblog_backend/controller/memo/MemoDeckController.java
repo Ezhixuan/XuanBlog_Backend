@@ -45,7 +45,7 @@ class MemoDeckController {
 
     @Operation(summary = "新增")
     @PostMapping("/update")
-    public BaseResponse<String> add(MemoDeckDTO memoDeckDTO) {
+    public BaseResponse<String> add(@RequestBody MemoDeckDTO memoDeckDTO) {
         ThrowUtils.throwIf(Objects.isNull(memoDeckDTO) || Objects.isNull(memoDeckDTO.getName()),
             ErrorCode.PARAMS_ERROR);
         decksService.saveOrUpdate(memoDeckDTO.toEntity());

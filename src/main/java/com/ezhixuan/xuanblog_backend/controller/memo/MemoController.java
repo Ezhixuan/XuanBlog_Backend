@@ -2,10 +2,7 @@ package com.ezhixuan.xuanblog_backend.controller.memo;
 
 import java.util.Objects;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ezhixuan.xuanblog_backend.common.BaseResponse;
 import com.ezhixuan.xuanblog_backend.common.OperationById;
@@ -35,7 +32,7 @@ class MemoController {
 
     @Operation(summary = "新增")
     @PostMapping("/update")
-    public BaseResponse<String> add(MemoCardSubmitDTO submitDTO) {
+    public BaseResponse<String> add(@RequestBody MemoCardSubmitDTO submitDTO) {
         ThrowUtils.throwIf(Objects.isNull(submitDTO.getBack()) || Objects.isNull(submitDTO.getFront()),
             ErrorCode.PARAMS_ERROR);
         cardService.saveOrUpdate(submitDTO.toEntity());

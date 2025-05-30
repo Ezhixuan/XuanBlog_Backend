@@ -8,7 +8,11 @@ spring:
 blog:
   salt: blog # 加密盐
   upload:
-    type: github
-    repo: # userName/repoName
-    branch: # your branch
-    token: # your token
+    type: minio
+    github-repo: # userName/repoName
+    github-branch: # your branch
+    github-token: # your token
+    minio-endpoint: # endpoint
+    minio-bucket: # bucket
+    minio-accessKey: # accessKey
+    minio-secretKey: # secretKey

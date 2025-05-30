@@ -25,6 +25,7 @@ import com.ezhixuan.xuanblog_backend.exception.ThrowUtils;
 import com.ezhixuan.xuanblog_backend.mapper.MemoCardMapper;
 import com.ezhixuan.xuanblog_backend.service.MemoCardService;
 import com.ezhixuan.xuanblog_backend.service.MemoDecksService;
+import com.ezhixuan.xuanblog_backend.utils.Sm17AlgorithmUtil;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -122,7 +123,7 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard> i
     }
 
     /**
-     * 根据分数更新计划
+     * 根据分数更新计划 - SM-17算法增强版
      *
      * @author Ezhixuan
      * @param quality 分数
@@ -132,15 +133,111 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard> i
         ThrowUtils.throwIf(Objects.isNull(quality) || Objects.isNull(memoCard), ErrorCode.PARAMS_ERROR);
         ThrowUtils.throwIf(quality > 5L || quality < 0L, ErrorCode.OPERATION_ERROR);
 
+        // 检查算法版本，决定使用SM-17还是SM-2
+        String algorithmVersion = memoCard.getAlgorithmVersion();
+        if ("SM17".equals(algorithmVersion) || algorithmVersion == null) {
+            updatePlanWithSm17(quality, memoCard);
+        } else {
+            updatePlanWithSm2(quality, memoCard);
+        }
+    }
+
+    /**
+     * 使用SM-17算法更新复习计划
+     * 
+     * @param quality 质量分数
+     * @param memoCard 记忆卡片
+     */
+    private void updatePlanWithSm17(Long quality, MemoCard memoCard) {
         Long id = memoCard.getId();
-        Long repetitions = memoCard.getRepetitions(); // 当前的重复次数
-        Double currentEaseFactor = memoCard.getEaseFactor(); // 卡片当前的EF
-        Long currentReviewInterval = memoCard.getReviewInterval(); // 卡片当前的间隔
+        LocalDateTime now = LocalDateTime.now();
+        
+        // 初始化SM-17算法所需的字段
+        initializeSm17Fields(memoCard);
+        
+        // 计算实际的时间间隔（天数）
+        long actualIntervalDays = 0;
+        if (memoCard.getLastReviewTime() != null) {
+            actualIntervalDays = Sm17AlgorithmUtil.calculateDaysBetween(memoCard.getLastReviewTime(), now);
+        }
+        
+        // 计算当前的理论检索能力
+        double currentStability = memoCard.getStability();
+        double theoreticalRetrievability = Sm17AlgorithmUtil.calculateRetrievability(currentStability, actualIntervalDays);
+        
+        // 基于质量分数估算实际检索能力
+        double actualRetrievability = Sm17AlgorithmUtil.estimateRetrievabilityFromQuality(quality);
+        
+        // 更新难度
+        double newDifficulty = Sm17AlgorithmUtil.updateDifficulty(
+            memoCard.getDifficulty(), 
+            quality, 
+            theoreticalRetrievability, 
+            actualRetrievability
+        );
+        
+        // 更新稳定性
+        double newStability = Sm17AlgorithmUtil.updateStability(
+            currentStability, 
+            newDifficulty, 
+            actualRetrievability, 
+            quality
+        );
+        
+        // 计算下次复习的最优间隔
+        long newInterval = Sm17AlgorithmUtil.calculateOptimalInterval(
+            newStability, 
+            DEFAULT_FORGETTING_INDEX
+        );
+        
+        // 更新重复次数
+        Long repetitions = memoCard.getRepetitions();
+        if (quality < 2L) {
+            // 回忆失败：重置重复次数，增加失败计数
+            memoCard.setRepetitions(0L);
+            memoCard.setLapseCount(memoCard.getLapseCount() == null ? 1L : memoCard.getLapseCount() + 1);
+        } else {
+            // 回忆成功：增加重复次数
+            memoCard.setRepetitions(repetitions == null ? 1L : repetitions + 1);
+        }
+        
+        // 更新卡片数据
+        memoCard.setDifficulty(newDifficulty);
+        memoCard.setStability(newStability);
+        memoCard.setRetrievability(actualRetrievability);
+        memoCard.setReviewInterval(newInterval);
+        memoCard.setNextReviewDate(now.plusMinutes(newInterval));
+        memoCard.setLastReviewTime(now);
+        memoCard.setUpdateTime(now);
+        memoCard.setQuality(quality);
+        memoCard.setAlgorithmVersion("SM17");
+        
+        // 为兼容性保留易度因子计算
+        updateEaseFactorForCompatibility(memoCard, quality);
+        
+        // 持久化更新
+        updateById(memoCard);
+        
+        log.info("SM-17算法更新完成 - 卡片ID:{}, 质量:{}, 难度:{:.3f}, 稳定性:{:.2f}天, 间隔:{}分钟", 
+                id, quality, newDifficulty, newStability, newInterval);
+    }
+
+    /**
+     * 使用传统SM-2算法更新复习计划（兼容模式）
+     * 
+     * @param quality 质量分数
+     * @param memoCard 记忆卡片
+     */
+    private void updatePlanWithSm2(Long quality, MemoCard memoCard) {
+        Long id = memoCard.getId();
+        Long repetitions = memoCard.getRepetitions(); 
+        Double currentEaseFactor = memoCard.getEaseFactor(); 
+        Long currentReviewInterval = memoCard.getReviewInterval(); 
 
         ThrowUtils.throwIf(Objects.isNull(id) || Objects.isNull(repetitions) || Objects.isNull(currentEaseFactor)
             || Objects.isNull(currentReviewInterval), ErrorCode.PARAMS_ERROR);
 
-        // 1. 无论回忆质量如何，都先根据本次回忆质量更新易度因子EF
+        // 1. 更新易度因子EF
         double calculatedNewEF = currentEaseFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
 
         if (calculatedNewEF < MIN_EASE_FACTOR) {
@@ -150,31 +247,27 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard> i
         }
 
         // 2. 根据回忆质量更新重复次数和复习间隔
-        if (quality < 2L) { // 回忆失败或非常差
-            memoCard.setRepetitions(0L); // 重置重复次数
-            memoCard.setReviewInterval(INIT_REVIEW_INTERVAL); // 回到初始学习间隔
-        } else { // 回忆成功 (quality = 2, 3, 4, or 5)
-            repetitions++; // 增加重复次数
+        if (quality < 2L) { 
+            memoCard.setRepetitions(0L); 
+            memoCard.setReviewInterval(INIT_REVIEW_INTERVAL); 
+        } else { 
+            repetitions++; 
             memoCard.setRepetitions(repetitions);
 
             long newInterval;
-            MemoReviewIntervalEnum reviewIntervalEnum = MemoReviewIntervalEnum.getEnum(repetitions); // 假设这是您预设的固定间隔枚举
+            MemoReviewIntervalEnum reviewIntervalEnum = MemoReviewIntervalEnum.getEnum(repetitions); 
 
             if (Objects.isNull(reviewIntervalEnum)) {
-                // 当 repetitions 超出预设枚举范围后 (例如 repetitions >= 5)
-                // 使用 SM-2 的乘法规则计算新间隔: I(n) = I(n-1) * EF
-                // I(n-1) 是指卡片在本次被复习前的间隔，即 currentReviewInterval
-                newInterval = Math.round(currentReviewInterval * memoCard.getEaseFactor()); // 使用更新后的EF
+                newInterval = Math.round(currentReviewInterval * memoCard.getEaseFactor()); 
             } else {
-                // 对于初期的几次复习，使用预设的固定间隔
                 newInterval = reviewIntervalEnum.getReViewInterval();
             }
 
             if (repetitions > 0 && newInterval <= currentReviewInterval && Objects.isNull(reviewIntervalEnum)
-                && quality >= 3) { // 只有在动态计算且质量较好时才强制增加
-                newInterval = Math.round(currentReviewInterval * MIN_EASE_FACTOR); // 保证至少有最小幅度的增长
+                && quality >= 3) { 
+                newInterval = Math.round(currentReviewInterval * MIN_EASE_FACTOR); 
                 if (newInterval <= currentReviewInterval)
-                    newInterval = currentReviewInterval + 1; // 确保至少增加1分钟
+                    newInterval = currentReviewInterval + 1; 
             }
 
             if (newInterval >= MAX_REVIEW_INTERVAL) {
@@ -183,13 +276,81 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard> i
             memoCard.setReviewInterval(newInterval);
         }
 
-        // 4. 更新下一次复习时间、更新时间戳和本次复习质量
+        // 3. 更新其他字段
         memoCard.setNextReviewDate(LocalDateTime.now().plusMinutes(memoCard.getReviewInterval()));
         memoCard.setUpdateTime(LocalDateTime.now());
-        memoCard.setQuality(quality); // 记录本次复习的质量
+        memoCard.setQuality(quality); 
+        memoCard.setAlgorithmVersion("SM2");
 
-        // 5. 持久化更新
+        // 4. 持久化更新
         updateById(memoCard);
+        
+        log.info("SM-2算法更新完成 - 卡片ID:{}, 质量:{}, 易度因子:{:.2f}, 间隔:{}分钟", 
+                id, quality, memoCard.getEaseFactor(), memoCard.getReviewInterval());
+    }
+
+    /**
+     * 初始化SM-17算法所需的字段
+     * 
+     * @param memoCard 记忆卡片
+     */
+    private void initializeSm17Fields(MemoCard memoCard) {
+        // 初始化难度（基于历史表现估算）
+        if (memoCard.getDifficulty() == null) {
+            double initialDifficulty = 0.5; // 默认中等难度
+            if (memoCard.getEaseFactor() != null) {
+                // 从易度因子转换：EF越小，难度越大
+                initialDifficulty = Math.max(0.0, Math.min(1.0, (4.0 - memoCard.getEaseFactor()) / 2.5));
+            }
+            memoCard.setDifficulty(initialDifficulty);
+        }
+        
+        // 初始化稳定性
+        if (memoCard.getStability() == null) {
+            double initialStability = DEFAULT_INITIAL_STABILITY;
+            if (memoCard.getQuality() != null) {
+                initialStability = Sm17AlgorithmUtil.calculateInitialStability(memoCard.getQuality());
+            }
+            memoCard.setStability(initialStability);
+        }
+        
+        // 初始化检索能力
+        if (memoCard.getRetrievability() == null) {
+            memoCard.setRetrievability(0.9); // 默认90%
+        }
+        
+        // 初始化失败计数
+        if (memoCard.getLapseCount() == null) {
+            memoCard.setLapseCount(0L);
+        }
+        
+        // 初始化上次复习时间
+        if (memoCard.getLastReviewTime() == null) {
+            memoCard.setLastReviewTime(memoCard.getUpdateTime() != null ? 
+                memoCard.getUpdateTime() : LocalDateTime.now().minusDays(1));
+        }
+    }
+
+    /**
+     * 为兼容性更新易度因子
+     * 
+     * @param memoCard 记忆卡片
+     * @param quality 质量分数
+     */
+    private void updateEaseFactorForCompatibility(MemoCard memoCard, Long quality) {
+        // 从难度转换为易度因子：难度越大，易度因子越小
+        double difficulty = memoCard.getDifficulty();
+        double easeFactor = 4.0 - 2.5 * difficulty; // 映射到1.5-4.0范围
+        easeFactor = Math.max(MIN_EASE_FACTOR, Math.min(4.0, easeFactor));
+        
+        // 根据质量分数微调
+        if (quality < 3) {
+            easeFactor *= 0.95; // 降低5%
+        } else if (quality > 3) {
+            easeFactor *= 1.05; // 提高5%
+        }
+        
+        memoCard.setEaseFactor(Math.max(MIN_EASE_FACTOR, easeFactor));
     }
 
     private static final long TIME_EASY_QUICK_THRESHOLD = 10000;
