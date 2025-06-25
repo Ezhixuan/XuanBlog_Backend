@@ -39,6 +39,7 @@
         <unirest.version>1.4.9</unirest.version>
         <commonmarkdown.version>0.24.0</commonmarkdown.version>
         <minio.version>8.5.7</minio.version>
+        <websocket.version>3.2.0</websocket.version>
     </properties>
     <dependencies>
         <dependency>
@@ -150,6 +151,12 @@
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
             <version>${minio.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>${websocket.version}</version>
         </dependency>
     </dependencies>
 

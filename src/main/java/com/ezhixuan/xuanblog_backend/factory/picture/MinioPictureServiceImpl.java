@@ -1,4 +1,4 @@
-package com.ezhixuan.xuanblog_backend.factory;
+package com.ezhixuan.xuanblog_backend.factory.picture;
 
 import java.io.IOException;
 import java.io.InputStream;

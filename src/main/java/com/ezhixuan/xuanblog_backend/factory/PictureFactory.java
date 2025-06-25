@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.ezhixuan.xuanblog_backend.configs.propertites.BlogUploadProp;
 import com.ezhixuan.xuanblog_backend.configs.propertites.UploadModelEnum;
 import com.ezhixuan.xuanblog_backend.exception.ErrorCode;
+import com.ezhixuan.xuanblog_backend.factory.picture.PictureManager;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

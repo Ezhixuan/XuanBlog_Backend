@@ -1,4 +1,4 @@
-package com.ezhixuan.xuanblog_backend.factory;
+package com.ezhixuan.xuanblog_backend.factory.picture;
 
 import static com.ezhixuan.xuanblog_backend.utils.PictureCommonUtil.pathName;
 import static com.ezhixuan.xuanblog_backend.utils.PictureCommonUtil.toBase64Code;
