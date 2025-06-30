@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezhixuan.blog.mapper.SysPictureMapper">
+
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.sys.SysPicture">
+            <id property="id" column="id" />
+            <result property="url" column="url" />
+            <result property="name" column="name" />
+            <result property="userId" column="user_id" />
+            <result property="type" column="type"/>
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="deleted" column="deleted" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,url,name,user_id,type,create_time,update_time,
+        deleted
+    </sql>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezhixuan.blog.mapper.SysInterfaceLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.sys.SysInterfaceLog">
+            <id property="id" column="id" />
+            <result property="requestTime" column="request_time" />
+            <result property="interfaceName" column="interface_name" />
+            <result property="requestParams" column="request_params" />
+            <result property="responseData" column="response_data" />
+            <result property="status" column="status" />
+            <result property="errorInfo" column="error_info" />
+            <result property="executionTime" column="execution_time" />
+            <result property="clientIp" column="client_ip" />
+            <result property="userId" column="user_id" />
+            <result property="requestId" column="request_id" />
+            <result property="createdAt" column="created_at" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,request_time,interface_name,request_params,response_data,status,
+        error_info,execution_time,client_ip,user_id,request_id,
+        created_at
+    </sql>
+</mapper>

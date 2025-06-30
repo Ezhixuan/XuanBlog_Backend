@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezhixuan.blog.mapper.MemoCardMapper">
+
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.memo.MemoCard">
+            <id property="id" column="id" />
+            <id property="deckId" column="deck_id" />
+            <result property="front" column="front" />
+            <result property="back" column="back" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="reviewInterval" column="review_interval" />
+        <result property="nextReviewDate" column="next_review_date"/>
+            <result property="repetitions" column="repetitions" />
+            <result property="quality" column="quality" />
+            <result property="easeFactor" column="ease_factor" />
+        <result property="algorithmVersion" column="algorithm_version" />
+        <result property="stability" column="stability" />
+        <result property="retrievability" column="retrievability" />
+        <result property="difficulty" column="difficulty" />
+        <result property="lastReviewTime" column="last_review_time" />
+        <result property="lapseCount" column="lapse_count" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,deck_id,front,back,create_time,update_time,
+        review_interval,next_review_date,repetitions,quality,ease_factor
+        ,algorithm_version,stability,retrievability,difficulty,last_review_time,lapse_count
+    </sql>
+</mapper>
