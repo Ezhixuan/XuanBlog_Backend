@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.ezhixuan.blog.domain.entity.memo.MemoCard;
+import com.ezhixuan.blog.domain.entity.MemoCard;
 
 import lombok.Data;
 import lombok.experimental.UtilityClass;

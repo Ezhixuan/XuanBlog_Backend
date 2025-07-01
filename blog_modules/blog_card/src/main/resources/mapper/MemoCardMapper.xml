@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezhixuan.blog.mapper.MemoCardMapper">
 
-    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.memo.MemoCard">
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.MemoCard">
             <id property="id" column="id" />
             <id property="deckId" column="deck_id" />
             <result property="front" column="front" />

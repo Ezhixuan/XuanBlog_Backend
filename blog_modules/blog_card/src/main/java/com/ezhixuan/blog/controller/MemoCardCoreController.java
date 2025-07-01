@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.controller.memo;
+package com.ezhixuan.blog.controller;
 
 import java.util.List;
 import java.util.Objects;

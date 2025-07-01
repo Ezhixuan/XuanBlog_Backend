@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.domain.entity.memo;
+package com.ezhixuan.blog.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;

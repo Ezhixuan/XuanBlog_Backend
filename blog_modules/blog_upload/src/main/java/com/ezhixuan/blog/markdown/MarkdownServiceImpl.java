@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.service.impl;
+package com.ezhixuan.blog.markdown;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
-import com.ezhixuan.blog.service.MarkdownService;
 
 import lombok.extern.slf4j.Slf4j;
 

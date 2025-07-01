@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.service;
+package com.ezhixuan.blog.markdown;
 
 import org.springframework.web.multipart.MultipartFile;
 

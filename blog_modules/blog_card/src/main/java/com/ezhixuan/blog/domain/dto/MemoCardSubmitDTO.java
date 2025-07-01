@@ -3,7 +3,7 @@ package com.ezhixuan.blog.domain.dto;
 import java.time.LocalDateTime;
 
 import com.ezhixuan.blog.domain.constant.MemoConstant;
-import com.ezhixuan.blog.domain.entity.memo.MemoCard;
+import com.ezhixuan.blog.domain.entity.MemoCard;
 
 import lombok.Data;
 

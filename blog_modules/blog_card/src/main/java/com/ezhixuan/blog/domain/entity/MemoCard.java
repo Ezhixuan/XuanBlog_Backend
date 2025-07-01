@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.domain.entity.memo;
+package com.ezhixuan.blog.domain.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

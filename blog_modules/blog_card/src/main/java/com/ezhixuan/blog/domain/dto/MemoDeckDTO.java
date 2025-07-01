@@ -2,7 +2,7 @@ package com.ezhixuan.blog.domain.dto;
 
 import java.util.Date;
 
-import com.ezhixuan.blog.domain.entity.memo.MemoDecks;
+import com.ezhixuan.blog.domain.entity.MemoDecks;
 
 import cn.hutool.core.bean.BeanUtil;
 import lombok.Data;

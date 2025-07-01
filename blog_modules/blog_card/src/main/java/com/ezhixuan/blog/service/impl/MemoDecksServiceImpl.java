@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ezhixuan.blog.domain.entity.memo.MemoDecks;
+import com.ezhixuan.blog.domain.entity.MemoDecks;
 import com.ezhixuan.blog.domain.vo.MemoDeckVO;
 import com.ezhixuan.blog.mapper.MemoDecksMapper;
 import com.ezhixuan.blog.service.MemoDecksService;

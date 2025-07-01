@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.controller.memo;
+package com.ezhixuan.blog.controller;
 
 import java.util.List;
 import java.util.Objects;
@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.blog.common.PageResponse;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.dto.MemoDeckDTO;
-import com.ezhixuan.blog.domain.entity.memo.MemoDecks;
+import com.ezhixuan.blog.domain.entity.MemoDecks;
 import com.ezhixuan.blog.domain.vo.MemoDeckVO;
 import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.entity.OperationById;
