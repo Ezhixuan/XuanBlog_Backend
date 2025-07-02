@@ -14,11 +14,11 @@ import com.ezhixuan.blog.exception.ThrowUtils;
 import com.ezhixuan.blog.handler.picture.PictureCommonUtil;
 import com.ezhixuan.blog.handler.picture.PictureUploadHandler;
 import com.ezhixuan.blog.handler.picture.UploadModel;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import cn.hutool.json.JSONObject;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import lombok.RequiredArgsConstructor;
 
 /**

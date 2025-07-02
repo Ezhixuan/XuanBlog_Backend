@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-import com.ezhixuan.blog.handler.picture.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,9 +14,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.domain.entity.sys.SysPicture;
 import com.ezhixuan.blog.exception.ErrorCode;
+import com.ezhixuan.blog.handler.picture.*;
 import com.ezhixuan.blog.mapper.SysPictureMapper;
 import com.ezhixuan.blog.service.SysPictureService;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
@@ -39,7 +38,7 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
             PictureUploadVO result = PictureUploadVO.builder().url(url).name(name).build();
             doUpload2Sys(userId, result, uploadDTO);
             return url;
-        } catch (IOException | UnirestException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

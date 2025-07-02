@@ -3,8 +3,6 @@ package com.ezhixuan.blog.handler.picture;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
-
 /**
  * 上传接口
  *
@@ -28,7 +26,7 @@ public interface PictureUploadHandler {
      * @param fileName 文件名
      * @return url
      */
-    String doUpload(InputStream inputStream, String targetPath, String fileName) throws IOException, UnirestException;
+    String doUpload(InputStream inputStream, String targetPath, String fileName) throws IOException;
 
     /**
      * 下载文件

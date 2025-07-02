@@ -1,6 +1,5 @@
 package com.ezhixuan.blog.minio;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
@@ -12,7 +11,6 @@ import com.ezhixuan.blog.exception.ThrowUtils;
 import com.ezhixuan.blog.handler.picture.PictureCommonUtil;
 import com.ezhixuan.blog.handler.picture.PictureUploadHandler;
 import com.ezhixuan.blog.handler.picture.UploadModel;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.minio.*;
 import lombok.RequiredArgsConstructor;
@@ -60,8 +58,7 @@ public class MinioPictureServiceImpl implements PictureUploadHandler {
      * @author Ezhixuan
      */
     @Override
-    public String doUpload(InputStream inputStream, String targetPath, String fileName)
-        throws IOException, UnirestException {
+    public String doUpload(InputStream inputStream, String targetPath, String fileName) {
         // 验证Minio配置
         ThrowUtils.throwIf(Objects.isNull(minioConfig) || Objects.isNull(minioConfig.getMinioEndpoint())
             || Objects.isNull(minioConfig.getMinioBucket()) || Objects.isNull(minioConfig.getMinioAccessKey())
