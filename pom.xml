@@ -46,6 +46,8 @@
         <commonmarkdown.version>0.24.0</commonmarkdown.version>
         <minio.version>8.5.17</minio.version>
         <spring-boot-starter.version>3.5.0</spring-boot-starter.version>
+        <redisson.version>3.45.1</redisson.version>
+        <netty.version>4.2.2.Final</netty.version>
     </properties>
 
     <dependencyManagement>
@@ -137,6 +139,18 @@
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-resolver-dns-native-macos</artifactId>
+                <version>${netty.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
