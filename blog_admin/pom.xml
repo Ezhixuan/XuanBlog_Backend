@@ -21,17 +21,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>com.ezhixuan</groupId>
             <artifactId>blog_message</artifactId>
             <version>0.0.1-SNAPSHOT</version>
@@ -39,7 +28,19 @@
 
         <dependency>
             <groupId>com.ezhixuan</groupId>
+            <artifactId>blog_message_websocket</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ezhixuan</groupId>
             <artifactId>blog_upload</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ezhixuan</groupId>
+            <artifactId>blog_card</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>

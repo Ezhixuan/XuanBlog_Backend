@@ -65,4 +65,12 @@ public interface SysUserService extends IService<SysUser> {
      * @param userEditDTO 用户编辑
      */
     void updateUserInfo(UserEditDTO userEditDTO);
+
+    /**
+     * 判断当前用户是否是管理员
+     * @param userId 用户id
+     * @return 是否是管理员
+     */
+    boolean isAdmin(Long userId);
+
 }

@@ -11,7 +11,7 @@ import com.ezhixuan.blog.entity.BaseResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/md")
+@RequestMapping("/markdown")
 @RequiredArgsConstructor
 public class MarkdownController {
 
@@ -20,6 +20,6 @@ public class MarkdownController {
     @PostMapping("/upload")
     public BaseResponse<String> markdownUpload(@RequestPart("file") MultipartFile file) {
         String content = markdownService.upload(file);
-        return new BaseResponse<String>(200, content);
+        return new BaseResponse<String>(0, content);
     }
 }

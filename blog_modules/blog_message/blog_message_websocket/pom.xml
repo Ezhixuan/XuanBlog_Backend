@@ -3,23 +3,32 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.ezhixuan</groupId>
-        <artifactId>blog_modules</artifactId>
+        <artifactId>blog_message</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blog_message</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>blog_message_websocket</artifactId>
+    <packaging>jar</packaging>
 
-    <name>blog_message</name>
+    <name>blog_message_websocket</name>
     <url>http://maven.apache.org</url>
-    <modules>
-        <module>blog_message_websocket</module>
-    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ezhixuan</groupId>
+            <artifactId>blog_system</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

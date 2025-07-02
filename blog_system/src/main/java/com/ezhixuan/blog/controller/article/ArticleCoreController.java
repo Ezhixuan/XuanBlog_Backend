@@ -34,7 +34,7 @@ public class ArticleCoreController {
     }
 
     @Log
-    @PostMapping("/add")
+    @PostMapping("/submit")
     @Operation(summary = "提交博客")
     @SaCheckLogin
     public BaseResponse<String> doSubmitArticle(@RequestBody ArticleSubmitDTO articleSubmitDTO) {

@@ -1,5 +1,6 @@
 package com.ezhixuan.blog.controller;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -13,10 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 消息提醒计数WebSocket
  */
-@ServerEndpoint("/ws/test/{userId}")
+@ServerEndpoint("/ws/link/{userId}")
 @Component
 @Slf4j
-public class MessageCountWebSocketServer {
+public class MessageWebSocketServer {
     /**
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
@@ -29,7 +30,7 @@ public class MessageCountWebSocketServer {
      * concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
      * 虽然@Component默认是单例模式的，但springboot还是会为每个websocket连接初始化一个bean，所以可以用一个静态set保存起来。
      */
-    private static final CopyOnWriteArraySet<MessageCountWebSocketServer> webSockets = new CopyOnWriteArraySet<>();
+    private static final CopyOnWriteArraySet<MessageWebSocketServer> webSockets = new CopyOnWriteArraySet<>();
     /**
      * 用来存在线连接用户信息
      */
@@ -79,7 +80,7 @@ public class MessageCountWebSocketServer {
      * @param message
      */
     public void sendAllMessage(String message) {
-        for (MessageCountWebSocketServer socketServer : webSockets) {
+        for (MessageWebSocketServer socketServer : webSockets) {
             if (socketServer.session.isOpen()) {
                 socketServer.session.getAsyncRemote().sendText(message);
             }
@@ -105,7 +106,7 @@ public class MessageCountWebSocketServer {
      * @param userIds
      * @param message
      */
-    public void sendMoreMessage(Long[] userIds, String message) {
+    public void sendMoreMessage(List<Long> userIds, String message) {
         for (Long userId : userIds) {
             Session session = sessionPool.get(userId);
             if (session != null && session.isOpen()) {
@@ -113,6 +114,10 @@ public class MessageCountWebSocketServer {
             }
         }
 
+    }
+
+    public List<Long> getOnlineUserList() {
+        return sessionPool.keySet().stream().toList();
     }
 }
 

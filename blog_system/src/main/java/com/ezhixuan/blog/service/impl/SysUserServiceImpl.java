@@ -172,6 +172,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
         this.updateById(sysUser);
     }
+
+    /**
+     * 判断当前用户是否是管理员
+     *
+     * @param userId 用户id
+     * @return 是否是管理员
+     */
+    @Override
+    public boolean isAdmin(Long userId) {
+        if (Objects.isNull(userId)) {
+            return false;
+        }
+        return this.lambdaQuery().eq(SysUser::getId, userId).eq(SysUser::getRole, "admin").exists();
+    }
 }
 
 

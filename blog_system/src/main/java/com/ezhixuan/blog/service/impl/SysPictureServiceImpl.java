@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import com.ezhixuan.blog.handler.picture.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +15,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.domain.entity.sys.SysPicture;
 import com.ezhixuan.blog.exception.ErrorCode;
-import com.ezhixuan.blog.handler.picture.*;
 import com.ezhixuan.blog.mapper.SysPictureMapper;
 import com.ezhixuan.blog.service.SysPictureService;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -62,12 +62,12 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
         LambdaQueryWrapper<SysPicture> queryWrapper = Wrappers.<SysPicture>lambdaQuery()
                 .eq(SysPicture::getUserId, StpUtil.getLoginId())
                 .orderByDesc(SysPicture::getUpdateTime);
-        
+
         // 如果传入了type参数，则按类型过滤
         if (Objects.nonNull(type)) {
             queryWrapper.eq(SysPicture::getType, type);
         }
-        
+
         return list(queryWrapper).stream()
                 .map(pic -> PictureUploadVO.builder()
                         .id(pic.getId())
