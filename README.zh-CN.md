@@ -166,36 +166,6 @@ docker-compose logs -f xuanblog-app
 
 项目集成了 Knife4j，启动后访问 http://localhost:8901/api/doc.html 查看完整的 API 文档。
 
-### 主要 API 模块
-
-#### 文章管理
-- `POST /api/article/list` - 获取文章列表
-- `POST /api/article/submit` - 发布文章
-- `GET /api/article/{id}` - 获取文章详情
-- `POST /api/article/thumb` - 点赞/取消点赞
-
-#### 分类标签
-- `GET /api/category/list` - 获取分类列表
-- `PUT /api/category/{name}` - 创建分类
-- `GET /api/tag/list` - 获取标签列表
-- `PUT /api/tag/{name}` - 创建标签
-
-#### 用户认证
-- `POST /api/user/register` - 用户注册
-- `POST /api/user/login` - 用户登录
-- `POST /api/user/logout` - 用户登出
-- `GET /api/user/info` - 获取用户信息
-
-#### 图片上传
-- `POST /api/picture/upload` - 上传图片
-- `POST /api/markdown/upload` - Markdown 图片上传
-
-#### 记忆卡片
-- `POST /api/memo/card/submit` - 创建卡片
-- `GET /api/memo/deck/list` - 获取卡片集列表
-- `POST /api/memo/card/test` - 获取测试卡片
-- `POST /api/memo/card/handle` - 提交复习结果
-
 ## 🏗️ 架构设计
 
 ### 系统架构
@@ -354,10 +324,6 @@ blog:
 ## 👨‍💻 作者
 
 - **Ezhixuan** - *Initial work* - [GitHub](https://github.com/ezhixuan)
-
-## 🙏 致谢
-
-感谢所有为这个项目做出贡献的开发者！
 
 ---
 
