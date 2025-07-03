@@ -14,6 +14,11 @@
 
 ## 📖 项目简介
 
+![img.png](img.png)
+![img_3.png](img_3.png)
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+
 XuanBlog Backend 是一个基于 Spring Boot 3.5 构建的现代化博客系统后端服务。项目采用微服务架构设计，集成了博客管理、用户认证、图片上传、实时通信、智能记忆卡片等功能，旨在提供一个功能完善、性能优秀的个人博客解决方案。
 
 ### ✨ 核心特性
