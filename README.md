@@ -12,119 +12,119 @@
   
 </div>
 
-## 📖 项目简介
+## 📖 Project Introduction
 
-XuanBlog Backend 是一个基于 Spring Boot 3.5 构建的现代化博客系统后端服务。项目采用微服务架构设计，集成了博客管理、用户认证、图片上传、实时通信、智能记忆卡片等功能，旨在提供一个功能完善、性能优秀的个人博客解决方案。
+XuanBlog Backend is a modern blog system backend service built based on Spring Boot 3.5. The project adopts a microservice architecture design, integrating functions such as blog management, user authentication, image upload, real-time communication, and intelligent memory cards, aiming to provide a fully functional and high-performance personal blog solution.
 
-### ✨ 核心特性
+### ✨ Core Features
 
-- **📝 完整的博客管理**：支持文章的增删改查、分类管理、标签系统、评论互动
-- **🔐 安全的认证授权**：基于 Sa-Token 实现的灵活权限控制系统
-- **🖼️ 多样化图片存储**：支持 GitHub CDN 和 MinIO 对象存储
-- **💬 实时消息通知**：基于 WebSocket 的实时通信功能
-- **🧠 智能记忆系统**：实现了 SM-17 算法的记忆卡片系统，支持科学复习
-- **⚡ 高性能缓存**：Redis + Caffeine 双层缓存架构
-- **📊 全面的监控**：接口日志记录、性能分析、异常追踪
-- **🐳 容器化部署**：完整的 Docker Compose 部署方案
+- **📝 Complete Blog Management**: Supports CRUD operations for articles, category management, tag systems, and comment interactions
+- **🔐 Secure Authentication & Authorization**: Flexible permission control system implemented based on Sa-Token
+- **🖼️ Diverse Image Storage**: Supports GitHub CDN and MinIO object storage
+- **💬 Real-time Message Notification**: Real-time communication function based on WebSocket
+- **🧠 Intelligent Memory System**: Implements a memory card system with the SM-17 algorithm, supporting scientific review
+- **⚡ High-performance Caching**: Redis + Caffeine dual-layer caching architecture
+- **📊 Comprehensive Monitoring**: Interface log recording, performance analysis, and exception tracking
+- **🐳 Containerized Deployment**: Complete Docker Compose deployment solution
 
-## 🛠️ 技术栈
+## 🛠️ Technology Stack
 
-### 后端框架
-- **Spring Boot 3.5.0** - 主框架
+### Backend Framework
+- **Spring Boot 3.5.0** - Main framework
 - **Spring Web** - RESTful API
-- **Spring WebSocket** - 实时通信
-- **Spring AOP** - 切面编程
+- **Spring WebSocket** - Real-time communication
+- **Spring AOP** - Aspect-oriented programming
 
-### 数据存储
-- **MySQL 8.0** - 主数据库
-- **Redis 7.0** - 缓存 & 会话存储
-- **MyBatis-Plus 3.5.11** - ORM 框架
+### Data Storage
+- **MySQL 8.0** - Primary database
+- **Redis 7.0** - Caching & session storage
+- **MyBatis-Plus 3.5.11** - ORM framework
 
-### 安全认证
-- **Sa-Token 1.41.0** - 权限认证框架
-- **JWT** - Token 管理
+### Security & Authentication
+- **Sa-Token 1.41.0** - Permission authentication framework
+- **JWT** - Token management
 
-### 工具库
-- **Knife4j 4.4.0** - API 文档
-- **Hutool 5.8.26** - 工具集
-- **Fastjson2** - JSON 处理
-- **Caffeine** - 本地缓存
-- **Redisson 3.45.1** - 分布式锁
+### Tool Libraries
+- **Knife4j 4.4.0** - API documentation
+- **Hutool 5.8.26** - Toolkit
+- **Fastjson2** - JSON processing
+- **Caffeine** - Local caching
+- **Redisson 3.45.1** - Distributed locks
 
-### 存储服务
-- **MinIO** - 对象存储
-- **GitHub** - 图片 CDN
+### Storage Services
+- **MinIO** - Object storage
+- **GitHub** - Image CDN
 
-### 部署相关
-- **Docker** - 容器化
-- **Docker Compose** - 编排工具
-- **Maven** - 构建工具
+### Deployment-related
+- **Docker** - Containerization
+- **Docker Compose** - Orchestration tool
+- **Maven** - Build tool
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 XuanBlog_Backend/
-├── blog_admin/              # 管理端入口模块
+├── blog_admin/              # Management entry module
 │   └── src/
 │       └── main/
-│           ├── java/        # 主应用程序
-│           └── resources/   # 配置文件
-├── blog_common/             # 公共模块
-│   └── src/
-│       └── main/
-│           └── java/
-│               ├── config/  # 全局配置
-│               ├── entity/  # 通用实体
-│               ├── exception/ # 异常处理
-│               └── handler/ # 处理器
-├── blog_system/             # 系统核心模块
+│           ├── java/        # Main application
+│           └── resources/   # Configuration files
+├── blog_common/             # Common module
 │   └── src/
 │       └── main/
 │           └── java/
-│               ├── annotation/ # 自定义注解
-│               ├── aop/      # 切面
-│               ├── controller/ # 控制器
-│               ├── domain/   # 领域模型
-│               ├── mapper/   # 数据访问
-│               └── service/  # 业务逻辑
-├── blog_modules/            # 功能模块
-│   ├── blog_card/          # 记忆卡片模块
-│   ├── blog_message/       # 消息模块
-│   └── blog_upload/        # 上传模块
-├── sql/                     # 数据库脚本
-├── docker-compose.yml       # Docker 编排文件
-└── Dockerfile              # Docker 镜像定义
+│               ├── config/  # Global configuration
+│               ├── entity/  # Common entities
+│               ├── exception/ # Exception handling
+│               └── handler/ # Processors
+├── blog_system/             # System core module
+│   └── src/
+│       └── main/
+│           └── java/
+│               ├── annotation/ # Custom annotations
+│               ├── aop/      # Aspect-oriented programming
+│               ├── controller/ # Controllers
+│               ├── domain/   # Domain models
+│               ├── mapper/   # Data access
+│               └── service/  # Business logic
+├── blog_modules/            # Functional modules
+│   ├── blog_card/          # Memory card module
+│   ├── blog_message/       # Message module
+│   └── blog_upload/        # Upload module
+├── sql/                     # Database scripts
+├── docker-compose.yml       # Docker orchestration file
+└── Dockerfile              # Docker image definition
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 环境要求
+### Environment Requirements
 
 - JDK 21+
 - Maven 3.8+
-- Docker & Docker Compose (可选)
+- Docker & Docker Compose (optional)
 
-### 本地开发
+### Local Development
 
-1. **克隆项目**
+1. **Clone the project**
 ```bash
 git clone https://github.com/yourusername/XuanBlog_Backend.git
 cd XuanBlog_Backend
 ```
 
-2. **配置数据库**
+2. **Configure the database**
 ```bash
-# 创建数据库
+# Create database
 mysql -u root -p
 CREATE DATABASE blog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-# 导入数据
+# Import data
 mysql -u root -p blog < sql/blog.sql
 ```
 
-3. **修改配置**
+3. **Modify configuration**
 ```yaml
-# 编辑 blog_admin/src/main/resources/application.yml
+# Edit blog_admin/src/main/resources/application.yml
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/blog
@@ -135,44 +135,44 @@ spring:
     port: 6379
 ```
 
-4. **启动项目**
+4. **Start the project**
 ```bash
 mvn clean install
 mvn spring-boot:run -pl blog_admin
 ```
 
-### Docker 部署
+### Docker Deployment
 
-1. **使用 Docker Compose 一键部署**
+1. **Use Docker Compose for one-click deployment**
 ```bash
-# 构建并启动所有服务
+# Build and start all services
 docker-compose up -d
 
-# 查看服务状态
+# View service status
 docker-compose ps
 
-# 查看日志
+# View logs
 docker-compose logs -f xuanblog-app
 ```
 
-2. **访问服务**
-- 应用服务：http://localhost:8901/api
-- API 文档：http://localhost:8901/api/doc.html
-- MinIO 控制台：http://localhost:9001
-- MySQL：localhost:3307
-- Redis：localhost:6379
+2. **Access services**
+- Application service: http://localhost:8901/api
+- API documentation: http://localhost:8901/api/doc.html
+- MinIO console: http://localhost:9001
+- MySQL: localhost:3307
+- Redis: localhost:6379
 
-## 📡 API 文档
+## 📡 API Documentation
 
-项目集成了 Knife4j，启动后访问 http://localhost:8901/api/doc.html 查看完整的 API 文档。
+The project integrates Knife4j. After starting, visit http://localhost:8901/api/doc.html to view the complete API documentation.
 
-## 🏗️ 架构设计
+## 🏗️ Architecture Design
 
-### 系统架构
+### System Architecture
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   前端应用   │────▶│   Nginx    │────▶│ Spring Boot │
+│   Frontend  │────▶│   Nginx    │────▶│ Spring Boot │
 └─────────────┘     └─────────────┘     └─────────────┘
                                                │
                     ┌──────────────────────────┼──────────────────────────┐
@@ -183,45 +183,45 @@ docker-compose logs -f xuanblog-app
             └─────────────┘           └─────────────┘           └─────────────┘
 ```
 
-### 核心功能模块
+### Core Functional Modules
 
-#### 1. 博客管理模块
-- 文章的 CRUD 操作
-- 富文本编辑器支持
-- Markdown 渲染
-- 分类和标签管理
-- 文章统计分析
+#### 1. Blog Management Module
+- CRUD operations for articles
+- Rich text editor support
+- Markdown rendering
+- Category and tag management
+- Article statistical analysis
 
-#### 2. 用户认证模块
-- 基于 Sa-Token 的认证
-- 角色权限管理
-- 会话管理
-- 登录状态维持
+#### 2. User Authentication Module
+- Authentication based on Sa-Token
+- Role and permission management
+- Session management
+- Login status maintenance
 
-#### 3. 缓存系统
-- Redis 分布式缓存
-- Caffeine 本地缓存
-- 缓存注解支持
-- 缓存预热和更新策略
+#### 3. Cache System
+- Redis distributed caching
+- Caffeine local caching
+- Cache annotation support
+- Cache preheating and update strategies
 
-#### 4. 记忆卡片系统
-- **SM-17 算法实现**：基于三组件记忆模型（难度、稳定性、检索能力）
-- **智能复习调度**：根据遗忘曲线自动计算最佳复习时间
-- **学习数据分析**：提供详细的学习进度和效果分析
-- **算法对比**：支持 SM-2 和 SM-17 算法切换和效果对比
+#### 4. Memory Card System
+- **SM-17 Algorithm Implementation**: Based on a three-component memory model (difficulty, stability, retrieval ability)
+- **Intelligent Review Scheduling**: Automatically calculates the optimal review time based on the forgetting curve
+- **Learning Data Analysis**: Provides detailed learning progress and effectiveness analysis
+- **Algorithm Comparison**: Supports switching between SM-2 and SM-17 algorithms and comparing their effects
 
-#### 5. 消息通知系统
-- WebSocket 实时通信
-- 消息推送机制
-- 在线用户管理
-- 消息持久化
+#### 5. Message Notification System
+- WebSocket real-time communication
+- Message push mechanism
+- Online user management
+- Message persistence
 
-## 🔧 配置说明
+## 🔧 Configuration Instructions
 
-### 应用配置
+### Application Configuration
 
 ```yaml
-# application.yml 主要配置项
+# Main configuration items in application.yml
 server:
   port: 8901
   servlet:
@@ -243,10 +243,10 @@ sa-token:
   timeout: 2592000
   token-style: uuid
   
-# 文件上传配置
+# File upload configuration
 blog:
   upload:
-    type: github  # 可选 github 或 minio
+    type: github  # Options: github or minio
     github:
       token: your_github_token
       owner: your_github_username
@@ -257,76 +257,76 @@ blog:
       secretKey: minioadmin123
 ```
 
-### 环境配置
+### Environment Configuration
 
-项目支持多环境配置：
-- `dev` - 开发环境（默认）
-- `test` - 测试环境
-- `prod` - 生产环境
-- `docker` - Docker 环境
+The project supports multi-environment configuration:
+- `dev` - Development environment (default)
+- `test` - Testing environment
+- `prod` - Production environment
+- `docker` - Docker environment
 
-## 📈 性能优化
+## 📈 Performance Optimization
 
-1. **数据库优化**
-   - 合理的索引设计
-   - 分页查询优化
-   - 慢查询日志监控
+1. **Database Optimization**
+   - Reasonable index design
+   - Pagination query optimization
+   - Slow query log monitoring
 
-2. **缓存策略**
-   - 热点数据缓存
-   - 缓存穿透防护
-   - 缓存雪崩处理
+2. **Caching Strategies**
+   - Hot data caching
+   - Cache penetration protection
+   - Cache avalanche handling
 
-3. **接口优化**
-   - 接口限流
-   - 请求合并
-   - 异步处理
+3. **Interface Optimization**
+   - Interface rate limiting
+   - Request merging
+   - Asynchronous processing
 
-## 🔐 安全措施
+## 🔐 Security Measures
 
-- XSS 防护
-- SQL 注入防护
-- CSRF 防护
-- 敏感数据加密
-- 接口权限控制
-- 请求频率限制
+- XSS protection
+- SQL injection protection
+- CSRF protection
+- Sensitive data encryption
+- Interface permission control
+- Request frequency limitation
 
-## 📝 开发规范
+## 📝 Development Specifications
 
-1. **代码规范**
-   - 遵循阿里巴巴 Java 开发手册
-   - 统一的代码格式化
-   - 完善的注释文档
+1. **Code Specifications**
+   - Follow Alibaba Java Development Manual
+   - Unified code formatting
+   - Complete documentation comments
 
-2. **Git 规范**
-   - feat: 新功能
-   - fix: 修复 bug
-   - docs: 文档更新
-   - style: 代码格式调整
-   - refactor: 重构
-   - test: 测试相关
-   - chore: 构建过程或辅助工具的变动
+2. **Git Specifications**
+   - feat: New features
+   - fix: Bug fixes
+   - docs: Documentation updates
+   - style: Code formatting adjustments
+   - refactor: Code refactoring
+   - test: Testing-related changes
+   - chore: Changes to the build process or auxiliary tools
 
-## 🤝 贡献指南
+## 🤝 Contribution Guidelines
 
-欢迎提交 Issue 和 Pull Request！
+Welcome to submit Issues and Pull Requests!
 
-1. Fork 本仓库
-2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交你的更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启一个 Pull Request
+1. Fork this repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📄 许可证
+## 📄 License
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
-## 👨‍💻 作者
+## 👨‍💻 Author
 
 - **Ezhixuan** - *Initial work* - [GitHub](https://github.com/ezhixuan)
 
 ---
 
 <div align="center">
-  <p>如果这个项目对你有帮助，请给一个 ⭐️ Star！</p>
-</div> 
+  <p>If this project helps you, please give it a ⭐️ Star!</p>
+</div>
