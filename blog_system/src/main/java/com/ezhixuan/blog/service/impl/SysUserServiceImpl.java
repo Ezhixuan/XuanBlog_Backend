@@ -14,6 +14,7 @@ import com.ezhixuan.blog.domain.dto.UserLoginDTO;
 import com.ezhixuan.blog.domain.dto.UserRegisterDTO;
 import com.ezhixuan.blog.domain.dto.UserUpdatePasswordDTO;
 import com.ezhixuan.blog.domain.entity.sys.SysUser;
+import com.ezhixuan.blog.domain.enums.RoleEnum;
 import com.ezhixuan.blog.domain.vo.UserInfoVO;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
@@ -50,8 +51,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         SysUser sysUser = new SysUser();
         sysUser.setUserAccount(userRegisterDTO.getUserAccount());
         sysUser.setPassword(encryptedPassword);
-        sysUser.setRole("user");
+        sysUser.setRole(count() == 0 ? RoleEnum.ROLE_ADMIN.getRole() : RoleEnum.ROLE_USER.getRole());
         sysUser.setUsername(userRegisterDTO.getUserAccount());
+        if (Objects.equals(sysUser.getRole(), RoleEnum.ROLE_ADMIN.getRole())) {
+            sysUser.setId(1L);
+        }
         this.save(sysUser);
     }
 

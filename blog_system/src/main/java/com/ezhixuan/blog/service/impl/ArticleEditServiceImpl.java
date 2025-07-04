@@ -14,9 +14,7 @@ import com.ezhixuan.blog.domain.entity.article.Article;
 import com.ezhixuan.blog.domain.entity.article.ArticleContent;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
-import com.ezhixuan.blog.service.ArticleContentService;
-import com.ezhixuan.blog.service.ArticleEditService;
-import com.ezhixuan.blog.service.ArticleService;
+import com.ezhixuan.blog.service.*;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
@@ -33,6 +31,8 @@ public class ArticleEditServiceImpl implements ArticleEditService {
     final ArticleContentService contentService;
     final PlatformTransactionManager transactionManager;
     final CacheInterceptor cacheInterceptor;
+    final ArticleTagService tagService;
+    final ArticleCategoryService categoryService;
 
     /**
      * 上传博客
@@ -42,21 +42,14 @@ public class ArticleEditServiceImpl implements ArticleEditService {
      */
     @Override
     public void doSubmitArticle(ArticleSubmitDTO articleSubmitDTO) {
-        /*
-         todo Ezhixuan : 1. 根据文章内容生成摘要
-                         2. 提供根据文章标题自动搜索合适封面的选项
-                         3. 字数计数
-                         4. 内容审核
-                         5. 支持将图片上传图床
-                         6. 通过md文件上传文章
-         */
         ThrowUtils.throwIf(StrUtil.isBlank(articleSubmitDTO.getTitle()), ErrorCode.PARAMS_ERROR, "博客标题不能为空");
         if (StrUtil.isBlank(articleSubmitDTO.getTagIds())) {
-            articleSubmitDTO.setTagIds("1");
+            articleSubmitDTO.setTagIds(tagService.getDefaultId().toString());
         }
         if (Objects.isNull(articleSubmitDTO.getCategoryId())) {
-            articleSubmitDTO.setCategoryId(1L);
+            articleSubmitDTO.setCategoryId(categoryService.getDefaultId());
         }
+
         long userId = StpUtil.getLoginIdAsLong();
         if (Objects.nonNull(articleSubmitDTO.getId())) {
             boolean exists = articleService.lambdaQuery().eq(Article::getId, articleSubmitDTO.getId()).eq(Article::getUserId, userId).exists();

@@ -18,4 +18,11 @@ public interface ArticleTagService extends IService<ArticleTag> {
      * @return ids
      */
     Collection<Long> getIdsByTagName(String tagName);
+
+    /**
+     * 获取默认 tag Id
+     * @author Ezhixuan
+     * @return id
+     */
+    Long getDefaultId();
 }

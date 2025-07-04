@@ -19,4 +19,12 @@ public interface ArticleCategoryService extends IService<ArticleCategory> {
      * @return ids
      */
     Collection<Long> getIdsByCategoryName(String categoryName);
+
+    /**
+     * 获取默认 category id
+     * @author Ezhixuan
+     * @param
+     * @return 默认category id
+     */
+    Long getDefaultId();
 }

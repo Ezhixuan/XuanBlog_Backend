@@ -14,8 +14,11 @@ import com.ezhixuan.blog.domain.dto.ArticleQueryDTO;
 import com.ezhixuan.blog.domain.entity.article.Article;
 import com.ezhixuan.blog.mapper.ArticleMapper;
 import com.ezhixuan.blog.service.ArticleService;
+import com.ezhixuan.blog.service.SysUserService;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import lombok.RequiredArgsConstructor;
 
 /**
  * @author ezhixuan
@@ -23,7 +26,10 @@ import cn.hutool.core.bean.BeanUtil;
  * @createDate 2025-03-27 09:45:21
  */
 @Service
+@RequiredArgsConstructor
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
+
+    private final SysUserService sysUserService;
 
     @Override
     public IPage<ArticlePageDTO> getArticlePageList(ArticleQueryDTO articleQueryDTO) {
@@ -41,6 +47,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     private LambdaQueryWrapper<Article> queryWrapper(ArticleQueryDTO queryDTO) {
         LambdaQueryWrapper<Article> qw = new LambdaQueryWrapper<>();
+
+        boolean admin = !sysUserService.isAdmin(StpUtil.getLoginIdAsLong());
+        qw.eq(admin, Article::getStatus, 1);
 
         qw.like(Objects.nonNull(queryDTO.getTitle()), Article::getTitle, queryDTO.getTitle());
         qw.like(Objects.nonNull(queryDTO.getSummary()), Article::getSummary, queryDTO.getSummary());

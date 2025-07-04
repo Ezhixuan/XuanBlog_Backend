@@ -1,6 +1,7 @@
 package com.ezhixuan.blog.service.impl;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,8 @@ import com.ezhixuan.blog.service.ArticleCategoryService;
 public class ArticleCategoryServiceImpl extends ServiceImpl<ArticleCategoryMapper, ArticleCategory>
     implements ArticleCategoryService{
 
+    private static final String DEFAULT_CATEGORY = "默认分类";
+
     /**
      * 根据分类名模糊搜索
      *
@@ -33,6 +36,24 @@ public class ArticleCategoryServiceImpl extends ServiceImpl<ArticleCategoryMappe
         qw.select(ArticleCategory::getId);
 
         return listObjs(qw, o -> (long) o);
+    }
+
+    /**
+     * 获取默认 category id
+     *
+     * @return 默认category id
+     * @author Ezhixuan
+     */
+    @Override
+    public Long getDefaultId() {
+        ArticleCategory defaultCategory = getOne(queryWrapper(DEFAULT_CATEGORY));
+        if (Objects.isNull(defaultCategory)) {
+            defaultCategory = new ArticleCategory();
+            defaultCategory.setName(DEFAULT_CATEGORY);
+            defaultCategory.setDescription(DEFAULT_CATEGORY);
+            save(defaultCategory);
+        }
+        return defaultCategory.getId();
     }
 
     private LambdaQueryWrapper<ArticleCategory> queryWrapper(String categoryName) {

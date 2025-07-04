@@ -1,5 +1,6 @@
 package com.ezhixuan.blog.controller.article;
 
+import com.ezhixuan.blog.service.ArticleService;
 import org.springframework.web.bind.annotation.*;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -25,6 +26,7 @@ public class ArticleCoreController {
 
     private final ArticleQueryService queryService;
     private final ArticleEditService editService;
+    private final ArticleService articleService;
 
     @PostMapping("/list")
     @Operation(summary = "获取分页文章列表")
@@ -46,5 +48,11 @@ public class ArticleCoreController {
     @Operation(summary = "获取文章详情")
     public BaseResponse<ArticleInfoVO> getArticleInfo(@PathVariable Long id) {
         return R.success(queryService.getArticleInfoVO(id));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(description = "删除文章")
+    public BaseResponse<Boolean> deleteArticle(@PathVariable Long id) {
+        return R.success(articleService.removeById(id));
     }
 }
