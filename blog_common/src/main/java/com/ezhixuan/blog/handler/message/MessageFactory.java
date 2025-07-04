@@ -42,17 +42,21 @@ public class MessageFactory {
 
     /**
      * 获取默认消息管理器实例
-     *
+     * {@link MessageModelConstant}
      * @return MessageManager
      */
     public MessageHandler getInstance(MessageModel model) {
         if (isNull(model) || !StringUtils.hasText(model.getMessageType())) {
-            throw new RuntimeException("请确定选择的消息服务");
+            log.warn("消息服务参数不合法: {}", model);
+            return null;
         }
         return serviceList.stream()
             .filter(service -> Objects.equals(service.getMessageModel().getMessageType(), model.getMessageType()))
             .findAny()
-            .orElseThrow(() -> new RuntimeException("未提供的消息服务" + model.getDesc()));
+            .orElseGet(() -> {
+                log.warn("未找到对应的消息服务: {}", model.getMessageType());
+                return null;
+            });
     }
 
 
