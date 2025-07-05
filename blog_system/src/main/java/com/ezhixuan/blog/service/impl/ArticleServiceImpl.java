@@ -48,7 +48,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private LambdaQueryWrapper<Article> queryWrapper(ArticleQueryDTO queryDTO) {
         LambdaQueryWrapper<Article> qw = new LambdaQueryWrapper<>();
 
-        boolean admin = !sysUserService.isAdmin(StpUtil.getLoginIdAsLong());
+        boolean admin = true;
+        try {
+            admin = !sysUserService.isAdmin(StpUtil.getLoginIdAsLong());
+        }catch (Exception e) {
+
+        }
+
         qw.eq(admin, Article::getStatus, 1);
 
         qw.like(Objects.nonNull(queryDTO.getTitle()), Article::getTitle, queryDTO.getTitle());
