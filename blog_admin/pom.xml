@@ -38,6 +38,12 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.ezhixuan.blog</groupId>
+            <artifactId>blog_project</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- MacOS DNS resolver -->
         <dependency>
             <groupId>io.netty</groupId>

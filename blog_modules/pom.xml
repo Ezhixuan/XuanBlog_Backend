@@ -18,6 +18,7 @@
         <module>blog_card</module>
         <module>blog_upload</module>
         <module>blog_message</module>
+        <module>blog_project</module>
     </modules>
 
     <properties>

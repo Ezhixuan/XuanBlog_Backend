@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezhixuan.blog.mapper.ProjectItemMapper">
+
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.ProjectItem">
+            <id property="id" column="id" />
+            <result property="title" column="title" />
+            <result property="description" column="description" />
+            <result property="long_description" column="long_description" />
+            <result property="image" column="image" />
+            <result property="technologies" column="technologies" />
+            <result property="url" column="url" />
+            <result property="liveUrl" column="liveUrl" />
+            <result property="createTime" column="create_time" />
+            <result property="featured" column="featured" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,title,description,long_description,image,technologies,
+        url,liveUrl,create_time,featured
+    </sql>
+</mapper>
