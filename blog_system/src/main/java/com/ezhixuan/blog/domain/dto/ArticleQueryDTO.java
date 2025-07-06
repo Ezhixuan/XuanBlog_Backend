@@ -1,5 +1,6 @@
 package com.ezhixuan.blog.domain.dto;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import com.ezhixuan.blog.common.PageRequest;
@@ -37,7 +38,7 @@ public class ArticleQueryDTO extends PageRequest {
     /**
      * 根据id查询
      */
-    private Collection<Long> ids;
+    private Collection<Long> ids = new ArrayList<>();
 
     /**
      * 标签id

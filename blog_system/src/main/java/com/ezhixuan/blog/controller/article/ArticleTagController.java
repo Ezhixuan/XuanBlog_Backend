@@ -8,16 +8,17 @@ import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.annotation.Log;
-import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.entity.article.ArticleTag;
 import com.ezhixuan.blog.domain.vo.ArticleTagCountVO;
 import com.ezhixuan.blog.domain.vo.ArticleTagVO;
+import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
 import com.ezhixuan.blog.service.ArticleQueryService;
 import com.ezhixuan.blog.service.ArticleService;
 import com.ezhixuan.blog.service.ArticleTagService;
+import com.ezhixuan.blog.service.LinkArticleTagService;
 
 import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +32,7 @@ public class ArticleTagController {
     private final ArticleTagService tagService;
     private final ArticleService articleService;
     private final ArticleQueryService queryService;
+    private final LinkArticleTagService linkArticleTagService;
 
     @GetMapping("/list")
     @Cache(key = "list:tags")
@@ -58,7 +60,7 @@ public class ArticleTagController {
     @GetMapping("/count")
     @Operation(summary = "标签统计计数")
     public BaseResponse<List<ArticleTagCountVO>> getTagCount() {
-        return R.success(queryService.getTagCount());
+        return R.success(linkArticleTagService.getTagCount());
     }
 
     @Log

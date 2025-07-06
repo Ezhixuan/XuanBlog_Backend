@@ -9,8 +9,6 @@
             <result property="title" column="title" />
             <result property="summary" column="summary" />
             <result property="cover" column="cover" />
-            <result property="categoryId" column="category_id" />
-            <result property="tagIds" column="tag_ids"/>
             <result property="userId" column="user_id" />
             <result property="wordCount" column="word_count"/>
             <result property="viewCount" column="view_count" />
@@ -23,7 +21,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,title,summary,cover,category_id,tag_ids,
+        id,title,summary,cover,
         user_id,view_count,like_count,comment_count,status,
         create_time,update_time,deleted
     </sql>

@@ -2,7 +2,7 @@ package com.ezhixuan.blog.service;
 
 import com.ezhixuan.blog.domain.dto.ArticleSubmitDTO;
 
-public interface ArticleEditService {
+public interface ArticleOperateService {
 
     /**
      * 上传博客

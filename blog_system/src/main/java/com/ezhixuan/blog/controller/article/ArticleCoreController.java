@@ -12,7 +12,7 @@ import com.ezhixuan.blog.domain.dto.ArticleQueryDTO;
 import com.ezhixuan.blog.domain.dto.ArticleSubmitDTO;
 import com.ezhixuan.blog.domain.vo.ArticleInfoVO;
 import com.ezhixuan.blog.domain.vo.ArticlePageVO;
-import com.ezhixuan.blog.service.ArticleEditService;
+import com.ezhixuan.blog.service.ArticleOperateService;
 import com.ezhixuan.blog.service.ArticleQueryService;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
@@ -25,13 +25,13 @@ import lombok.RequiredArgsConstructor;
 public class ArticleCoreController {
 
     private final ArticleQueryService queryService;
-    private final ArticleEditService editService;
+    private final ArticleOperateService operateService;
     private final ArticleService articleService;
 
     @PostMapping("/list")
     @Operation(summary = "获取分页文章列表")
     public BaseResponse<PageResponse<ArticlePageVO>> getArticlePageList(@RequestBody ArticleQueryDTO articleQueryDTO) {
-        IPage<ArticlePageVO> articlePageVOList = queryService.getArticlePageVOList(articleQueryDTO);
+        IPage<ArticlePageVO> articlePageVOList = queryService.queryArticleListByDTO(articleQueryDTO);
         return R.list(articlePageVOList);
     }
 
@@ -40,7 +40,7 @@ public class ArticleCoreController {
     @Operation(summary = "提交博客")
     @SaCheckLogin
     public BaseResponse<String> doSubmitArticle(@RequestBody ArticleSubmitDTO articleSubmitDTO) {
-        editService.doSubmitArticle(articleSubmitDTO);
+        operateService.doSubmitArticle(articleSubmitDTO);
         return R.success();
     }
 

@@ -48,18 +48,6 @@ public class Article implements Serializable {
     private String cover;
 
     /**
-     * 分类ID
-     */
-    @TableField(value = "category_id")
-    private Long categoryId;
-
-    /**
-     * 标签id列表
-     */
-    @TableField(value = "tag_ids")
-    private String tagIds;
-
-    /**
      * 文章字数
      */
     @TableField(value = "word_count")

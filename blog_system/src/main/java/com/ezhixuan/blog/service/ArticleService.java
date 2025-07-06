@@ -13,8 +13,20 @@ import com.ezhixuan.blog.domain.entity.article.Article;
 */
 public interface ArticleService extends IService<Article> {
 
+    /**
+     * 分页查询文章列表
+     * @author Ezhixuan
+     * @param articlePageDTO 查询参数
+     * @return IPage<ArticlePageDTO>
+     */
     IPage<ArticlePageDTO> getArticlePageList(ArticleQueryDTO articlePageDTO);
 
+    /**
+     * 根据 id 获取文章信息
+     * @author Ezhixuan
+     * @param id 文章id
+     * @return ArticlePageDTO
+     */
     ArticlePageDTO getArticleById(Long id);
 
 }

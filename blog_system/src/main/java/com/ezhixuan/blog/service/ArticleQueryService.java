@@ -1,17 +1,11 @@
 package com.ezhixuan.blog.service;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.scheduling.annotation.Async;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.ezhixuan.blog.domain.dto.ArticlePageDTO;
 import com.ezhixuan.blog.domain.dto.ArticleQueryDTO;
-import com.ezhixuan.blog.domain.vo.ArticleCategoryCountVO;
 import com.ezhixuan.blog.domain.vo.ArticleInfoVO;
 import com.ezhixuan.blog.domain.vo.ArticlePageVO;
-import com.ezhixuan.blog.domain.vo.ArticleTagCountVO;
 
 
 /**
@@ -25,37 +19,7 @@ public interface ArticleQueryService {
      * @param articleQueryDTO 查询条件
      * @return 包含vo数据
      */
-    IPage<ArticlePageVO> getArticlePageVOList(ArticleQueryDTO articleQueryDTO);
-
-    /**
-     * 查询结果DTO 转 VO
-     * @author Ezhixuan
-     * @param articlePageDTO 需要包含article数据
-     * @return ArticlePageVO 脱敏后数据
-     */
-    ArticlePageVO toPageVO(ArticlePageDTO articlePageDTO);
-
-    /**
-     * 转Vo
-     * @author Ezhixuan
-     * @param collection 注意articlePageDTO需要包含article数据
-     * @return 脱敏后List数据
-     */
-    List<ArticlePageVO> toPageVOList(Collection<ArticlePageDTO> collection);
-
-    /**
-     * 菜单数量使用情况统计
-     * @author Ezhixuan
-     * @return 统计列表
-     */
-    List<ArticleCategoryCountVO> getCategoryCount();
-
-    /**
-     * 标签数量使用情况统计
-     * @author Ezhixuan
-     * @return 统计列表
-     */
-    List<ArticleTagCountVO> getTagCount();
+    IPage<ArticlePageVO> queryArticleListByDTO(ArticleQueryDTO articleQueryDTO);
 
     /**
      * 获取文章详情
