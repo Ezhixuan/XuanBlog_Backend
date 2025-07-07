@@ -37,5 +37,5 @@ public interface ProjectOperateService {
      * @author Ezhixuan
      * @param id 项目id
      */
-    void featured(Long id);
+    boolean featured(Long id);
 }

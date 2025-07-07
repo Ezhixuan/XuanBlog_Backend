@@ -118,12 +118,14 @@ public class ProjectOperateServiceImpl implements ProjectOperateService {
      * @author Ezhixuan
      */
     @Override
-    public void featured(Long id) {
+    public boolean featured(Long id) {
         ProjectItem item = itemService.getById(id);
         if (Objects.isNull(item)) {
-            return;
+            return false;
         }
-        item.setFeatured(!item.getFeatured());
+        boolean res = !item.getFeatured();
+        item.setFeatured(res);
         itemService.updateById(item);
+        return res;
     }
 }

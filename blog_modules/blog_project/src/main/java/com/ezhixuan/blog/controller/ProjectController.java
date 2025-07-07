@@ -43,9 +43,8 @@ public class ProjectController {
 
     @Operation(summary = "推荐")
     @PutMapping("/featured/{id}")
-    public BaseResponse<Void> featured(@PathVariable Long id) {
-        operateService.featured(id);
-        return R.success();
+    public BaseResponse<Boolean> featured(@PathVariable Long id) {
+        return R.success(operateService.featured(id));
     }
 
 }
