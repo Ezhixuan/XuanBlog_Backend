@@ -114,12 +114,12 @@ public class ProjectOperateServiceImpl implements ProjectOperateService {
     /**
      * 推荐
      *
-     * @param id 项目id
+     * @param projectId 项目id
      * @author Ezhixuan
      */
     @Override
-    public boolean featured(Long id) {
-        ProjectItem item = itemService.getById(id);
+    public boolean featured(Long projectId) {
+        ProjectItem item = itemService.getById(projectId);
         if (Objects.isNull(item)) {
             return false;
         }
@@ -127,5 +127,17 @@ public class ProjectOperateServiceImpl implements ProjectOperateService {
         item.setFeatured(res);
         itemService.updateById(item);
         return res;
+    }
+
+    /**
+     * 删除
+     *
+     * @param projectId 项目id
+     * @author Ezhixuan
+     */
+    @Override
+    public Boolean removeById(Long projectId) {
+        linkService.removeByProjectId(projectId);
+        return itemService.removeById(projectId);
     }
 }

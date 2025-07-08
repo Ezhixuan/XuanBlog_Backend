@@ -35,7 +35,14 @@ public interface ProjectOperateService {
     /**
      * 推荐
      * @author Ezhixuan
-     * @param id 项目id
+     * @param projectId 项目id
      */
-    boolean featured(Long id);
+    boolean featured(Long projectId);
+
+    /**
+     * 删除
+     * @author Ezhixuan
+     * @param projectId 项目id
+     */
+    Boolean removeById(Long projectId);
 }

@@ -35,4 +35,11 @@ public interface LinkProjectTechnologyService extends IService<LinkProjectTechno
      * @param technologiesIds 技术栈 id
      */
     void saveAll(Long projectId, List<Long> technologiesIds);
+
+    /**
+     * 断开链接
+     * @author Ezhixuan
+     * @param projectId 项目 id
+     */
+    void removeByProjectId(Long projectId);
 }

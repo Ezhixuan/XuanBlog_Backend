@@ -78,4 +78,15 @@ public class LinkProjectTechnologyServiceImpl extends ServiceImpl<LinkProjectTec
         }).toList();
         saveBatch(projectTechnologyList);
     }
+
+    /**
+     * 断开链接
+     *
+     * @param projectId 项目 id
+     * @author Ezhixuan
+     */
+    @Override
+    public void removeByProjectId(Long projectId) {
+        remove(Wrappers.<LinkProjectTechnology>lambdaQuery().eq(LinkProjectTechnology::getProjectId, projectId));
+    }
 }

@@ -60,7 +60,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         qw.like(Objects.nonNull(queryDTO.getTitle()), Article::getTitle, queryDTO.getTitle());
         qw.like(Objects.nonNull(queryDTO.getSummary()), Article::getSummary, queryDTO.getSummary());
         qw.in(!ObjectUtils.isEmpty(queryDTO.getIds()), Article::getId, queryDTO.getIds());
-        qw.orderBy(Objects.nonNull(queryDTO.getSortOrder()), !Objects.equals(queryDTO.getSortOrder(), "descend"), Article::getCreateTime);
+        qw.orderBy(Objects.nonNull(queryDTO.getSortOrder()), !Objects.equals(queryDTO.getSortOrder(), "desc"), Article::getCreateTime);
 
         return qw;
     }

@@ -47,4 +47,10 @@ public class ProjectController {
         return R.success(operateService.featured(id));
     }
 
+    @Operation(summary = "删除")
+    @DeleteMapping("/{id}")
+    public BaseResponse<Boolean> delete(@PathVariable Long id) {
+        return R.success(operateService.removeById(id));
+    }
+
 }
