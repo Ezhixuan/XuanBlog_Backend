@@ -25,14 +25,9 @@ public class PageRequest {
     private int pageSize = 10;
 
     /**
-     * 排序字段
-     */
-    private String sortField;
-
-    /**
      * 排序顺序（默认降序）
      */
-    private String sortOrder = "descend";
+    private String sortOrder = "desc";
 
     public <T> IPage<T> toIPage() {
         return new Page<>(this.current, this.getPageSize());
