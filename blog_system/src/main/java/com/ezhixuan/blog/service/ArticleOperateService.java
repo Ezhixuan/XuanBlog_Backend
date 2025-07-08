@@ -10,4 +10,21 @@ public interface ArticleOperateService {
      * @param articleSubmitDTO 提交dto
      */
     void doSubmitArticle(ArticleSubmitDTO articleSubmitDTO);
+
+    /**
+     * 异步执行更新操作
+     *
+     * @author Ezhixuan
+     * @param articleId 文章 id
+     * @param viewCount 查看次数
+     */
+    void asyncUpdateViewCount(long articleId, Integer viewCount);
+
+    /**
+     * 通过 articleId 删除文章
+     * @author Ezhixuan
+     * @param articleId 文章 articleId
+     * @return Boolean
+     */
+    Boolean deleteArticleById(Long articleId);
 }

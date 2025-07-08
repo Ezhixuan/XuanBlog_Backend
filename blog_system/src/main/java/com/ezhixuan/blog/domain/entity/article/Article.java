@@ -1,5 +1,6 @@
 package com.ezhixuan.blog.domain.entity.article;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -95,6 +96,6 @@ public class Article implements Serializable {
     @TableField(value = "deleted")
     private Integer deleted;
 
-    @TableField(exist = false)
+    @Serial
     private static final long serialVersionUID = 1L;
 }

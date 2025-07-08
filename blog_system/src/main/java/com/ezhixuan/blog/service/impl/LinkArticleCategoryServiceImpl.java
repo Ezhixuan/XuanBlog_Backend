@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.controller.article.LinkArticleCategory;
-import com.ezhixuan.blog.domain.vo.ArticleCategoryCountVO;
+import com.ezhixuan.blog.domain.vo.CountVO;
 import com.ezhixuan.blog.mapper.LinkArticleCategoryMapper;
 import com.ezhixuan.blog.service.ArticleService;
 import com.ezhixuan.blog.service.LinkArticleCategoryService;
@@ -69,7 +69,7 @@ public class LinkArticleCategoryServiceImpl extends ServiceImpl<LinkArticleCateg
      * @author Ezhixuan
      */
     @Override
-    public List<ArticleCategoryCountVO> getCategoryCount() {
+    public List<CountVO> getCategoryCount() {
         return baseMapper.getCategoryCount();
     }
 
@@ -96,6 +96,17 @@ public class LinkArticleCategoryServiceImpl extends ServiceImpl<LinkArticleCateg
     @Override
     public List<LinkArticleCategory> queryLink(List<Long> articleIds) {
         return list(Wrappers.<LinkArticleCategory>lambdaQuery().in(LinkArticleCategory::getArticleId, articleIds));
+    }
+
+    /**
+     * 通过articleId 断开连接
+     *
+     * @param articleId 文章 id
+     * @author Ezhixuan
+     */
+    @Override
+    public void removeByArticleId(Long articleId) {
+        remove(Wrappers.<LinkArticleCategory>lambdaQuery().eq(LinkArticleCategory::getArticleId, articleId));
     }
 }
 

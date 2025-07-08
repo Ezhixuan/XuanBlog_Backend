@@ -1,11 +1,11 @@
 package com.ezhixuan.blog.service;
 
-import com.ezhixuan.blog.controller.article.LinkArticleTag;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.ezhixuan.blog.domain.vo.ArticleTagCountVO;
-
 import java.util.Collection;
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.ezhixuan.blog.controller.article.LinkArticleTag;
+import com.ezhixuan.blog.domain.vo.CountVO;
 
 /**
  * @author ezhixuan
@@ -21,7 +21,7 @@ public interface LinkArticleTagService extends IService<LinkArticleTag> {
      * @param articleId 文章id
      * @param tagIds 标签id
      */
-    void saveAll(Long articleId, String tagIds);
+    void saveAll(Long articleId, List<Long> tagIds);
 
     /**
      * 获取关联的文章 id
@@ -36,7 +36,7 @@ public interface LinkArticleTagService extends IService<LinkArticleTag> {
      * @author Ezhixuan
      * @return List<ArticleTagCountVO>
      */
-    List<ArticleTagCountVO> getTagCount();
+    List<CountVO> getTagCount();
 
     /**
      * 获取文章关联的标签 id
@@ -53,4 +53,11 @@ public interface LinkArticleTagService extends IService<LinkArticleTag> {
      * @return List<LinkArticleTag>
      */
     List<LinkArticleTag> queryLink(List<Long> articleIds);
+
+    /**
+     * 通过 articleId 断开连接
+     * @author Ezhixuan
+     * @param articleId 文章 id
+     */
+    void removeByArticle(Long articleId);
 }

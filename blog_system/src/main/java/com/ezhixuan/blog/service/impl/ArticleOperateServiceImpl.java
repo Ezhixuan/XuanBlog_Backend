@@ -1,12 +1,18 @@
 package com.ezhixuan.blog.service.impl;
 
+import static java.util.Objects.isNull;
+
+import java.util.Collections;
 import java.util.Objects;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.CollectionUtils;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.blog.aop.CacheInterceptor;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.domain.dto.ArticleSubmitDTO;
@@ -29,7 +35,6 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
 
     private final ArticleService articleService;
     private final ArticleContentService contentService;
-    private final PlatformTransactionManager transactionManager;
     private final CacheInterceptor cacheInterceptor;
     private final ArticleTagService tagService;
     private final ArticleCategoryService categoryService;
@@ -43,40 +48,77 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
      * @author Ezhixuan
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doSubmitArticle(ArticleSubmitDTO articleSubmitDTO) {
         ThrowUtils.throwIf(StrUtil.isBlank(articleSubmitDTO.getTitle()), ErrorCode.PARAMS_ERROR, "博客标题不能为空");
-        if (StrUtil.isBlank(articleSubmitDTO.getTagIds())) {
-            articleSubmitDTO.setTagIds(tagService.getDefaultId().toString());
+        if (CollectionUtils.isEmpty(articleSubmitDTO.getTagIds())) {
+            articleSubmitDTO.setTagIds(Collections.singletonList(tagService.getDefaultId()));
         }
-        if (Objects.isNull(articleSubmitDTO.getCategoryId())) {
+        if (isNull(articleSubmitDTO.getCategoryId())) {
             articleSubmitDTO.setCategoryId(categoryService.getDefaultId());
         }
 
         long userId = StpUtil.getLoginIdAsLong();
+        boolean hasId = false;
         if (Objects.nonNull(articleSubmitDTO.getId())) {
-            // 编辑态
             boolean exists = articleService.lambdaQuery().eq(Article::getId, articleSubmitDTO.getId())
                 .eq(Article::getUserId, userId).exists();
-            ThrowUtils.throwIf(!exists, ErrorCode.NOT_FOUND_ERROR);
+            ThrowUtils.throwIf(!exists, ErrorCode.NOT_FOUND_ERROR, "文章不存在或无权操作");
+            hasId = true;
         }
+
         Article article = BeanUtil.copyProperties(articleSubmitDTO, Article.class);
         article.setUserId(userId);
 
-        TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
-        try {
-            articleService.saveOrUpdate(article);
-            linkArticleTagService.saveAll(article.getId(), articleSubmitDTO.getTagIds());
-            linkArticleCategoryService.save(article.getId(), articleSubmitDTO.getCategoryId());
-            ArticleContent articleContent = new ArticleContent();
-            articleContent.setArticleId(article.getId());
-            articleContent.setContent(articleSubmitDTO.getContent());
-            contentService.saveOrUpdate(articleContent);
-            transactionManager.commit(transaction);
-            cacheInterceptor.cleanLocalCache(RedisKeyConstant.ARTICLE_INFO_PRE_KEY + article.getId());
-        } catch (Exception e) {
-            log.error("事务回滚 {}", e.getMessage());
-            transactionManager.rollback(transaction);
-            throw e;
+        articleService.saveOrUpdate(article);
+        linkArticleTagService.saveAll(article.getId(), articleSubmitDTO.getTagIds());
+        linkArticleCategoryService.save(article.getId(), articleSubmitDTO.getCategoryId());
+
+        ArticleContent articleContent = new ArticleContent();
+        articleContent.setArticleId(article.getId());
+        articleContent.setContent(articleSubmitDTO.getContent());
+        contentService.saveOrUpdate(articleContent);
+
+        if (hasId) {
+            Long articleId = article.getId();
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    log.info("Transaction committed. Cleaning cache for articleId: {}", articleId);
+                    cacheInterceptor.cleanLocalCache(RedisKeyConstant.ARTICLE_INFO_PRE_KEY + articleId);
+                }
+            });
         }
+    }
+
+    /**
+     * 异步执行更新操作
+     *
+     * @author Ezhixuan
+     * @param articleId 文章 id
+     * @param viewCount 查看次数
+     */
+    @Async
+    @Override
+    public void asyncUpdateViewCount(long articleId, Integer viewCount) {
+        articleService.update(
+            Wrappers.<Article>lambdaUpdate().eq(Article::getId, articleId).set(Article::getViewCount, viewCount));
+    }
+
+    /**
+     * 通过 articleId 删除文章
+     *
+     * @param articleId 文章 articleId
+     * @return Boolean
+     * @author Ezhixuan
+     */
+    @Override
+    public Boolean deleteArticleById(Long articleId) {
+        if (isNull(articleId)) {
+            return false;
+        }
+        linkArticleCategoryService.removeByArticleId(articleId);
+        linkArticleTagService.removeByArticle(articleId);
+        return articleService.removeById(articleId);
     }
 }

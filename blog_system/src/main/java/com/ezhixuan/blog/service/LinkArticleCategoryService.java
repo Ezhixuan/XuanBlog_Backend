@@ -1,11 +1,11 @@
 package com.ezhixuan.blog.service;
 
-import com.ezhixuan.blog.controller.article.LinkArticleCategory;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.ezhixuan.blog.domain.vo.ArticleCategoryCountVO;
-
 import java.util.Collection;
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.ezhixuan.blog.controller.article.LinkArticleCategory;
+import com.ezhixuan.blog.domain.vo.CountVO;
 
 /**
 * @author ezhixuan
@@ -35,7 +35,7 @@ public interface LinkArticleCategoryService extends IService<LinkArticleCategory
      * @author Ezhixuan
      * @return List<ArticleCategoryCountVO>
      */
-    List<ArticleCategoryCountVO> getCategoryCount();
+    List<CountVO> getCategoryCount();
 
     /**
      * 获取分类 id
@@ -52,4 +52,11 @@ public interface LinkArticleCategoryService extends IService<LinkArticleCategory
      * @return List<LinkArticleCategory>
      */
     List<LinkArticleCategory> queryLink(List<Long> articleIds);
+
+    /**
+     * 通过articleId 断开连接
+     * @author Ezhixuan
+     * @param articleId 文章 id
+     */
+    void removeByArticleId(Long articleId);
 }

@@ -10,8 +10,8 @@ import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.annotation.Log;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.entity.article.ArticleTag;
-import com.ezhixuan.blog.domain.vo.ArticleTagCountVO;
 import com.ezhixuan.blog.domain.vo.ArticleTagVO;
+import com.ezhixuan.blog.domain.vo.CountVO;
 import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
@@ -59,7 +59,7 @@ public class ArticleTagController {
 
     @GetMapping("/count")
     @Operation(summary = "标签统计计数")
-    public BaseResponse<List<ArticleTagCountVO>> getTagCount() {
+    public BaseResponse<List<CountVO>> getTagCount() {
         return R.success(linkArticleTagService.getTagCount());
     }
 

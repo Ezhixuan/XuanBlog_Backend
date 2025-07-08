@@ -1,11 +1,12 @@
 package com.ezhixuan.blog.mapper;
 
-import com.ezhixuan.blog.controller.article.LinkArticleCategory;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ezhixuan.blog.domain.vo.ArticleCategoryCountVO;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Select;
 
-import java.util.List;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ezhixuan.blog.controller.article.LinkArticleCategory;
+import com.ezhixuan.blog.domain.vo.CountVO;
 
 /**
 * @author ezhixuan
@@ -16,7 +17,7 @@ import java.util.List;
 public interface LinkArticleCategoryMapper extends BaseMapper<LinkArticleCategory> {
 
     @Select("SELECT category_id as id, count(*) as count FROM link_article_category GROUP BY category_id")
-    List<ArticleCategoryCountVO> getCategoryCount();
+    List<CountVO> getCategoryCount();
 
 }
 

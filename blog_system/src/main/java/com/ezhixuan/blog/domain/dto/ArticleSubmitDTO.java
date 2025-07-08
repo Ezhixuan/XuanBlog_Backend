@@ -1,5 +1,7 @@
 package com.ezhixuan.blog.domain.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -36,7 +38,7 @@ public class ArticleSubmitDTO {
     /**
      * 标签id列表
      */
-    private String tagIds;
+    private List<Long> tagIds;
 
     /**
      * 状态：1-已发布，0-草稿

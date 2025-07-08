@@ -1,17 +1,16 @@
 package com.ezhixuan.blog.service.impl;
 
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.BeanUtils;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.common.PageRequest;
 import com.ezhixuan.blog.controller.article.LinkArticleCategory;
@@ -19,7 +18,6 @@ import com.ezhixuan.blog.controller.article.LinkArticleTag;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.domain.dto.ArticlePageDTO;
 import com.ezhixuan.blog.domain.dto.ArticleQueryDTO;
-import com.ezhixuan.blog.domain.entity.article.Article;
 import com.ezhixuan.blog.domain.entity.article.ArticleCategory;
 import com.ezhixuan.blog.domain.entity.article.ArticleContent;
 import com.ezhixuan.blog.domain.entity.article.ArticleTag;
@@ -41,18 +39,28 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
     private final ArticleTagService tagService;
     private final ArticleContentService contentService;
     private final ArticleThumbService thumbService;
+    private final ArticleOperateService operateService;
     private final LinkArticleCategoryService linkArticleCategoryService;
     private final LinkArticleTagService linkArticleTagService;
 
     @Override
-    public IPage<ArticlePageVO> queryArticleListByDTO(ArticleQueryDTO articleQueryDTO) {
+    public IPage<ArticlePageVO> pageListByDTO(ArticleQueryDTO articleQueryDTO) {
         // 特殊处理获取对应id
-        if (!CollectionUtils.isEmpty(articleQueryDTO.getTagIds())) {
+        boolean hasId = false;
+        if (!isEmpty(articleQueryDTO.getTagIds())) {
             articleQueryDTO.getIds().addAll(linkArticleTagService.queryArticleId(articleQueryDTO.getTagIds().stream().distinct().toList()));
+            hasId = true;
         }
-        if (!CollectionUtils.isEmpty(articleQueryDTO.getCategoryIds())) {
+        if (!isEmpty(articleQueryDTO.getCategoryIds())) {
             articleQueryDTO.getIds().addAll(linkArticleCategoryService.queryArticleId(articleQueryDTO.getCategoryIds().stream().distinct().toList()));
+            hasId = true;
         }
+        if (hasId) {
+            if (isEmpty(articleQueryDTO.getIds())) {
+                return articleQueryDTO.toIPage();
+            }
+        }
+
         IPage<ArticlePageDTO> paged = articleService.getArticlePageList(articleQueryDTO);
         return PageRequest.convert(paged, convert(paged.getRecords()));
     }
@@ -150,21 +158,7 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
         int thumbToday = thumbService.getThumbToday(articleId);
         articleInfoVO.setLikeCount(articleInfoVO.getLikeCount() + thumbToday);
 
-        ((ArticleQueryService)AopContext.currentProxy()).asyncUpdateViewCount(articleId, viewCount);
+        operateService.asyncUpdateViewCount(articleId, viewCount);
         return articleInfoVO;
-    }
-
-    /**
-     * 异步执行更新操作
-     *
-     * @author Ezhixuan
-     * @param articleId 文章 id
-     * @param viewCount 查看次数
-     */
-    @Async
-    @Override
-    public void asyncUpdateViewCount(long articleId, Integer viewCount) {
-        articleService.update(
-            Wrappers.<Article>lambdaUpdate().eq(Article::getId, articleId).set(Article::getViewCount, viewCount));
     }
 }

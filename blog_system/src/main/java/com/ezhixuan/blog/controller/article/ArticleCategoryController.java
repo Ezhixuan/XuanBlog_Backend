@@ -10,8 +10,8 @@ import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.annotation.Log;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.entity.article.ArticleCategory;
-import com.ezhixuan.blog.domain.vo.ArticleCategoryCountVO;
 import com.ezhixuan.blog.domain.vo.ArticleCategoryVO;
+import com.ezhixuan.blog.domain.vo.CountVO;
 import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
@@ -70,7 +70,7 @@ public class ArticleCategoryController {
 
     @GetMapping("/count")
     @Operation(summary = "分类统计计数")
-    public BaseResponse<List<ArticleCategoryCountVO>> getCategoryCount() {
+    public BaseResponse<List<CountVO>> getCategoryCount() {
         return R.success(linkArticleCategoryService.getCategoryCount());
     }
 }

@@ -1,9 +1,9 @@
 package com.ezhixuan.blog.service.impl;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import com.ezhixuan.blog.domain.vo.CountVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -11,9 +11,7 @@ import org.springframework.util.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.controller.article.LinkArticleTag;
-import com.ezhixuan.blog.domain.vo.ArticleTagCountVO;
 import com.ezhixuan.blog.mapper.LinkArticleTagMapper;
-import com.ezhixuan.blog.service.ArticleService;
 import com.ezhixuan.blog.service.LinkArticleTagService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,18 +26,14 @@ import lombok.RequiredArgsConstructor;
 public class LinkArticleTagServiceImpl extends ServiceImpl<LinkArticleTagMapper, LinkArticleTag>
     implements LinkArticleTagService{
 
-    private final ArticleService articleService;
-
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveAll(Long articleId, String tagIds) {
-        String[] tagIdArr = tagIds.split(",");
-        List<Long> tagIdList = Arrays.stream(tagIdArr).map(Long::parseLong).distinct().toList();
-        List<LinkArticleTag> list = list(Wrappers.<LinkArticleTag>lambdaQuery().eq(LinkArticleTag::getArticleId, articleId).in(LinkArticleTag::getTagId, tagIdList));
+    public void saveAll(Long articleId, List<Long> tagIds) {
+        List<LinkArticleTag> list = list(Wrappers.<LinkArticleTag>lambdaQuery().eq(LinkArticleTag::getArticleId, articleId).in(LinkArticleTag::getTagId, tagIds));
         if (!CollectionUtils.isEmpty(list)) {
             removeBatchByIds(list);
         }
-        tagIdList.forEach(tagId -> {
+        tagIds.forEach(tagId -> {
             LinkArticleTag link = new LinkArticleTag();
             link.setArticleId(articleId);
             link.setTagId(tagId);
@@ -66,7 +60,7 @@ public class LinkArticleTagServiceImpl extends ServiceImpl<LinkArticleTagMapper,
      * @author Ezhixuan
      */
     @Override
-    public List<ArticleTagCountVO> getTagCount() {
+    public List<CountVO> getTagCount() {
         return baseMapper.getTagCount();
     }
 
@@ -92,6 +86,17 @@ public class LinkArticleTagServiceImpl extends ServiceImpl<LinkArticleTagMapper,
     @Override
     public List<LinkArticleTag> queryLink(List<Long> articleIds) {
         return list(Wrappers.<LinkArticleTag>lambdaQuery().in(LinkArticleTag::getArticleId, articleIds));
+    }
+
+    /**
+     * 通过 articleId 断开连接
+     *
+     * @param articleId 文章 id
+     * @author Ezhixuan
+     */
+    @Override
+    public void removeByArticle(Long articleId) {
+        remove(Wrappers.<LinkArticleTag>lambdaQuery().eq(LinkArticleTag::getArticleId, articleId));
     }
 }
 

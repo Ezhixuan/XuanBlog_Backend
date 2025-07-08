@@ -1,11 +1,12 @@
 package com.ezhixuan.blog.mapper;
 
-import com.ezhixuan.blog.controller.article.LinkArticleTag;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ezhixuan.blog.domain.vo.ArticleTagCountVO;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Select;
 
-import java.util.List;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ezhixuan.blog.controller.article.LinkArticleTag;
+import com.ezhixuan.blog.domain.vo.CountVO;
 
 /**
 * @author ezhixuan
@@ -15,8 +16,8 @@ import java.util.List;
 */
 public interface LinkArticleTagMapper extends BaseMapper<LinkArticleTag> {
 
-    @Select("select id,tag_id as id, count(*) as count from link_article_tag group by tag_id")
-    List<ArticleTagCountVO> getTagCount();
+    @Select("select tag_id as id, count(*) as count from link_article_tag group by tag_id")
+    List<CountVO> getTagCount();
 }
 
 
