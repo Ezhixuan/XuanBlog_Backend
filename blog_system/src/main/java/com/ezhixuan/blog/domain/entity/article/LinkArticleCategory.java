@@ -1,15 +1,14 @@
-package com.ezhixuan.blog.controller.article;
+package com.ezhixuan.blog.domain.entity.article;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-public class LinkArticleTag {
+public class LinkArticleCategory {
 
     @Schema(description="主键 id")
     @TableId(type = IdType.AUTO)
@@ -19,7 +18,7 @@ public class LinkArticleTag {
     @TableField("article_id")
     private Long articleId;
 
-    @Schema(description="标签 id")
-    @TableField("tag_id")
-    private Long tagId;
+    @Schema(description="分类 id")
+    @TableField("category_id")
+    private Long categoryId;
 }

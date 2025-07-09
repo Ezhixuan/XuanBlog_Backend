@@ -7,12 +7,9 @@
     <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.article.ArticleTag">
             <id property="id" column="id" />
             <result property="name" column="name" />
-            <result property="createTime" column="create_time" />
-            <result property="updateTime" column="update_time" />
-            <result property="deleted" column="deleted" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,create_time,update_time,deleted
+        id,name
     </sql>
 </mapper>

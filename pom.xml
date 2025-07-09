@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.2</version>
+        <version>3.5.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ezhixuan</groupId>
@@ -19,6 +19,7 @@
         <module>blog_common</module>
         <module>blog_system</module>
         <module>blog_modules</module>
+        <module>blog_test</module>
     </modules>
     <url/>
     <licenses>
@@ -44,9 +45,9 @@
         <lombok.version>1.18.32</lombok.version>
         <unirest.version>3.14.5</unirest.version>
         <commonmarkdown.version>0.24.0</commonmarkdown.version>
+        <redission.version>3.50.0</redission.version>
+        <spring-boot-starter.version>3.5.0</spring-boot-starter.version>
         <minio.version>8.5.17</minio.version>
-        <spring-boot-starter.version>3.4.2</spring-boot-starter.version>
-        <redisson.version>3.45.1</redisson.version>
         <netty.version>4.2.2.Final</netty.version>
     </properties>
 
@@ -144,7 +145,7 @@
             <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
-                <version>${redisson.version}</version>
+                <version>${redission.version}</version>
             </dependency>
 
             <dependency>

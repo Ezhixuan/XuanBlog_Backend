@@ -1,7 +1,7 @@
 package com.ezhixuan.blog.domain.entity.article;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -17,6 +17,10 @@ import lombok.Data;
 @TableName(value ="article_category")
 @Data
 public class ArticleCategory implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 5449958369178159577L;
+
     /**
      * 主键
      */
@@ -28,31 +32,4 @@ public class ArticleCategory implements Serializable {
      */
     @TableField(value = "name")
     private String name;
-
-    /**
-     * 分类描述
-     */
-    @TableField(value = "description")
-    private String description;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time")
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(value = "update_time")
-    private Date updateTime;
-
-    /**
-     * 是否删除：0-未删除，1-已删除
-     */
-    @TableField(value = "deleted")
-    private Integer deleted;
-
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 }

@@ -1,6 +1,6 @@
 package com.ezhixuan.blog.service.impl;
 
-import java.util.Objects;
+import static java.util.Objects.isNull;
 
 import org.springframework.stereotype.Service;
 
@@ -32,10 +32,9 @@ public class ArticleCategoryServiceImpl extends ServiceImpl<ArticleCategoryMappe
     @Cache
     public Long getDefaultId() {
         ArticleCategory defaultCategory = getOne(Wrappers.<ArticleCategory>lambdaQuery().eq(ArticleCategory::getName,DEFAULT_CATEGORY));
-        if (Objects.isNull(defaultCategory)) {
+        if (isNull(defaultCategory)) {
             defaultCategory = new ArticleCategory();
             defaultCategory.setName(DEFAULT_CATEGORY);
-            defaultCategory.setDescription(DEFAULT_CATEGORY);
             save(defaultCategory);
         }
         return defaultCategory.getId();

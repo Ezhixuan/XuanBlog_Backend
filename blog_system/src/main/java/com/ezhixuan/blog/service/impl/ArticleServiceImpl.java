@@ -32,7 +32,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private final SysUserService sysUserService;
 
     @Override
-    public IPage<ArticlePageDTO> getArticlePageList(ArticleQueryDTO articleQueryDTO) {
+    public IPage<ArticlePageDTO> pageList(ArticleQueryDTO articleQueryDTO) {
         LambdaQueryWrapper<Article> qw = queryWrapper(articleQueryDTO);
         IPage<Article> iPage = articleQueryDTO.toIPage();
         page(iPage, qw);

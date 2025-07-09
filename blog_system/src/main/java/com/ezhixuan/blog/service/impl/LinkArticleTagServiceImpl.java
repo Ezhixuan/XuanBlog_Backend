@@ -3,14 +3,14 @@ package com.ezhixuan.blog.service.impl;
 import java.util.Collection;
 import java.util.List;
 
-import com.ezhixuan.blog.domain.vo.CountVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ezhixuan.blog.controller.article.LinkArticleTag;
+import com.ezhixuan.blog.domain.entity.article.LinkArticleTag;
+import com.ezhixuan.blog.domain.vo.CountVO;
 import com.ezhixuan.blog.mapper.LinkArticleTagMapper;
 import com.ezhixuan.blog.service.LinkArticleTagService;
 
@@ -60,7 +60,7 @@ public class LinkArticleTagServiceImpl extends ServiceImpl<LinkArticleTagMapper,
      * @author Ezhixuan
      */
     @Override
-    public List<CountVO> getTagCount() {
+    public List<CountVO> queryTagCount() {
         return baseMapper.getTagCount();
     }
 
@@ -95,8 +95,19 @@ public class LinkArticleTagServiceImpl extends ServiceImpl<LinkArticleTagMapper,
      * @author Ezhixuan
      */
     @Override
-    public void removeByArticle(Long articleId) {
+    public void removeByArticleId(Long articleId) {
         remove(Wrappers.<LinkArticleTag>lambdaQuery().eq(LinkArticleTag::getArticleId, articleId));
+    }
+
+    /**
+     * 通过 tagId 断开连接
+     *
+     * @param tagId 标签 id
+     * @author Ezhixuan
+     */
+    @Override
+    public void removeByTagId(Long tagId) {
+        remove(Wrappers.<LinkArticleTag>lambdaQuery().eq(LinkArticleTag::getTagId, tagId));
     }
 }
 

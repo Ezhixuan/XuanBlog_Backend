@@ -40,6 +40,23 @@ public class CacheInterceptor {
     @SneakyThrows
     @Around("@annotation(cache)")
     public Object doInterceptor(ProceedingJoinPoint joinPoint, Cache cache) {
+        if (Objects.equals(cache.operateType(), Cache.CacheOperateType.INSERT)) {
+            return insertCache(joinPoint, cache);
+        } else if (Objects.equals(cache.operateType(), Cache.CacheOperateType.DELETE)) {
+            return updateCache(joinPoint, cache);
+        }
+        return joinPoint.proceed();
+    }
+
+    @SneakyThrows
+    private Object updateCache(ProceedingJoinPoint joinPoint, Cache cache) {
+        String key = getKey(joinPoint, cache);
+        cleanLocalCache(key);
+        return joinPoint.proceed();
+    }
+
+    @SneakyThrows
+    private Object insertCache(ProceedingJoinPoint joinPoint, Cache cache) {
         String key = getKey(joinPoint, cache);
         String resTypeName = ((MethodSignature) joinPoint.getSignature()).getReturnType().getName();
         Class<?> aClass = Class.forName(resTypeName);

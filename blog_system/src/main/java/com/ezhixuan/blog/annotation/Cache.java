@@ -17,15 +17,14 @@ public @interface Cache {
     /**
      * 操作类型 默认插入
      */
-    String operateType() default CacheOperateType.INSERT;
+    CacheOperateType operateType() default CacheOperateType.INSERT;
 
     /**
      * 用户自行设置key
      */
     String key() default "";
 
-    interface CacheOperateType {
-        String INSERT = "insert";
-        String UPDATE = "update";
+    enum CacheOperateType {
+        INSERT, DELETE;
     }
 }

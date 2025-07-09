@@ -19,7 +19,7 @@ public interface ArticleService extends IService<Article> {
      * @param articlePageDTO 查询参数
      * @return IPage<ArticlePageDTO>
      */
-    IPage<ArticlePageDTO> getArticlePageList(ArticleQueryDTO articlePageDTO);
+    IPage<ArticlePageDTO> pageList(ArticleQueryDTO articlePageDTO);
 
     /**
      * 根据 id 获取文章信息

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ezhixuan.blog.controller.article.LinkArticleCategory;
+import com.ezhixuan.blog.domain.entity.article.LinkArticleCategory;
 import com.ezhixuan.blog.domain.vo.CountVO;
 
 /**
@@ -35,7 +35,7 @@ public interface LinkArticleCategoryService extends IService<LinkArticleCategory
      * @author Ezhixuan
      * @return List<ArticleCategoryCountVO>
      */
-    List<CountVO> getCategoryCount();
+    List<CountVO> queryCategoryCount();
 
     /**
      * 获取分类 id
@@ -59,4 +59,11 @@ public interface LinkArticleCategoryService extends IService<LinkArticleCategory
      * @param articleId 文章 id
      */
     void removeByArticleId(Long articleId);
+
+    /**
+     * 通过 categoryId 断开连接
+     * @author Ezhixuan
+     * @param categoryId 分类 id
+     */
+    void removeByCategoryId(Long categoryId);
 }

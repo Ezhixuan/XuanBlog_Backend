@@ -11,24 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ezhixuan.blog.annotation.Log;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.domain.entity.article.Article;
 import com.ezhixuan.blog.service.ArticleService;
 import com.ezhixuan.blog.utils.RedisUtil;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class ThumbSyncTask {
 
     public static String CURRENT_TIME = "currentTime";
     private final RedisUtil redisUtil;
     private final ArticleService articleService;
-
-    public ThumbSyncTask(RedisUtil redisUtil, ArticleService articleService) {
-        this.redisUtil = redisUtil;
-        this.articleService = articleService;
-    }
 
     @PostConstruct
     public void init() {
@@ -50,6 +48,7 @@ public class ThumbSyncTask {
      * 每小时统计一次 Thumb
      * @author Ezhixuan
      */
+    @Log
     @Scheduled(fixedRate = 1000L * 60 * 60)
     @Transactional(rollbackFor = Exception.class)
     public void syncThumb2DB() {

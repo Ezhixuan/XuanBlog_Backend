@@ -5,12 +5,12 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
-import com.ezhixuan.blog.config.props.BlogUploadProp;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
 import com.ezhixuan.blog.handler.picture.PictureCommonUtil;
 import com.ezhixuan.blog.handler.picture.PictureUploadHandler;
 import com.ezhixuan.blog.handler.picture.UploadModel;
+import com.ezhixuan.blog.props.BlogUploadProp;
 
 import io.minio.*;
 import lombok.RequiredArgsConstructor;

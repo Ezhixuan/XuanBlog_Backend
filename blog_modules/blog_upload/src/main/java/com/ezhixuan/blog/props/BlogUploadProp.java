@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.config.props;
+package com.ezhixuan.blog.props;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

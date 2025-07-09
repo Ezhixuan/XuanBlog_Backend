@@ -13,14 +13,10 @@ import org.springframework.util.ObjectUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.common.PageRequest;
-import com.ezhixuan.blog.controller.article.LinkArticleCategory;
-import com.ezhixuan.blog.controller.article.LinkArticleTag;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.domain.dto.ArticlePageDTO;
 import com.ezhixuan.blog.domain.dto.ArticleQueryDTO;
-import com.ezhixuan.blog.domain.entity.article.ArticleCategory;
-import com.ezhixuan.blog.domain.entity.article.ArticleContent;
-import com.ezhixuan.blog.domain.entity.article.ArticleTag;
+import com.ezhixuan.blog.domain.entity.article.*;
 import com.ezhixuan.blog.domain.vo.ArticleInfoVO;
 import com.ezhixuan.blog.domain.vo.ArticlePageVO;
 import com.ezhixuan.blog.service.*;
@@ -61,7 +57,7 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
             }
         }
 
-        IPage<ArticlePageDTO> paged = articleService.getArticlePageList(articleQueryDTO);
+        IPage<ArticlePageDTO> paged = articleService.pageList(articleQueryDTO);
         return PageRequest.convert(paged, convert(paged.getRecords()));
     }
 

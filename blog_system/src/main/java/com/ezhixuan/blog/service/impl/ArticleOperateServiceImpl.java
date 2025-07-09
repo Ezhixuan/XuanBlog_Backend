@@ -35,11 +35,12 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
 
     private final ArticleService articleService;
     private final ArticleContentService contentService;
-    private final CacheInterceptor cacheInterceptor;
     private final ArticleTagService tagService;
     private final ArticleCategoryService categoryService;
     private final LinkArticleTagService linkArticleTagService;
     private final LinkArticleCategoryService linkArticleCategoryService;
+
+    private final CacheInterceptor cacheInterceptor;
 
     /**
      * 上传博客
@@ -100,9 +101,13 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
      */
     @Async
     @Override
-    public void asyncUpdateViewCount(long articleId, Integer viewCount) {
+    public void asyncUpdateViewCount(Long articleId, Integer viewCount) {
+        requireIdNoNull(articleId);
         articleService.update(
-            Wrappers.<Article>lambdaUpdate().eq(Article::getId, articleId).set(Article::getViewCount, viewCount));
+            Wrappers.<Article>lambdaUpdate()
+                    .eq(Article::getId, articleId)
+                    .set(Article::getViewCount, viewCount)
+        );
     }
 
     /**
@@ -113,12 +118,47 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
      * @author Ezhixuan
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean deleteArticleById(Long articleId) {
-        if (isNull(articleId)) {
-            return false;
-        }
+        requireIdNoNull(articleId);
         linkArticleCategoryService.removeByArticleId(articleId);
-        linkArticleTagService.removeByArticle(articleId);
+        linkArticleTagService.removeByArticleId(articleId);
         return articleService.removeById(articleId);
+    }
+
+    /**
+     * 通过 categoryId 删除分类
+     *
+     * @param categoryId 分类 id
+     * @return Boolean
+     * @author Ezhixuan
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean deleteCategoryById(Long categoryId) {
+        requireIdNoNull(categoryId);
+        linkArticleCategoryService.removeByCategoryId(categoryId);
+        return categoryService.removeById(categoryId);
+    }
+
+    /**
+     * 通过 tagId 删除标签
+     *
+     * @param tagId 标签 id
+     * @return Boolean
+     * @author Ezhixuan
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean deleteTagById(Long tagId) {
+        requireIdNoNull(tagId);
+        linkArticleTagService.removeByTagId(tagId);
+        return tagService.removeById(tagId);
+    }
+
+    private <T> void requireIdNoNull(T id) {
+        if (isNull(id)) {
+            throw new IllegalArgumentException("id不能为空");
+        }
     }
 }

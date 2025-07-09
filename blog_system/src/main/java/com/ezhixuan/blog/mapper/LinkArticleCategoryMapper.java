@@ -5,14 +5,14 @@ import java.util.List;
 import org.apache.ibatis.annotations.Select;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ezhixuan.blog.controller.article.LinkArticleCategory;
+import com.ezhixuan.blog.domain.entity.article.LinkArticleCategory;
 import com.ezhixuan.blog.domain.vo.CountVO;
 
 /**
 * @author ezhixuan
 * @description 针对表【link_article_category(关联 文章 分类)】的数据库操作Mapper
 * @createDate 2025-07-06 14:59:36
-* @Entity com.ezhixuan.blog.controller.article.LinkArticleCategory
+* @Entity com.ezhixuan.blog.domain.entity.article.LinkArticleCategory
 */
 public interface LinkArticleCategoryMapper extends BaseMapper<LinkArticleCategory> {
 

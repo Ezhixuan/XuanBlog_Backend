@@ -18,7 +18,7 @@ public interface ArticleOperateService {
      * @param articleId 文章 id
      * @param viewCount 查看次数
      */
-    void asyncUpdateViewCount(long articleId, Integer viewCount);
+    void asyncUpdateViewCount(Long articleId, Integer viewCount);
 
     /**
      * 通过 articleId 删除文章
@@ -27,4 +27,20 @@ public interface ArticleOperateService {
      * @return Boolean
      */
     Boolean deleteArticleById(Long articleId);
+
+    /**
+     * 通过 categoryId 删除分类
+     * @author Ezhixuan
+     * @param categoryId 分类 id
+     * @return Boolean
+     */
+    Boolean deleteCategoryById(Long categoryId);
+
+    /**
+     * 通过 tagId 删除标签
+     * @author Ezhixuan
+     * @param tagId 标签 id
+     * @return Boolean
+     */
+    Boolean deleteTagById(Long tagId);
 }
