@@ -13,4 +13,6 @@ public class PictureUploadDTO {
 
     @Schema(description = "图片类型 1.博客内容图片 2.博客封面图片 3.博客用户头像")
     private Integer type = 1;
+
+    private Boolean reName = true;
 }

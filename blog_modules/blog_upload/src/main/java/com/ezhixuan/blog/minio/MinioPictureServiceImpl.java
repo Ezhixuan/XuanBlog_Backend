@@ -10,7 +10,7 @@ import com.ezhixuan.blog.exception.ThrowUtils;
 import com.ezhixuan.blog.handler.picture.PictureCommonUtil;
 import com.ezhixuan.blog.handler.picture.PictureUploadHandler;
 import com.ezhixuan.blog.handler.picture.UploadModel;
-import com.ezhixuan.blog.props.BlogUploadProp;
+import com.ezhixuan.blog.handler.picture.BlogUploadProp;
 
 import io.minio.*;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MinioPictureServiceImpl implements PictureUploadHandler {
 
     private final BlogUploadProp minioConfig;
-    public static final UploadModel MODEL = UploadModel.builder().model("MINIO").desc("minio").build();
+    public static final UploadModel MODEL = UploadModel.MINIO;
 
     /**
      * 优先级 默认 100 越小越优先执行
@@ -76,7 +76,7 @@ public class MinioPictureServiceImpl implements PictureUploadHandler {
                     .stream(inputStream, inputStream.available(), -1).contentType(PictureCommonUtil.getContentType(fileName))
                     .build());
 
-            String url = String.format("%s/%s/%s", minioConfig.getMinioEndpoint(), minioConfig.getMinioBucket(), objectName);
+            String url = String.format("%s/%s/%s", minioConfig.getMinioDomain(), minioConfig.getMinioBucket(), objectName);
             log.info("文件上传成功：{}", url);
             return url;
         } catch (Exception e) {

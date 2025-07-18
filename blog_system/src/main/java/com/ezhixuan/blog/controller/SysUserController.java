@@ -41,6 +41,11 @@ public class SysUserController {
         return R.success(userService.getLoginUserInfoVO());
     }
 
+    @GetMapping("/admin")
+    public BaseResponse<UserInfoVO> getAdminUserInfo() {
+        return R.success(userService.getAdminUserInfoVO());
+    }
+
     @PostMapping("/logout")
     @SaCheckLogin
     public BaseResponse<String> doLogout() {

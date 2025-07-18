@@ -7,10 +7,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.common.PageRequest;
 import com.ezhixuan.blog.domain.dto.MemoCardOperateDTO;
@@ -76,6 +78,9 @@ public class MemoCardServiceImpl extends ServiceImpl<MemoCardMapper, MemoCard> i
         LambdaQueryWrapper<MemoCard> lqw = queryWrapper(queryDTO);
         IPage<MemoCard> iPage = queryDTO.toIPage();
         page(iPage, lqw);
+        if (CollectionUtils.isEmpty(iPage.getRecords())) {
+            return new Page<>();
+        }
         Set<Long> deckIds = iPage.getRecords().stream().map(MemoCard::getDeckId).collect(Collectors.toSet());
         Map<Long, String> nameMap =
             decksService.listByIds(deckIds).stream().collect(Collectors.toMap(MemoDecks::getId, MemoDecks::getName));

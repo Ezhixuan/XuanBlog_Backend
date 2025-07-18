@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezhixuan.blog.mapper.ArticleThumbMapper">
+
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.article.ArticleThumb">
+            <id property="id" column="id" />
+            <id property="userId" column="user_id" />
+            <id property="articleId" column="article_id" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,article_id
+    </sql>
+</mapper>

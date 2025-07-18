@@ -1,5 +1,8 @@
 package com.ezhixuan.blog.service.impl;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import com.ezhixuan.blog.domain.dto.UserUpdatePasswordDTO;
 import com.ezhixuan.blog.domain.entity.sys.SysUser;
 import com.ezhixuan.blog.domain.enums.RoleEnum;
 import com.ezhixuan.blog.domain.vo.UserInfoVO;
+import com.ezhixuan.blog.exception.BusinessException;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
 import com.ezhixuan.blog.mapper.SysUserMapper;
@@ -26,14 +30,13 @@ import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
-* @author ezhixuan
-* @description 针对表【sys_user(用户表)】的数据库操作Service实现
-* @createDate 2025-03-26 16:38:17
-*/
+ * @author ezhixuan
+ * @description 针对表【sys_user(用户表)】的数据库操作Service实现
+ * @createDate 2025-03-26 16:38:17
+ */
 @Service
 @RequiredArgsConstructor
-public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
-    implements SysUserService{
+public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
     private final BlogProp blogProp;
 
@@ -69,12 +72,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     public void doLogin(UserLoginDTO userLoginDTO) {
         userLoginDTO.check();
         String encryptedPassword = checkAndSupplyEncPwd(userLoginDTO);
-        SysUser user = this.getOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getUserAccount, userLoginDTO.getUserAccount()).eq(SysUser::getPassword, encryptedPassword));
+        SysUser user = this.getOne(Wrappers.<SysUser>lambdaQuery()
+            .eq(SysUser::getUserAccount, userLoginDTO.getUserAccount()).eq(SysUser::getPassword, encryptedPassword));
         StpUtil.login(user.getId());
     }
 
     /**
      * 内部方法 校验并返回加密后的密码
+     *
      * @author Ezhixuan
      * @param dto 用户登录/注册信息
      * @return String
@@ -86,13 +91,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         String encPwd = encryptByMd5(password);
 
         if (dto instanceof UserUpdatePasswordDTO) {
-            String confirmPassword = ((UserUpdatePasswordDTO) dto).getConfirmPassword();
+            String confirmPassword = ((UserUpdatePasswordDTO)dto).getConfirmPassword();
             String oldEncPwd = encryptByMd5(confirmPassword);
-            ThrowUtils.throwIf(!this.lambdaQuery().eq(SysUser::getUserAccount, userAccount).eq(SysUser::getPassword, oldEncPwd).exists(), ErrorCode.OPERATION_ERROR, "密码错误");
+            ThrowUtils.throwIf(!this.lambdaQuery().eq(SysUser::getUserAccount, userAccount)
+                .eq(SysUser::getPassword, oldEncPwd).exists(), ErrorCode.OPERATION_ERROR, "密码错误");
         } else if (dto instanceof UserRegisterDTO) {
-            ThrowUtils.throwIf(this.lambdaQuery().eq(SysUser::getUserAccount, userAccount).exists(), ErrorCode.OPERATION_ERROR, "用户名已存在");
-        }else {
-            ThrowUtils.throwIf(!this.lambdaQuery().eq(SysUser::getUserAccount, userAccount).eq(SysUser::getPassword, encPwd).exists(), ErrorCode.OPERATION_ERROR, "用户名或密码错误");
+            ThrowUtils.throwIf(this.lambdaQuery().eq(SysUser::getUserAccount, userAccount).exists(),
+                ErrorCode.OPERATION_ERROR, "用户名已存在");
+        } else {
+            ThrowUtils.throwIf(
+                !this.lambdaQuery().eq(SysUser::getUserAccount, userAccount).eq(SysUser::getPassword, encPwd).exists(),
+                ErrorCode.OPERATION_ERROR, "用户名或密码错误");
         }
         return encPwd;
     }
@@ -110,8 +119,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
      */
     @Override
     public UserInfoVO getLoginUserInfoVO() {
-        long userId = StpUtil.getLoginIdAsLong();
-        return getUserInfoVo(userId);
+        try {
+            long userId = StpUtil.getLoginIdAsLong();
+            return getUserInfoVo(userId);
+        } catch (Exception e) {
+            StpUtil.logout();
+        }
+        return null;
     }
 
     /**
@@ -147,8 +161,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
      */
     @Override
     public SysUser getUserInfo(Long userId) {
-        ThrowUtils.throwIf(Objects.isNull(userId), ErrorCode.PARAMS_ERROR, "必要参数不能为null");
-        return this.getById(userId);
+        if (isNull(userId)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户 id 不能为空");
+        }
+        SysUser user = this.getById(userId);
+        if (isNull(user)) {
+            throw new RuntimeException("数据不存在");
+        }
+        return user;
     }
 
     /**
@@ -161,7 +181,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     public void updateUserInfo(UserEditDTO userEditDTO) {
         Long userId = StpUtil.getLoginIdAsLong();
         SysUser user = this.getById(userId);
-        ThrowUtils.throwIf(Objects.isNull(user), ErrorCode.NOT_LOGIN_ERROR);
+        ThrowUtils.throwIf(isNull(user), ErrorCode.NOT_LOGIN_ERROR);
 
         SysUser sysUser = BeanUtil.copyProperties(userEditDTO, SysUser.class);
         sysUser.setId(userId);
@@ -185,13 +205,28 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
      */
     @Override
     public boolean isAdmin(Long userId) {
-        if (Objects.isNull(userId)) {
+        if (isNull(userId)) {
             return false;
         }
         return this.lambdaQuery().eq(SysUser::getId, userId).eq(SysUser::getRole, "admin").exists();
     }
+
+    /**
+     * 获取管理员信息
+     *
+     * @return UserInfoVO
+     * @author Ezhixuan
+     */
+    @Override
+    public UserInfoVO getAdminUserInfoVO() {
+        return getUserInfoVo(getAdminUserId());
+    }
+
+    private Long getAdminUserId() {
+        SysUser one = getOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getRole, RoleEnum.ROLE_ADMIN.getRole()));
+        if (nonNull(one)) {
+            return one.getId();
+        }
+        return 1L;
+    }
 }
-
-
-
-

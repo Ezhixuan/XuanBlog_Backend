@@ -33,7 +33,7 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
         long userId = StpUtil.getLoginIdAsLong();
         String targetPath = String.format("public/%s/", userId);
         try {
-            String name = PictureCommonUtil.reName(file.getOriginalFilename());
+            String name = uploadDTO.getReName() ? PictureCommonUtil.reName(file.getOriginalFilename()) : file.getOriginalFilename();
             String url = factory.getInstance().doUpload(file.getInputStream(), targetPath, name);
             PictureUploadVO result = PictureUploadVO.builder().url(url).name(name).build();
             doUpload2Sys(userId, result, uploadDTO);

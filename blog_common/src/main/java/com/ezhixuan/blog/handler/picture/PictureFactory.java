@@ -3,7 +3,10 @@ package com.ezhixuan.blog.handler.picture;
 import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
@@ -25,6 +28,7 @@ public class PictureFactory {
 
     private static UploadModel type;
     private static List<UploadModel> types;
+    private final BlogUploadProp prop;
 
     @PostConstruct
     public void init() {
@@ -79,7 +83,7 @@ public class PictureFactory {
         if (isEmpty(serviceList)) {
             return;
         }
-        type = serviceList.stream().min(Comparator.comparing(PictureUploadHandler::getOrder))
-            .map(PictureUploadHandler::getUploadModel).orElse(null);
+        type = serviceList.stream().filter(service -> Objects.equals(service.getUploadModel().getModel(), prop.getType())).findFirst()
+            .orElseGet(() -> serviceList.get(0)).getUploadModel();
     }
 }

@@ -8,9 +8,9 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
-import com.ezhixuan.blog.props.BlogUploadProp;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
+import com.ezhixuan.blog.handler.picture.BlogUploadProp;
 import com.ezhixuan.blog.handler.picture.PictureCommonUtil;
 import com.ezhixuan.blog.handler.picture.PictureUploadHandler;
 import com.ezhixuan.blog.handler.picture.UploadModel;
@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class GitHubPictureServiceImpl implements PictureUploadHandler {
 
     private final BlogUploadProp gitHubConfig;
-    public static final UploadModel MODEL = UploadModel.builder().model("GITHUB").desc("GITHUB").build();
+    public static final UploadModel MODEL = UploadModel.GITHUB;
 
     /**
      * 优先级 默认 100 越小越优先执行

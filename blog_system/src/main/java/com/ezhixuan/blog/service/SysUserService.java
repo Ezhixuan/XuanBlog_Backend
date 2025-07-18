@@ -73,4 +73,12 @@ public interface SysUserService extends IService<SysUser> {
      */
     boolean isAdmin(Long userId);
 
+    /**
+     * 获取管理员信息
+     * @author Ezhixuan
+     * @param
+     * @return UserInfoVO
+     */
+    UserInfoVO getAdminUserInfoVO();
+
 }

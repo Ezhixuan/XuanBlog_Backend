@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.props;
+package com.ezhixuan.blog.handler.picture;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,4 +24,6 @@ public class BlogUploadProp {
     private String minioAccessKey;
 
     private String minioSecretKey;
+
+    private String minioDomain;
 }
