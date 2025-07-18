@@ -10,10 +10,13 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.domain.entity.article.Article;
+import com.ezhixuan.blog.domain.entity.article.ArticleThumb;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
+import com.ezhixuan.blog.mapper.ArticleThumbMapper;
 import com.ezhixuan.blog.service.ArticleService;
 import com.ezhixuan.blog.service.ArticleThumbService;
 import com.ezhixuan.blog.task.ThumbSyncTask;
@@ -25,7 +28,8 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ArticleThumbServiceImpl implements ArticleThumbService {
+public class ArticleThumbServiceImpl extends ServiceImpl<ArticleThumbMapper, ArticleThumb>
+        implements ArticleThumbService {
 
     private final ArticleService articleService;
     private final RedisUtil redisUtil;
@@ -33,7 +37,7 @@ public class ArticleThumbServiceImpl implements ArticleThumbService {
     /**
      * 获取博客的点赞数
      *
-     * @param blogIds 博客 id 集合
+     * @param articleIds 博客 id 集合
      * @return 点赞集合 (id,点赞数)
      * @author Ezhixuan
      */

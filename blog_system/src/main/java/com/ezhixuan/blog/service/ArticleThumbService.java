@@ -3,11 +3,14 @@ package com.ezhixuan.blog.service;
 import java.util.Collection;
 import java.util.Map;
 
-public interface ArticleThumbService {
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.ezhixuan.blog.domain.entity.article.ArticleThumb;
+
+public interface ArticleThumbService extends IService<ArticleThumb> {
 
     /**
      * 获取博客的点赞数
-     * @param blogIds 博客 id 集合
+     * @param articleIds 博客 id 集合
      * @return 点赞集合 (id,点赞数)
      * @author Ezhixuan
      */

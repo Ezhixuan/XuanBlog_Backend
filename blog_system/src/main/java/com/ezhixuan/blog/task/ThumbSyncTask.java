@@ -15,6 +15,7 @@ import com.ezhixuan.blog.annotation.Log;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.domain.entity.article.Article;
 import com.ezhixuan.blog.service.ArticleService;
+import com.ezhixuan.blog.service.ArticleThumbService;
 import com.ezhixuan.blog.utils.RedisUtil;
 
 import jakarta.annotation.PostConstruct;
@@ -27,6 +28,7 @@ public class ThumbSyncTask {
     public static String CURRENT_TIME = "currentTime";
     private final RedisUtil redisUtil;
     private final ArticleService articleService;
+    private final ArticleThumbService thumbService;
 
     @PostConstruct
     public void init() {
@@ -67,6 +69,15 @@ public class ThumbSyncTask {
         Thread.startVirtualThread(() -> {
             redisUtil.cleanCaches(tempKey);
         });
+    }
+
+    public void syncThumbUser2DB() {
+
+    }
+
+    @PostConstruct
+    public void syncThumbUser2Redis() {
+        
     }
 
 }
