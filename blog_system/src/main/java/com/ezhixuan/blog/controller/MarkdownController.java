@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.service.MarkdownService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,6 +21,7 @@ public class MarkdownController {
 
     private final MarkdownService markdownService;
 
+    @Operation(summary = "上传 markdown")
     @PostMapping("/upload")
     public BaseResponse<String> markdownUpload(
             @RequestPart("file") MultipartFile file,

@@ -28,18 +28,21 @@ class MemoCardCoreController {
     @Resource
     private MemoCardService memoCardService;
 
+    @Operation(summary = "卡片测试操作")
     @PostMapping("/operate")
     public BaseResponse<String> operate(@RequestBody MemoCardOperateDTO operateDTO) {
         memoCardService.operate(operateDTO);
         return R.success();
     }
 
+    @Operation(summary = "卡片列表")
     @GetMapping("/list")
     public BaseResponse<PageResponse<MemoCardVO>> list(MemoQueryDTO queryDTO) {
         IPage<MemoCardVO> memoCardVOIPage = memoCardService.getMemoPageVOList(queryDTO);
         return R.list(memoCardVOIPage);
     }
 
+    @Operation(summary = "卡片测试")
     @GetMapping("/test")
     public BaseResponse<List<MemoCardVO>> test(@RequestParam(required = false) Long deckId) {
         List<MemoCardVO> memoCardVOList = memoCardService.test(deckId);
@@ -47,7 +50,7 @@ class MemoCardCoreController {
     }
 
     @Operation(summary = "删除")
-    @DeleteMapping()
+    @DeleteMapping
     public BaseResponse<String> del(@RequestBody OperationById idOpt) {
         ThrowUtils.throwIf(Objects.isNull(idOpt) || Objects.isNull(idOpt.getId()), ErrorCode.PARAMS_ERROR);
         memoCardService.removeById(idOpt.getId());

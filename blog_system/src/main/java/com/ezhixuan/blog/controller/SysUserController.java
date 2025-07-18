@@ -1,5 +1,6 @@
 package com.ezhixuan.blog.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 
 import com.ezhixuan.blog.entity.BaseResponse;
@@ -22,18 +23,21 @@ public class SysUserController {
 
     final SysUserService userService;
 
+    @Operation(summary = "用户注册")
     @PostMapping("/register")
     public BaseResponse<String> doRegister(@RequestBody UserRegisterDTO userRegisterDTO) {
         userService.doRegister(userRegisterDTO);
         return R.success();
     }
 
+    @Operation(summary = "用户登录")
     @PostMapping("/login")
     public BaseResponse<SaTokenInfo> doLogin(@RequestBody UserLoginDTO userLoginDTO) {
         userService.doLogin(userLoginDTO);
         return R.success(StpUtil.getTokenInfo());
     }
 
+    @Operation(summary = "获取登录用户信息")
     @GetMapping("/info")
     @SaCheckLogin
     public BaseResponse<UserInfoVO> getLoginUserInfo() {
@@ -41,11 +45,13 @@ public class SysUserController {
         return R.success(userService.getLoginUserInfoVO());
     }
 
+    @Operation(summary = "获取管理员用户信息")
     @GetMapping("/admin")
     public BaseResponse<UserInfoVO> getAdminUserInfo() {
         return R.success(userService.getAdminUserInfoVO());
     }
 
+    @Operation(summary = "用户登出")
     @PostMapping("/logout")
     @SaCheckLogin
     public BaseResponse<String> doLogout() {
@@ -54,6 +60,7 @@ public class SysUserController {
         return R.success();
     }
 
+    @Operation(summary = "用户信息修改")
     @PostMapping("/edit")
     @SaCheckLogin
     public BaseResponse<UserInfoVO> editUserInfo(@RequestBody UserEditDTO userEditDTO) {
