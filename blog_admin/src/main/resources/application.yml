@@ -1,13 +1,4 @@
 spring:
-  redisson:
-    single-server-config:
-      address: redis://localhost:6379
-      database: 0
-      timeout: 10000
-      connection-minimum-idle-size: 10
-      connection-pool-size: 200
-      subscription-connection-minimum-idle-size: 1
-      subscription-connection-pool-size: 50
   profiles:
     active: @profiles.active@
   servlet:
