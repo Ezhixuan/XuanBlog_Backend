@@ -141,6 +141,14 @@ public class RedisUtil {
         return redisTemplate.delete(keys);
     }
 
+    /**
+     * 判断该 key 是否存在
+     * @return boolean
+     */
+    public boolean hasKey(String key) {
+        return redisTemplate.hasKey(key);
+    }
+
     public RedisTemplate<String, Object> getRedisTemplate() {
         return redisTemplate;
     }

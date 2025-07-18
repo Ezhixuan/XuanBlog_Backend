@@ -1,9 +1,6 @@
 package com.ezhixuan.blog.service.impl;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -57,7 +54,15 @@ public class ArticleThumbServiceImpl extends ServiceImpl<ArticleThumbMapper, Art
     @Override
     public boolean doThumb(Long articleId) {
         ThrowUtils.throwIf(Objects.isNull(articleId), ErrorCode.PARAMS_ERROR);
+        ifNotExists(articleId);
         return setThumb(articleId);
+    }
+
+    private void ifNotExists(Long articleId) {
+        if (redisUtil.hasKey(RedisKeyConstant.ARTICLE_THUMB_PRE_KEY + articleId)) {
+            return;
+        }
+        syncToRedis(Collections.singletonList(articleId));
     }
 
     /**
@@ -117,5 +122,22 @@ public class ArticleThumbServiceImpl extends ServiceImpl<ArticleThumbMapper, Art
 
     private String getThumbTempKey() {
         return RedisKeyConstant.ARTICLE_THUMB_TEMP_PRE_KEY + ThumbSyncTask.CURRENT_TIME;
+    }
+
+    /**
+     * 将数据同步至 redis
+     *
+     * @param articleIds 博客 id 集合
+     * @return void
+     * @author Ezhixuan
+     */
+    @Override
+    public void syncToRedis(Collection<Long> articleIds) {
+        Map<Object, Object> articleUserIdMap = list(Wrappers.<ArticleThumb>lambdaQuery().in(ArticleThumb::getArticleId, articleIds)).stream().collect(Collectors.toMap(ArticleThumb::getArticleId, ArticleThumb::getUserId));
+        articleIds.forEach(articleId -> {
+            String thumbKey = RedisKeyConstant.ARTICLE_THUMB_PRE_KEY + articleId;
+            Object userId = articleUserIdMap.get(articleId);
+            redisUtil.hSet(thumbKey, userId.toString(), 1);
+        });
     }
 }

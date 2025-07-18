@@ -11,8 +11,8 @@ public class ArticleThumb {
     private Long id;
     @Schema(description="用户 id")
     @TableField("user_id")
-    private Long userId;
+    private Object userId;
     @Schema(description="文章 id")
     @TableField("article_id")
-    private Long articleId;
+    private Object articleId;
 }

@@ -39,4 +39,12 @@ public interface ArticleThumbService extends IService<ArticleThumb> {
      * @return 点赞数
      */
     int getThumbToday(Long articleId);
+
+    /**
+     * 将数据同步至 redis
+     * @author Ezhixuan
+     * @param articleIds 博客 id 集合
+     * @return void
+     */
+    void syncToRedis(Collection<Long> articleIds);
 }
