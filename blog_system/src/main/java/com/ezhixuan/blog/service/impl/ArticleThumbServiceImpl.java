@@ -1,11 +1,12 @@
 package com.ezhixuan.blog.service.impl;
 
+import static com.baomidou.mybatisplus.core.toolkit.CollectionUtils.isEmpty;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
@@ -40,7 +41,7 @@ public class ArticleThumbServiceImpl extends ServiceImpl<ArticleThumbMapper, Art
      */
     @Override
     public Map<Long, Integer> get(Collection<Long> articleIds) {
-        ThrowUtils.throwIf(CollectionUtils.isEmpty(articleIds), ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(isEmpty(articleIds), ErrorCode.PARAMS_ERROR);
         return articleService.list(Wrappers.<Article>lambdaQuery().in(Article::getId, articleIds)).stream().collect(Collectors.toMap(Article::getId, Article::getLikeCount));
     }
 
@@ -134,6 +135,9 @@ public class ArticleThumbServiceImpl extends ServiceImpl<ArticleThumbMapper, Art
     @Override
     public void syncToRedis(Collection<Long> articleIds) {
         Map<Object, Object> articleUserIdMap = list(Wrappers.<ArticleThumb>lambdaQuery().in(ArticleThumb::getArticleId, articleIds)).stream().collect(Collectors.toMap(ArticleThumb::getArticleId, ArticleThumb::getUserId));
+        if (isEmpty(articleUserIdMap)) {
+            return;
+        }
         articleIds.forEach(articleId -> {
             String thumbKey = RedisKeyConstant.ARTICLE_THUMB_PRE_KEY + articleId;
             Object userId = articleUserIdMap.get(articleId);
