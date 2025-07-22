@@ -1,5 +1,7 @@
 package com.ezhixuan.blog.service.impl;
 
+import static java.util.Objects.isNull;
+
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -34,6 +36,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public IPage<ArticlePageDTO> pageList(ArticleQueryDTO articleQueryDTO) {
         LambdaQueryWrapper<Article> qw = queryWrapper(articleQueryDTO);
+        qw.eq(Article::getProjectId, articleQueryDTO.getProjectId());
         IPage<Article> iPage = articleQueryDTO.toIPage();
         page(iPage, qw);
         return PageRequest.convert(iPage, item -> BeanUtil.copyProperties(item, ArticlePageDTO.class));
@@ -63,5 +66,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         qw.orderBy(Objects.nonNull(queryDTO.getSortOrder()), !Objects.equals(queryDTO.getSortOrder(), "desc"), Article::getCreateTime);
 
         return qw;
+    }
+
+    /**
+     * 判断项目是否有项目文档
+     *
+     * @param projectId 项目id
+     * @return boolean
+     * @author Ezhixuan
+     */
+    @Override
+    public boolean hasArticle(Long projectId) {
+        if (isNull(projectId)) {
+            return false;
+        }
+        return count(new LambdaQueryWrapper<Article>().eq(Article::getProjectId, projectId)) > 0;
     }
 }

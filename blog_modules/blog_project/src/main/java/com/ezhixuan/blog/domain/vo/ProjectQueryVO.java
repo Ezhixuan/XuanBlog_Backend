@@ -44,4 +44,7 @@ public class ProjectQueryVO {
 
     @Schema(description = "是否精选")
     private boolean featured;
+
+    @Schema(description = "是否包含文章")
+    private boolean hasArticles;
 }

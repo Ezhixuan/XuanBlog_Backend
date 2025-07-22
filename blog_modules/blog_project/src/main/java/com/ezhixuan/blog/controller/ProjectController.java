@@ -7,8 +7,10 @@ import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.dto.ProjectCreateDTO;
 import com.ezhixuan.blog.domain.dto.ProjectEditDTO;
 import com.ezhixuan.blog.domain.dto.ProjectQueryDTO;
+import com.ezhixuan.blog.domain.vo.ProjectLinkArticleVo;
 import com.ezhixuan.blog.domain.vo.ProjectQueryVO;
 import com.ezhixuan.blog.entity.BaseResponse;
+import com.ezhixuan.blog.service.ProjectItemService;
 import com.ezhixuan.blog.service.ProjectOperateService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class ProjectController {
 
     private final ProjectOperateService operateService;
+    private final ProjectItemService projectItemService;
 
     @Operation(summary = "获取项目列表")
     @GetMapping
@@ -36,7 +39,7 @@ public class ProjectController {
     }
 
     @Operation(summary = "更新项目")
-    @PutMapping()
+    @PutMapping
     public BaseResponse<ProjectQueryVO> update(@RequestBody ProjectEditDTO editDTO) {
         return R.success(operateService.edit(editDTO));
     }
@@ -51,6 +54,12 @@ public class ProjectController {
     @DeleteMapping("/{id}")
     public BaseResponse<Boolean> delete(@PathVariable Long id) {
         return R.success(operateService.removeById(id));
+    }
+
+    @Operation(summary = "获取项目选择列表")
+    @GetMapping("/link")
+    public BaseResponse<PageResponse<ProjectLinkArticleVo>> getLinkList() {
+        return R.list(projectItemService.getLinkArticleList());
     }
 
 }

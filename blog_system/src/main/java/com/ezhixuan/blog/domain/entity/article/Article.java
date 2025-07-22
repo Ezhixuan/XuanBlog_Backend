@@ -25,6 +25,12 @@ public class Article implements Serializable {
     private Long id;
 
     /**
+     * 项目 id
+     */
+    @TableField(value = "project_id")
+    private Long projectId;
+
+    /**
      * 文章标题
      */
     @TableField(value = "title")

@@ -1,9 +1,12 @@
 package com.ezhixuan.blog.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.ezhixuan.blog.domain.dto.ProjectQueryDTO;
 import com.ezhixuan.blog.domain.entity.ProjectItem;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.ezhixuan.blog.domain.vo.ProjectLinkArticleVo;
 
 /**
 * @author ezhixuan
@@ -19,4 +22,11 @@ public interface ProjectItemService extends IService<ProjectItem> {
      * @return IPage<ProjectItem> 项目列表
      */
     IPage<ProjectItem> queryListByDTO(ProjectQueryDTO queryDTO);
+
+    /**
+     * 获取用于关联文章的项目列表
+     * @author Ezhixuan
+     * @return List<ProjectLinkArticleVo>
+     */
+    List<ProjectLinkArticleVo> getLinkArticleList();
 }

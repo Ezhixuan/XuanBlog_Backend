@@ -1,18 +1,20 @@
 package com.ezhixuan.blog.service.impl;
 
 import static java.util.Objects.nonNull;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.domain.dto.ProjectQueryDTO;
 import com.ezhixuan.blog.domain.entity.ProjectItem;
+import com.ezhixuan.blog.domain.vo.ProjectLinkArticleVo;
 import com.ezhixuan.blog.mapper.ProjectItemMapper;
 import com.ezhixuan.blog.service.ProjectItemService;
 
@@ -46,7 +48,27 @@ public class ProjectItemServiceImpl extends ServiceImpl<ProjectItemMapper, Proje
         List<Long> projectIds = queryDTO.getProjectIds();
 
         lqw.eq(nonNull(featured), ProjectItem::getFeatured, featured);
-        lqw.in(!CollectionUtils.isEmpty(projectIds), ProjectItem::getId, projectIds);
+        lqw.in(!isEmpty(projectIds), ProjectItem::getId, projectIds);
         return lqw;
+    }
+
+    /**
+     * 获取用于关联文章的项目列表
+     *
+     * @return List<ProjectLinkArticleVo>
+     * @author Ezhixuan
+     */
+    @Override
+    public List<ProjectLinkArticleVo> getLinkArticleList() {
+        List<ProjectItem> projectItemList = list();
+        if (isEmpty(projectItemList)) {
+            return Collections.emptyList();
+        }
+        return projectItemList.stream().map(item -> {
+            ProjectLinkArticleVo projectLinkArticleVo = new ProjectLinkArticleVo();
+            projectLinkArticleVo.setId(item.getId());
+            projectLinkArticleVo.setTitle(item.getTitle());
+            return projectLinkArticleVo;
+        }).toList();
     }
 }

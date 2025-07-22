@@ -15,10 +15,7 @@ import com.ezhixuan.blog.domain.dto.ProjectEditDTO;
 import com.ezhixuan.blog.domain.dto.ProjectQueryDTO;
 import com.ezhixuan.blog.domain.entity.ProjectItem;
 import com.ezhixuan.blog.domain.vo.ProjectQueryVO;
-import com.ezhixuan.blog.service.LinkProjectTechnologyService;
-import com.ezhixuan.blog.service.ProjectItemService;
-import com.ezhixuan.blog.service.ProjectOperateService;
-import com.ezhixuan.blog.service.ProjectTechnologyService;
+import com.ezhixuan.blog.service.*;
 
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +27,7 @@ public class ProjectOperateServiceImpl implements ProjectOperateService {
     private final ProjectItemService itemService;
     private final ProjectTechnologyService technologyService;
     private final LinkProjectTechnologyService linkService;
+    private final ArticleService articleService;
 
     /**
      * 查询项目列表
@@ -56,6 +54,7 @@ public class ProjectOperateServiceImpl implements ProjectOperateService {
         ProjectQueryVO vo = BeanUtil.copyProperties(item, ProjectQueryVO.class);
         List<Long> technologyIds = linkService.queryLink(vo.getId());
         List<String> technologyList = technologyService.getName(technologyIds);
+        vo.setHasArticles(articleService.hasArticle(item.getId()));
         vo.setTechnologies(technologyList);
         fullViewAndStartData(item);
         return vo;

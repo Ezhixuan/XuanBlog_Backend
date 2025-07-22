@@ -29,4 +29,11 @@ public interface ArticleService extends IService<Article> {
      */
     ArticlePageDTO getArticleById(Long id);
 
+    /**
+     * 判断项目是否有项目文档
+     * @author Ezhixuan
+     * @param projectId 项目id
+     * @return boolean
+     */
+    boolean hasArticle(Long projectId);
 }

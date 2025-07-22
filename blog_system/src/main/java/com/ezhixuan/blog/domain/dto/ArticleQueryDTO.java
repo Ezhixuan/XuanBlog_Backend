@@ -49,4 +49,9 @@ public class ArticleQueryDTO extends PageRequest {
      * 菜单id
      */
     private Collection<Long> categoryIds;
+
+    /**
+     * 项目 id
+     */
+    private Long projectId = 0L;
 }

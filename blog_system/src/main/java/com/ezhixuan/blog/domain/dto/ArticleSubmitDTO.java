@@ -54,4 +54,9 @@ public class ArticleSubmitDTO {
      * 字数统计
      */
     private Integer wordCount;
+
+    /**
+     * 项目 id
+     */
+    private Long projectId;
 }

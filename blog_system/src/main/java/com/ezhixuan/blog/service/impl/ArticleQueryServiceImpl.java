@@ -1,5 +1,6 @@
 package com.ezhixuan.blog.service.impl;
 
+import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import java.util.*;
@@ -86,8 +87,11 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
                 linkArticleTagList.stream().collect(Collectors.groupingBy(LinkArticleTag::getArticleId));
 
             pageVOList.forEach(item -> {
-                List<Long> innerTagIds =
-                    groupByArticleId.get(item.getId()).stream().map(LinkArticleTag::getTagId).toList();
+                List<LinkArticleTag> linkArticleTags = groupByArticleId.get(item.getId());
+                if (isEmpty(linkArticleTags)) {
+                    return;
+                }
+                List<Long> innerTagIds = linkArticleTags.stream().map(LinkArticleTag::getTagId).toList();
                 HashMap<Long, String> innerTagMap = HashMap.newHashMap(innerTagIds.size());
                 for (long tagId : innerTagIds) {
                     innerTagMap.put(tagId, tag.get(tagId));
@@ -105,6 +109,9 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
                 .collect(Collectors.toMap(LinkArticleCategory::getArticleId, LinkArticleCategory::getCategoryId));
             pageVOList.forEach(item -> {
                 Long categoryId = categoryIdMap.get(item.getId());
+                if (isNull(categoryId)) {
+                    return;
+                }
                 item.setCategoryId(categoryId);
                 item.setCategoryName(category.get(categoryId));
             });
