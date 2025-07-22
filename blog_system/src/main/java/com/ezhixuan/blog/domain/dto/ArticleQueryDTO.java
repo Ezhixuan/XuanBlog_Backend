@@ -2,6 +2,10 @@ package com.ezhixuan.blog.domain.dto;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.util.CollectionUtils;
 
 import com.ezhixuan.blog.common.PageRequest;
 
@@ -54,4 +58,18 @@ public class ArticleQueryDTO extends PageRequest {
      * 项目 id
      */
     private Long projectId = 0L;
+
+    public List<Long> getTagIds() {
+        if (CollectionUtils.isEmpty(tagIds)) {
+            return Collections.emptyList();
+        }
+        return tagIds.stream().distinct().toList();
+    }
+
+    public List<Long> getCategoryIds() {
+        if (CollectionUtils.isEmpty(categoryIds)) {
+            return Collections.emptyList();
+        }
+        return categoryIds.stream().distinct().toList();
+    }
 }

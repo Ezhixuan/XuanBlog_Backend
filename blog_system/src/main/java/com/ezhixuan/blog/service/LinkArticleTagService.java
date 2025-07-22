@@ -39,14 +39,6 @@ public interface LinkArticleTagService extends IService<LinkArticleTag> {
     List<CountVO> queryTagCount();
 
     /**
-     * 获取文章关联的标签 id
-     * @author Ezhixuan
-     * @param articleIds 文章id
-     * @return Collection<Long>
-     */
-    Collection<Long> queryTagId(List<Long> articleIds);
-
-    /**
      * 获取文章关联的标签
      * @author Ezhixuan
      * @param articleIds 文章id

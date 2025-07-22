@@ -1,11 +1,13 @@
 package com.ezhixuan.blog.service.impl;
 
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -30,7 +32,7 @@ public class LinkArticleTagServiceImpl extends ServiceImpl<LinkArticleTagMapper,
     @Transactional(rollbackFor = Exception.class)
     public void saveAll(Long articleId, List<Long> tagIds) {
         List<LinkArticleTag> list = list(Wrappers.<LinkArticleTag>lambdaQuery().eq(LinkArticleTag::getArticleId, articleId).in(LinkArticleTag::getTagId, tagIds));
-        if (!CollectionUtils.isEmpty(list)) {
+        if (!isEmpty(list)) {
             removeBatchByIds(list);
         }
         tagIds.forEach(tagId -> {
@@ -65,18 +67,6 @@ public class LinkArticleTagServiceImpl extends ServiceImpl<LinkArticleTagMapper,
     }
 
     /**
-     * 获取文章关联的标签 id
-     *
-     * @param articleIds 文章id
-     * @return Collection<Long>
-     * @author Ezhixuan
-     */
-    @Override
-    public Collection<Long> queryTagId(List<Long> articleIds) {
-        return listObjs(Wrappers.<LinkArticleTag>lambdaQuery().select(LinkArticleTag::getTagId).in(LinkArticleTag::getArticleId, articleIds));
-    }
-
-    /**
      * 获取文章关联的标签
      *
      * @param articleIds 文章id
@@ -85,6 +75,9 @@ public class LinkArticleTagServiceImpl extends ServiceImpl<LinkArticleTagMapper,
      */
     @Override
     public List<LinkArticleTag> queryLink(List<Long> articleIds) {
+        if (isEmpty(articleIds)) {
+            return Collections.emptyList();
+        }
         return list(Wrappers.<LinkArticleTag>lambdaQuery().in(LinkArticleTag::getArticleId, articleIds));
     }
 

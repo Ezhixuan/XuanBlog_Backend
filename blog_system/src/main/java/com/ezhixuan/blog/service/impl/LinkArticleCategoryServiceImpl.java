@@ -1,48 +1,54 @@
 package com.ezhixuan.blog.service.impl;
 
-import static java.util.Objects.nonNull;
+import static java.util.Objects.isNull;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.domain.entity.article.LinkArticleCategory;
 import com.ezhixuan.blog.domain.vo.CountVO;
 import com.ezhixuan.blog.mapper.LinkArticleCategoryMapper;
-import com.ezhixuan.blog.service.ArticleService;
 import com.ezhixuan.blog.service.LinkArticleCategoryService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
-* @author ezhixuan
-* @description 针对表【link_article_category(关联 文章 分类)】的数据库操作Service实现
-* @createDate 2025-07-06 14:59:36
-*/
+ * @author ezhixuan
+ * @description 针对表【link_article_category(关联 文章 分类)】的数据库操作Service实现
+ * @createDate 2025-07-06 14:59:36
+ */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LinkArticleCategoryServiceImpl extends ServiceImpl<LinkArticleCategoryMapper, LinkArticleCategory>
-    implements LinkArticleCategoryService{
-
-    private final ArticleService articleService;
+    implements LinkArticleCategoryService {
 
     /**
      * 建立连接
      *
-     * @param articleId  文章 id
+     * @param articleId 文章 id
      * @param categoryId 分类 id
      * @author Ezhixuan
      */
     @Override
     public void save(Long articleId, Long categoryId) {
-        LinkArticleCategory articleCategory = getOne(Wrappers.<LinkArticleCategory>lambdaQuery().eq(LinkArticleCategory::getArticleId, articleId)
-                .eq(LinkArticleCategory::getCategoryId, categoryId));
-        if (nonNull(articleCategory)) {
-            removeById(articleCategory);
+        if (isNull(articleId) || isNull(categoryId)) {
+            log.error("文章 id 分类 id 不能为空, articleId = {}, categoryId = {}", articleId, categoryId);
+            throw new IllegalArgumentException("文章 id 分类 id 不能为空");
         }
+        Optional.ofNullable(
+                    getOne(Wrappers.<LinkArticleCategory>lambdaQuery()
+                            .eq(LinkArticleCategory::getArticleId, articleId)
+                            .eq(LinkArticleCategory::getCategoryId, categoryId)))
+                .ifPresent(this::removeById);
         LinkArticleCategory link = new LinkArticleCategory();
         link.setArticleId(articleId);
         link.setCategoryId(categoryId);
@@ -74,19 +80,6 @@ public class LinkArticleCategoryServiceImpl extends ServiceImpl<LinkArticleCateg
     }
 
     /**
-     * 获取分类 id
-     *
-     * @param articleIds 文章 id
-     * @return Collection<Long>
-     * @author Ezhixuan
-     */
-    @Override
-    public Collection<Long> queryCategoryId(List<Long> articleIds) {
-        return listObjs(Wrappers.<LinkArticleCategory>lambdaQuery().select(LinkArticleCategory::getCategoryId)
-            .in(LinkArticleCategory::getArticleId, articleIds));
-    }
-
-    /**
      * 获取关联信息
      *
      * @param articleIds 文章 id
@@ -95,6 +88,9 @@ public class LinkArticleCategoryServiceImpl extends ServiceImpl<LinkArticleCateg
      */
     @Override
     public List<LinkArticleCategory> queryLink(List<Long> articleIds) {
+        if (CollectionUtils.isEmpty(articleIds)) {
+            return Collections.emptyList();
+        }
         return list(Wrappers.<LinkArticleCategory>lambdaQuery().in(LinkArticleCategory::getArticleId, articleIds));
     }
 
@@ -120,7 +116,3 @@ public class LinkArticleCategoryServiceImpl extends ServiceImpl<LinkArticleCateg
         remove(Wrappers.<LinkArticleCategory>lambdaQuery().eq(LinkArticleCategory::getCategoryId, categoryId));
     }
 }
-
-
-
-

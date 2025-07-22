@@ -38,14 +38,6 @@ public interface LinkArticleCategoryService extends IService<LinkArticleCategory
     List<CountVO> queryCategoryCount();
 
     /**
-     * 获取分类 id
-     * @author Ezhixuan
-     * @param articleIds 文章 id
-     * @return Collection<Long>
-     */
-    Collection<Long> queryCategoryId(List<Long> articleIds);
-
-    /**
      * 获取关联信息
      * @author Ezhixuan
      * @param articleIds 文章 id

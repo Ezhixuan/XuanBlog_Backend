@@ -8,9 +8,8 @@ import java.util.Objects;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.blog.aop.CacheInterceptor;
@@ -18,13 +17,10 @@ import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.domain.dto.ArticleSubmitDTO;
 import com.ezhixuan.blog.domain.entity.article.Article;
 import com.ezhixuan.blog.domain.entity.article.ArticleContent;
-import com.ezhixuan.blog.exception.ErrorCode;
-import com.ezhixuan.blog.exception.ThrowUtils;
 import com.ezhixuan.blog.service.*;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +47,11 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void doSubmitArticle(ArticleSubmitDTO articleSubmitDTO) {
-        ThrowUtils.throwIf(StrUtil.isBlank(articleSubmitDTO.getTitle()), ErrorCode.PARAMS_ERROR, "博客标题不能为空");
+        if (!StringUtils.hasText(articleSubmitDTO.getTitle())) {
+            throw new IllegalArgumentException("博客标题不能为空");
+        }
+
+        // 设置如果为空默认标签/分类
         if (CollectionUtils.isEmpty(articleSubmitDTO.getTagIds())) {
             articleSubmitDTO.setTagIds(Collections.singletonList(tagService.getDefaultId()));
         }
@@ -60,17 +60,22 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
         }
 
         long userId = StpUtil.getLoginIdAsLong();
-        boolean hasId = false;
         if (Objects.nonNull(articleSubmitDTO.getId())) {
-            boolean exists = articleService.lambdaQuery().eq(Article::getId, articleSubmitDTO.getId())
-                .eq(Article::getUserId, userId).exists();
-            ThrowUtils.throwIf(!exists, ErrorCode.NOT_FOUND_ERROR, "文章不存在或无权操作");
-            hasId = true;
+            boolean exists = articleService.lambdaQuery()
+                    .eq(Article::getId, articleSubmitDTO.getId())
+                    .eq(Article::getUserId, userId)
+                    .exists();
+            if (!exists) {
+                throw new IllegalArgumentException("文章不存在");
+            }
         }
 
+        submitArticle(articleSubmitDTO, userId);
+    }
+
+    public void submitArticle(ArticleSubmitDTO articleSubmitDTO, long userId) {
         Article article = BeanUtil.copyProperties(articleSubmitDTO, Article.class);
         article.setUserId(userId);
-
         articleService.saveOrUpdate(article);
         linkArticleTagService.saveAll(article.getId(), articleSubmitDTO.getTagIds());
         linkArticleCategoryService.save(article.getId(), articleSubmitDTO.getCategoryId());
@@ -79,17 +84,7 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
         articleContent.setArticleId(article.getId());
         articleContent.setContent(articleSubmitDTO.getContent());
         contentService.saveOrUpdate(articleContent);
-
-        if (hasId) {
-            Long articleId = article.getId();
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    log.info("Transaction committed. Cleaning cache for articleId: {}", articleId);
-                    cacheInterceptor.cleanLocalCache(RedisKeyConstant.ARTICLE_INFO_PRE_KEY + articleId);
-                }
-            });
-        }
+        cacheInterceptor.cleanLocalCache(RedisKeyConstant.ARTICLE_INFO_PRE_KEY + article.getId());
     }
 
     /**

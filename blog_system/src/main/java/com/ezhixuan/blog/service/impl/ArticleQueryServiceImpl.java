@@ -1,6 +1,5 @@
 package com.ezhixuan.blog.service.impl;
 
-import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import java.util.*;
@@ -43,16 +42,7 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
     @Override
     public IPage<ArticlePageVO> pageListByDTO(ArticleQueryDTO articleQueryDTO) {
         // 特殊处理获取对应id
-        boolean hasId = false;
-        if (!isEmpty(articleQueryDTO.getTagIds())) {
-            articleQueryDTO.getIds().addAll(linkArticleTagService.queryArticleId(articleQueryDTO.getTagIds().stream().distinct().toList()));
-            hasId = true;
-        }
-        if (!isEmpty(articleQueryDTO.getCategoryIds())) {
-            articleQueryDTO.getIds().addAll(linkArticleCategoryService.queryArticleId(articleQueryDTO.getCategoryIds().stream().distinct().toList()));
-            hasId = true;
-        }
-        if (hasId) {
+        if (dealWithIds(articleQueryDTO)) {
             if (isEmpty(articleQueryDTO.getIds())) {
                 return articleQueryDTO.toIPage();
             }
@@ -60,6 +50,19 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
 
         IPage<ArticlePageDTO> paged = articleService.pageList(articleQueryDTO);
         return PageRequest.convert(paged, convert(paged.getRecords()));
+    }
+
+    private boolean dealWithIds(ArticleQueryDTO articleQueryDTO) {
+        boolean hasId = Boolean.FALSE;
+        if (!isEmpty(articleQueryDTO.getTagIds())) {
+            articleQueryDTO.getIds().addAll(linkArticleTagService.queryArticleId(articleQueryDTO.getTagIds()));
+            hasId = Boolean.TRUE;
+        }
+        if (!isEmpty(articleQueryDTO.getCategoryIds())) {
+            articleQueryDTO.getIds().addAll(linkArticleCategoryService.queryArticleId(articleQueryDTO.getCategoryIds()));
+            hasId = Boolean.TRUE;
+        }
+        return hasId;
     }
 
     private ArticlePageVO convert(ArticlePageDTO articlePageDTO) {
@@ -71,53 +74,60 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
             return Collections.emptyList();
         }
 
+        List<ArticlePageVO> pageVOList = collection
+                .stream()
+                .map(item -> BeanUtil.copyProperties(item, ArticlePageVO.class))
+                .toList();
+
         List<Long> articleIds = collection.stream().map(ArticlePageDTO::getId).toList();
-        Set<Long> categoryIdsAll = new HashSet<>(linkArticleCategoryService.queryCategoryId(articleIds));
-        List<ArticlePageVO> pageVOList =
-            collection.stream().map(item -> BeanUtil.copyProperties(item, ArticlePageVO.class)).toList();
 
+        linkTag(pageVOList, articleIds);
+        linkCategory(pageVOList, articleIds);
+        return pageVOList;
+    }
+
+    private void linkCategory(List<ArticlePageVO> pageVOList, List<Long> articleIds) {
+        List<LinkArticleCategory> linkArticleCategoryList = linkArticleCategoryService.queryLink(articleIds);
+        if (isEmpty(linkArticleCategoryList)) {
+            return;
+        }
+        Collection<Long> categoryIds = linkArticleCategoryList.stream().map(LinkArticleCategory::getCategoryId).collect(Collectors.toSet());
+        Map<Long, String> categoryMap = categoryService.listByIds(categoryIds)
+                .stream()
+                .collect(Collectors.toMap(ArticleCategory::getId, ArticleCategory::getName));
+        Map<Long, Long> groupByArticleId = linkArticleCategoryList.stream().collect(Collectors.toMap(LinkArticleCategory::getArticleId, LinkArticleCategory::getCategoryId));
+        pageVOList.forEach(item -> {
+            Optional.ofNullable(groupByArticleId.get(item.getId())).ifPresent(categoryId -> {
+                item.setCategoryId(categoryId);
+                item.setCategoryName(categoryMap.get(categoryId));
+            });
+        });
+    }
+
+    private void linkTag(List<ArticlePageVO> pageVOList, List<Long> articleIds) {
         List<LinkArticleTag> linkArticleTagList = linkArticleTagService.queryLink(articleIds);
+        if (isEmpty(linkArticleTagList)) {
+            return;
+        }
+        Collection<Long> tagIds = linkArticleTagList.stream().map(LinkArticleTag::getTagId).collect(Collectors.toSet());
+        Map<Long, String> tagMap = tagService.listByIds(tagIds)
+                .stream()
+                .collect(Collectors.toMap(ArticleTag::getId, ArticleTag::getName));
 
-        if (!ObjectUtils.isEmpty(linkArticleTagList)) {
-            Collection<Long> tagIds = linkArticleTagService.queryTagId(articleIds);
-            Map<Long, String> tag =
-                tagService.listByIds(tagIds).stream().collect(Collectors.toMap(ArticleTag::getId, ArticleTag::getName));
+        Map<Long, List<LinkArticleTag>> groupByArticleId = linkArticleTagList
+                .stream()
+                .collect(Collectors.groupingBy(LinkArticleTag::getArticleId));
 
-            Map<Long, List<LinkArticleTag>> groupByArticleId =
-                linkArticleTagList.stream().collect(Collectors.groupingBy(LinkArticleTag::getArticleId));
-
-            pageVOList.forEach(item -> {
-                List<LinkArticleTag> linkArticleTags = groupByArticleId.get(item.getId());
-                if (isEmpty(linkArticleTags)) {
-                    return;
-                }
-                List<Long> innerTagIds = linkArticleTags.stream().map(LinkArticleTag::getTagId).toList();
+        pageVOList.forEach(item -> {
+            Optional.ofNullable(groupByArticleId.get(item.getId())).ifPresent(tags -> {
+                Set<Long> innerTagIds = tags.stream().map(LinkArticleTag::getTagId).collect(Collectors.toSet());
                 HashMap<Long, String> innerTagMap = HashMap.newHashMap(innerTagIds.size());
-                for (long tagId : innerTagIds) {
-                    innerTagMap.put(tagId, tag.get(tagId));
-                }
+                innerTagIds.forEach(innerTagId -> {
+                    innerTagMap.put(innerTagId, tagMap.get(innerTagId));
+                });
                 item.setTagMap(innerTagMap);
             });
-        }
-
-        // 补充category 如果存在
-        if (!ObjectUtils.isEmpty(categoryIdsAll)) {
-            Map<Long, String> category = categoryService.listByIds(categoryIdsAll).stream()
-                .collect(Collectors.toMap(ArticleCategory::getId, ArticleCategory::getName));
-            List<LinkArticleCategory> linkArticleCategoryList = linkArticleCategoryService.queryLink(articleIds);
-            Map<Long, Long> categoryIdMap = linkArticleCategoryList.stream()
-                .collect(Collectors.toMap(LinkArticleCategory::getArticleId, LinkArticleCategory::getCategoryId));
-            pageVOList.forEach(item -> {
-                Long categoryId = categoryIdMap.get(item.getId());
-                if (isNull(categoryId)) {
-                    return;
-                }
-                item.setCategoryId(categoryId);
-                item.setCategoryName(category.get(categoryId));
-            });
-        }
-
-        return pageVOList;
+        });
     }
 
     /**
