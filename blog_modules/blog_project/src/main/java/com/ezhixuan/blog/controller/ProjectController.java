@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "项目控制器")
+@Tag(name = "ProjectController", description = "项目接口")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/projects")

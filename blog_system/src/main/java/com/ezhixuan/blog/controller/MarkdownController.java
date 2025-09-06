@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.service.MarkdownService;
 
@@ -27,6 +28,6 @@ public class MarkdownController {
             @RequestPart("file") MultipartFile file,
             @RequestPart(value = "images", required = false) List<MultipartFile> images) {
         String content = markdownService.upload(file, images);
-        return new BaseResponse<String>(0, content);
+        return R.success(content);
     }
 }
