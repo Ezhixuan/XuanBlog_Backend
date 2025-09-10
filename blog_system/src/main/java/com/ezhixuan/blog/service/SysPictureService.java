@@ -1,6 +1,8 @@
 package com.ezhixuan.blog.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ezhixuan.blog.domain.dto.PictureQueryDTO;
 import com.ezhixuan.blog.domain.entity.sys.SysPicture;
 import com.ezhixuan.blog.handler.picture.PictureUploadVO;
 import com.ezhixuan.blog.handler.picture.UploadModel;
@@ -18,5 +20,5 @@ public interface SysPictureService extends IService<SysPicture> {
 
     String doUpload(MultipartFile file, PictureUploadDTO uploadDTO);
 
-    List<PictureUploadVO> getPictureVOList(Integer type);
+    IPage<PictureUploadVO> getPictureVOList(PictureQueryDTO queryDTO);
 }

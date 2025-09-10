@@ -14,4 +14,9 @@ public class CountVO {
      * 数量
      */
     private int count;
+
+    /**
+     * 名称
+     */
+    private String name;
 }

@@ -1,55 +1,42 @@
 package com.ezhixuan.blog.common;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.util.ObjectUtils;
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.Objects;
 
 @Data
 public class PageRequest {
 
-    /**
-     * 当前页号
-     */
-    private int current = 1;
+  public static final String ASC = "asc";
+  public static final String DESC = "desc";
+  public static final Integer PAGE_SIZE_NONE = -1;
+  private static final Integer PAGE_NO = 1;
+  private static final Integer PAGE_SIZE = 10;
 
-    /**
-     * 页面大小
-     */
-    private int pageSize = 10;
+  @Schema(description = "页码，从 1 开始")
+  @NotNull(message = "页码不能为空")
+  @Min(value = 1, message = "页码最小值为 1")
+  private Integer pageNo = PAGE_NO;
 
-    /**
-     * 排序顺序（默认降序）
-     */
-    private String sortOrder = "desc";
+  @Schema(description = "每页条数，最大值为 100")
+  @NotNull(message = "每页条数不能为空")
+  @Min(value = 1, message = "每页条数最小值为 1")
+  @Max(value = 100, message = "每页条数最大值为 100")
+  private Integer pageSize = PAGE_SIZE;
 
-    public <T> IPage<T> toIPage() {
-        return new Page<>(this.current, this.getPageSize());
+  @Schema(description = "排序方式")
+  private String orderBy = ASC;
+
+  public <T> IPage<T> toPage() {
+    if (Objects.equals(pageSize, PAGE_SIZE_NONE)) {
+      return new Page<>(pageNo, pageSize);
     }
-
-    public static <A, B> IPage<B> convert(IPage<A> sourcePage, Converter<A, B> converter) {
-        // 创建新的 IPage 对象，保持分页信息一致
-        IPage<B> targetPage = new Page<>(sourcePage.getCurrent(), sourcePage.getSize(), sourcePage.getTotal());
-        // 转换数据内容
-        if (!ObjectUtils.isEmpty(sourcePage.getRecords())) {
-            List<B> targetRecords = sourcePage.getRecords().stream()
-                    .map(converter::convert)
-                    .collect(Collectors.toList());
-            // 设置新的数据内容
-            targetPage.setRecords(targetRecords);
-        }
-        return targetPage;
-    }
-
-    public static <A,B> IPage<B> convert(IPage<A> sourcePage, List<B> record) {
-        IPage<B> targetPage = new Page<>(sourcePage.getCurrent(), sourcePage.getSize(), sourcePage.getTotal());
-        targetPage.setRecords(record);
-        return targetPage;
-    }
+    return new Page<>(pageNo, pageSize, true);
+  }
 }

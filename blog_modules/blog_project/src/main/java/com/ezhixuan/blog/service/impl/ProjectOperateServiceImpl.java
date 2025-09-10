@@ -1,14 +1,6 @@
 package com.ezhixuan.blog.service.impl;
 
-import static org.springframework.util.StringUtils.hasText;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ezhixuan.blog.domain.dto.ProjectCreateDTO;
 import com.ezhixuan.blog.domain.dto.ProjectEditDTO;
@@ -16,9 +8,15 @@ import com.ezhixuan.blog.domain.dto.ProjectQueryDTO;
 import com.ezhixuan.blog.domain.entity.ProjectItem;
 import com.ezhixuan.blog.domain.vo.ProjectQueryVO;
 import com.ezhixuan.blog.service.*;
-
-import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+
+import static org.springframework.util.StringUtils.hasText;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +45,7 @@ public class ProjectOperateServiceImpl implements ProjectOperateService {
 
     private IPage<ProjectQueryVO> queryByDTO(ProjectQueryDTO queryDTO) {
         IPage<ProjectItem> page = itemService.queryListByDTO(queryDTO);
-        return ProjectQueryDTO.convert(page, this::convert);
+        return page.convert(this::convert);
     }
 
     private ProjectQueryVO convert(ProjectItem item) {

@@ -1,7 +1,16 @@
 package com.ezhixuan.blog.service.impl;
 
-import static org.springframework.util.CollectionUtils.isEmpty;
-import static org.springframework.util.CollectionUtils.newHashMap;
+import com.ezhixuan.blog.exception.ErrorCode;
+import com.ezhixuan.blog.exception.ThrowUtils;
+import com.ezhixuan.blog.handler.picture.PictureUploadDTO;
+import com.ezhixuan.blog.service.MarkdownService;
+import com.ezhixuan.blog.service.SysPictureService;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
@@ -12,19 +21,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.ezhixuan.blog.exception.ErrorCode;
-import com.ezhixuan.blog.exception.ThrowUtils;
-import com.ezhixuan.blog.handler.picture.PictureUploadDTO;
-import com.ezhixuan.blog.service.MarkdownService;
-import com.ezhixuan.blog.service.SysPictureService;
-
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.util.CollectionUtils.isEmpty;
+import static org.springframework.util.CollectionUtils.newHashMap;
 
 @Service
 @Slf4j
@@ -59,7 +57,9 @@ public class MarkdownServiceImpl implements MarkdownService {
         if (isEmpty(images)) {
             return content;
         }
-        Map<String, String> fileNameToUrlMap = doUpload(images, new PictureUploadDTO());
+        PictureUploadDTO pictureUploadDTO = new PictureUploadDTO();
+        pictureUploadDTO.setReName(false);
+        Map<String, String> fileNameToUrlMap = doUpload(images, pictureUploadDTO);
         return replaceImages(content, fileNameToUrlMap);
     }
 

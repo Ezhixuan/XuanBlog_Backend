@@ -1,12 +1,11 @@
 package com.ezhixuan.blog.domain.dto;
 
-import java.util.List;
-
 import com.ezhixuan.blog.common.PageRequest;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

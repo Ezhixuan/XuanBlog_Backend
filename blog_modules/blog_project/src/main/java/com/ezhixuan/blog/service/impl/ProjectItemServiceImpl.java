@@ -1,14 +1,5 @@
 package com.ezhixuan.blog.service.impl;
 
-import static java.util.Objects.nonNull;
-import static org.springframework.util.CollectionUtils.isEmpty;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.stereotype.Service;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,6 +8,14 @@ import com.ezhixuan.blog.domain.entity.ProjectItem;
 import com.ezhixuan.blog.domain.vo.ProjectLinkArticleVo;
 import com.ezhixuan.blog.mapper.ProjectItemMapper;
 import com.ezhixuan.blog.service.ProjectItemService;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
+import static java.util.Objects.nonNull;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * @author ezhixuan
@@ -36,7 +35,7 @@ public class ProjectItemServiceImpl extends ServiceImpl<ProjectItemMapper, Proje
     @Override
     public IPage<ProjectItem> queryListByDTO(ProjectQueryDTO queryDTO) {
         LambdaQueryWrapper<ProjectItem> lqw = queryWrapper(queryDTO);
-        return page(queryDTO.toIPage(), lqw);
+        return page(queryDTO.toPage(), lqw);
     }
 
     private LambdaQueryWrapper<ProjectItem> queryWrapper(ProjectQueryDTO queryDTO) {

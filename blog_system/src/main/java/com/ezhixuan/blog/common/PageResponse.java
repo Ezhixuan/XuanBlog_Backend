@@ -1,13 +1,22 @@
 package com.ezhixuan.blog.common;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.List;
+import java.io.Serial;
+import java.io.Serializable;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class PageResponse<T> {
+public class PageResponse<T> extends BaseResponse<PageResVo<T>> implements Serializable {
 
-    private List<T> data;
+  @Serial private static final long serialVersionUID = -8234567890123456789L;
 
-    private long total;
+  public PageResponse(PageResVo<T> data) {
+    super(data);
+  }
+
+  public PageResponse() {
+    super();
+  }
 }

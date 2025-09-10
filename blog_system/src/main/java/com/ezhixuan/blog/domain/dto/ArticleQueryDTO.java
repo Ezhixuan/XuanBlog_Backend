@@ -1,16 +1,14 @@
 package com.ezhixuan.blog.domain.dto;
 
+import com.ezhixuan.blog.common.PageRequest;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.util.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import org.springframework.util.CollectionUtils;
-
-import com.ezhixuan.blog.common.PageRequest;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * 文章分页 DTO

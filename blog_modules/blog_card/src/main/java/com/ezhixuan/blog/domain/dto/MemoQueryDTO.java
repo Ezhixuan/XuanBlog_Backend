@@ -8,9 +8,9 @@ import lombok.EqualsAndHashCode;
 @Data
 public class MemoQueryDTO extends PageRequest {
 
-    private int current = 1;
+    private Integer pageNo = 1;
 
-    private int pageSize = 9;
+    private Integer pageSize = 9;
 
     private Long deckId;
 }
