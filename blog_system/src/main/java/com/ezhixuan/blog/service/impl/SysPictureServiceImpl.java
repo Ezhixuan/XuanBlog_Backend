@@ -22,6 +22,11 @@ import java.util.Objects;
 
 import static com.ezhixuan.blog.exception.ThrowUtils.throwIf;
 
+/**
+ * 系统图片服务实现类
+ *
+ * @author Ezhixuan
+ */
 @Service
 @RequiredArgsConstructor
 public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPicture>
@@ -29,6 +34,13 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
 
   final PictureFactory factory;
 
+  /**
+   * 上传图片文件
+   *
+   * @param file       上传的图片文件
+   * @param uploadDTO  图片上传参数
+   * @return String 图片访问URL
+   */
   @Override
   public String doUpload(MultipartFile file, PictureUploadDTO uploadDTO) {
     long userId = StpUtil.getLoginIdAsLong();
@@ -47,19 +59,12 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
     }
   }
 
-  private void doUpload2Sys(long userId, PictureUploadVO uploadResult, PictureUploadDTO uploadDTO) {
-    // 内部方法 传入的参数都经过验证 不需要对uploadResult进行二次验证
-    SysPicture picture = BeanUtil.copyProperties(uploadResult, SysPicture.class);
-    picture.setType(uploadDTO.getType());
-    picture.setUserId(userId);
-    Long picId = uploadDTO.getId();
-    if (Objects.nonNull(picId)) {
-      picture.setId(picId);
-    }
-    boolean resultSave = this.saveOrUpdate(picture);
-    throwIf(!resultSave, ErrorCode.OPERATION_ERROR, "图片上传失败");
-  }
-
+  /**
+   * 获取图片列表
+   *
+   * @param queryDTO 查询参数
+   * @return IPage<PictureUploadVO> 分页图片列表
+   */
   @Override
   public IPage<PictureUploadVO> getPictureVOList(PictureQueryDTO queryDTO) {
     LambdaQueryWrapper<SysPicture> queryWrapper =
@@ -71,13 +76,44 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
         .convert(item -> BeanUtil.copyProperties(item, PictureUploadVO.class));
   }
 
+  /**
+   * 注册图片上传模型
+   *
+   * @param model 模型名称
+   * @return boolean 是否注册成功
+   */
   @Override
   public boolean register(String model) {
     return factory.register(model);
   }
 
+  /**
+   * 获取可用的上传类型列表
+   *
+   * @return List<UploadModel> 可用的上传类型列表
+   */
   @Override
   public List<UploadModel> getAvailableType() {
     return factory.getAvailableType();
+  }
+
+  /**
+   * 将上传的图片信息保存到系统数据库中
+   *
+   * @param userId        用户ID
+   * @param uploadResult  上传结果
+   * @param uploadDTO     上传参数
+   */
+  private void doUpload2Sys(long userId, PictureUploadVO uploadResult, PictureUploadDTO uploadDTO) {
+    // 内部方法 传入的参数都经过验证 不需要对uploadResult进行二次验证
+    SysPicture picture = BeanUtil.copyProperties(uploadResult, SysPicture.class);
+    picture.setType(uploadDTO.getType());
+    picture.setUserId(userId);
+    Long picId = uploadDTO.getId();
+    if (Objects.nonNull(picId)) {
+      picture.setId(picId);
+    }
+    boolean resultSave = this.saveOrUpdate(picture);
+    throwIf(!resultSave, ErrorCode.OPERATION_ERROR, "图片上传失败");
   }
 }
