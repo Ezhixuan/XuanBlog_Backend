@@ -1,24 +1,23 @@
 package com.ezhixuan.blog.controller.article;
 
-import com.ezhixuan.blog.common.BaseResponse;
-import com.ezhixuan.blog.common.R;
-import com.ezhixuan.blog.common.PageResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.annotation.Log;
+import com.ezhixuan.blog.common.BaseResponse;
+import com.ezhixuan.blog.common.PageResponse;
+import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.domain.dto.ArticleQueryDTO;
 import com.ezhixuan.blog.domain.dto.ArticleSubmitDTO;
 import com.ezhixuan.blog.domain.vo.ArticleInfoVO;
 import com.ezhixuan.blog.domain.vo.ArticlePageVO;
-import com.ezhixuan.blog.entity.OperationById;
 import com.ezhixuan.blog.service.ArticleOperateService;
 import com.ezhixuan.blog.service.ArticleQueryService;
 import com.ezhixuan.blog.service.ArticleThumbService;
-import cn.dev33.satoken.annotation.SaCheckLogin;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/article")
@@ -30,10 +29,9 @@ public class ArticleCoreController {
   private final ArticleOperateService operateService;
   private final ArticleThumbService thumbService;
 
-  @PostMapping("/list")
+  @GetMapping
   @Operation(summary = "获取分页文章列表")
-  public PageResponse<ArticlePageVO> getArticleListPage(
-      @RequestBody ArticleQueryDTO articleQueryDTO) {
+  public PageResponse<ArticlePageVO> getArticleListPage(ArticleQueryDTO articleQueryDTO) {
     return R.list(queryService.pageListByDTO(articleQueryDTO));
   }
 
@@ -49,7 +47,7 @@ public class ArticleCoreController {
   @GetMapping("/{id}")
   @Operation(summary = "获取文章详情")
   public BaseResponse<ArticleInfoVO> getArticleInfo(@PathVariable Long id) {
-    return com.ezhixuan.blog.common.R.success(queryService.getArticleInfoVO(id));
+    return R.success(queryService.getArticleInfoVO(id));
   }
 
   @Log
@@ -63,9 +61,9 @@ public class ArticleCoreController {
   }
 
   @Log
-  @PostMapping("/thumb")
+  @PutMapping("/thumb/{id}")
   @Operation(summary = "点赞/取消点赞")
-  public BaseResponse<Boolean> doThumb(@RequestBody OperationById request) {
-    return R.success(thumbService.doThumb(request.getId()));
+  public BaseResponse<Boolean> doThumb(@PathVariable("id") Long id) {
+    return R.success(thumbService.doThumb(id));
   }
 }

@@ -2,7 +2,6 @@ package com.ezhixuan.blog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ezhixuan.blog.domain.dto.ArticlePageDTO;
 import com.ezhixuan.blog.domain.dto.ArticleQueryDTO;
 import com.ezhixuan.blog.domain.entity.article.Article;
 
@@ -17,9 +16,9 @@ public interface ArticleService extends IService<Article> {
      * 分页查询文章列表
      * @author Ezhixuan
      * @param articlePageDTO 查询参数
-     * @return IPage<ArticlePageDTO>
+     * @return IPage<Article>
      */
-    IPage<ArticlePageDTO> pageList(ArticleQueryDTO articlePageDTO);
+    IPage<Article> pageList(ArticleQueryDTO articlePageDTO);
 
     /**
      * 根据 id 获取文章信息
@@ -27,7 +26,7 @@ public interface ArticleService extends IService<Article> {
      * @param id 文章id
      * @return ArticlePageDTO
      */
-    ArticlePageDTO getArticleById(Long id);
+    Article getArticleById(Long id);
 
     /**
      * 判断项目是否有项目文档

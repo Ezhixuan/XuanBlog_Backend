@@ -31,16 +31,16 @@ public class ArticleTagController {
   private final LinkArticleTagService linkArticleTagService;
 
   @Cache(key = RedisKeyConstant.LIST_TAG_KEY)
+  @GetMapping
   @Operation(summary = "获取标签列表")
-  @GetMapping("/list")
   public BaseResponse<List<ArticleTag>> getTagList() {
     return R.success(tagService.list());
   }
 
   @Log
   @Cache(key = RedisKeyConstant.LIST_TAG_KEY, operateType = Cache.CacheOperateType.DELETE)
-  @Operation(summary = "新增标签")
   @PostMapping
+  @Operation(summary = "新增标签")
   public BaseResponse<ArticleTag> addTag(@RequestBody ArticleTag tag) {
     tagService.save(tag);
     return R.success(tag);
@@ -48,14 +48,14 @@ public class ArticleTagController {
 
   @Log
   @Cache(key = RedisKeyConstant.LIST_TAG_KEY, operateType = Cache.CacheOperateType.DELETE)
-  @Operation(summary = "删除标签")
   @DeleteMapping("/{id}")
+  @Operation(summary = "删除标签")
   public BaseResponse<Boolean> deleteTag(@PathVariable Long id) {
     return R.success(operateService.deleteTagById(id));
   }
 
-  @Operation(summary = "标签统计计数")
   @GetMapping("/count")
+  @Operation(summary = "标签统计计数")
   public PageResponse<CountVO> getTagCount() {
     Map<Long, String> idNameMap =
         tagService.list().stream()

@@ -47,3 +47,4 @@ config/secret*
 **/*secret*
 /md/
 /.xcodemap/
+/blog_admin/src/main/resources/application-yuyun.yaml

@@ -20,14 +20,13 @@ import java.util.List;
 @Tag(name = "MarkdownController", description = "markdown上传")
 public class MarkdownController {
 
-    private final MarkdownService markdownService;
+  private final MarkdownService markdownService;
 
-    @Operation(summary = "上传 markdown")
-    @PostMapping("/upload")
-    public BaseResponse<String> markdownUpload(
-            @RequestPart("file") MultipartFile file,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
-        String content = markdownService.upload(file, images);
-        return R.success(content);
-    }
+  @PostMapping("/upload")
+  @Operation(summary = "上传 markdown")
+  public BaseResponse<String> markdownUpload(
+      @RequestPart("file") MultipartFile file,
+      @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+    return R.success(markdownService.upload(file, images));
+  }
 }

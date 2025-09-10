@@ -26,33 +26,33 @@ public class PictureUploadController {
 
   private final SysPictureService pictureService;
 
-  @Operation(summary = "服务注册")
   @PostMapping("/register")
+  @Operation(summary = "服务注册")
   public BaseResponse<Boolean> register(@RequestBody String Model) {
     return R.success(pictureService.register(Model));
   }
 
+  @GetMapping("/service")
   @Operation(summary = "服务列表")
-  @GetMapping("/service/list")
   public BaseResponse<List<UploadModel>> getPicServiceList() {
     return R.success(pictureService.getAvailableType());
   }
 
-  @Operation(summary = "上传图片")
   @PostMapping("/upload")
+  @Operation(summary = "上传图片")
   public BaseResponse<String> upload(
       @RequestParam("file") MultipartFile file, PictureUploadDTO uploadDTO) {
     return R.success(pictureService.doUpload(file, uploadDTO));
   }
 
+  @GetMapping
   @Operation(summary = "获取图片列表")
-  @GetMapping("/list")
   public PageResponse<PictureUploadVO> getPictureList(PictureQueryDTO queryDTO) {
     return R.list(pictureService.getPictureVOList(queryDTO));
   }
 
-  @Operation(summary = "删除图片")
   @DeleteMapping("/{id}")
+  @Operation(summary = "删除图片")
   public BaseResponse<Boolean> deletePicture(@PathVariable Long id) {
     return R.success(pictureService.removeById(id));
   }

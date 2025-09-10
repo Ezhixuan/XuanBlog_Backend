@@ -31,31 +31,31 @@ public class ArticleCategoryController {
   private final LinkArticleCategoryService linkArticleCategoryService;
 
   @Cache(key = RedisKeyConstant.LIST_CATEGORY_KEY)
+  @GetMapping
   @Operation(summary = "获取分类列表")
-  @GetMapping("/list")
   public PageResponse<ArticleCategory> getCategoryList() {
     return R.list(categoryService.list());
   }
 
   @Log
   @Cache(key = RedisKeyConstant.LIST_CATEGORY_KEY, operateType = Cache.CacheOperateType.DELETE)
-  @Operation(summary = "删除分类")
   @DeleteMapping("/{id}")
+  @Operation(summary = "删除分类")
   public BaseResponse<Boolean> deleteCategory(@PathVariable Long id) {
     return R.success(operateService.deleteCategoryById(id));
   }
 
   @Log
   @Cache(key = RedisKeyConstant.LIST_CATEGORY_KEY, operateType = Cache.CacheOperateType.DELETE)
-  @Operation(summary = "创建分类")
   @PostMapping
+  @Operation(summary = "创建分类")
   public BaseResponse<Void> addCategory(@RequestBody ArticleCategory category) {
     categoryService.save(category);
     return R.success();
   }
 
-  @Operation(summary = "分类统计计数")
   @GetMapping("/count")
+  @Operation(summary = "分类统计计数")
   public PageResponse<CountVO> getCategoryCount() {
     Map<Long, String> idNameMap =
         categoryService.list().stream()

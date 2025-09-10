@@ -1,9 +1,9 @@
 package com.ezhixuan.blog.domain.vo;
 
+import lombok.Data;
+
 import java.util.Date;
 import java.util.Map;
-
-import lombok.Data;
 
 /**
  * 文章分页 vo

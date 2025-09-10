@@ -23,32 +23,32 @@ public class SysUserController {
 
   private final SysUserService userService;
 
-  @Operation(summary = "用户注册")
   @PostMapping("/register")
+  @Operation(summary = "用户注册")
   public BaseResponse<String> doRegister(@RequestBody UserRegisterDTO userRegisterDTO) {
     userService.doRegister(userRegisterDTO);
     return R.success();
   }
 
-  @Operation(summary = "用户登录")
   @PostMapping("/login")
+  @Operation(summary = "用户登录")
   public BaseResponse<SaTokenInfo> doLogin(@RequestBody UserLoginDTO userLoginDTO) {
     userService.doLogin(userLoginDTO);
     return R.success(StpUtil.getTokenInfo());
   }
 
-  @Operation(summary = "用户登出")
-  @PostMapping("/logout")
   @SaCheckLogin
+  @PostMapping("/logout")
+  @Operation(summary = "用户登出")
   public BaseResponse<String> doLogout() {
     StpUtil.checkLogin();
     StpUtil.logout();
     return R.success();
   }
 
-  @Operation(summary = "获取登录用户信息")
-  @GetMapping("/info")
   @SaCheckLogin
+  @GetMapping("/info")
+  @Operation(summary = "获取登录用户信息")
   public BaseResponse<UserInfoVO> getLoginUserInfo() {
     try {
       StpUtil.checkLogin();
@@ -58,15 +58,15 @@ public class SysUserController {
     }
   }
 
-  @Operation(summary = "获取管理员用户信息")
   @GetMapping("/admin")
+  @Operation(summary = "获取管理员用户信息")
   public BaseResponse<UserInfoVO> getAdminUserInfo() {
     return R.success(userService.getAdminUserInfoVO());
   }
 
-  @Operation(summary = "用户信息修改")
-  @PostMapping("/edit")
   @SaCheckLogin
+  @PatchMapping
+  @Operation(summary = "用户信息修改")
   public BaseResponse<UserInfoVO> editUserInfo(@RequestBody UserEditDTO userEditDTO) {
     userService.updateUserInfo(userEditDTO);
     return R.success(userService.getUserInfoVo(StpUtil.getLoginIdAsLong()));
