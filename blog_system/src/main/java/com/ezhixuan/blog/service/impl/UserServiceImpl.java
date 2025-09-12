@@ -8,17 +8,19 @@ import com.ezhixuan.blog.controller.user.dto.UserEditDTO;
 import com.ezhixuan.blog.controller.user.dto.UserLoginDTO;
 import com.ezhixuan.blog.controller.user.dto.UserRegisterDTO;
 import com.ezhixuan.blog.controller.user.dto.UserUpdatePasswordDTO;
+import com.ezhixuan.blog.controller.user.vo.UserInfoVO;
 import com.ezhixuan.blog.domain.entity.User;
 import com.ezhixuan.blog.domain.enums.RoleEnum;
-import com.ezhixuan.blog.controller.user.vo.UserInfoVO;
+import com.ezhixuan.blog.exception.BusinessException;
 import com.ezhixuan.blog.exception.ErrorCode;
-import com.ezhixuan.blog.exception.ThrowUtils;
 import com.ezhixuan.blog.mapper.UserMapper;
 import com.ezhixuan.blog.service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
+
+import java.util.Objects;
 
 /**
  * @author ezhixuan
@@ -78,26 +80,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     if (dto instanceof UserUpdatePasswordDTO) {
       String confirmPassword = ((UserUpdatePasswordDTO) dto).getConfirmPassword();
       String oldEncPwd = encryptByMd5(confirmPassword);
-      ThrowUtils.throwIf(
-          !this.lambdaQuery()
+      boolean exists =
+          this.lambdaQuery()
               .eq(User::getAccount, userAccount)
               .eq(User::getPassword, oldEncPwd)
-              .exists(),
-          ErrorCode.OPERATION_ERROR,
-          "密码错误");
+              .exists();
+      if (!exists) {
+        throw new BusinessException(ErrorCode.OPERATION_ERROR, "密码错误");
+      }
     } else if (dto instanceof UserRegisterDTO) {
-      ThrowUtils.throwIf(
-          this.lambdaQuery().eq(User::getAccount, userAccount).exists(),
-          ErrorCode.OPERATION_ERROR,
-          "用户名已存在");
+      boolean exists = this.lambdaQuery().eq(User::getAccount, userAccount).exists();
+      if (exists) {
+        throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户名已存在");
+      }
     } else {
-      ThrowUtils.throwIf(
-          !this.lambdaQuery()
+      boolean exists =
+          this.lambdaQuery()
               .eq(User::getAccount, userAccount)
               .eq(User::getPassword, encPwd)
-              .exists(),
-          ErrorCode.OPERATION_ERROR,
-          "用户名或密码错误");
+              .exists();
+      if (!exists) {
+        throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户名或密码错误");
+      }
     }
     return encPwd;
   }
@@ -174,7 +178,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
    */
   @Override
   public boolean isAdmin(Long userId) {
-    return this.lambdaQuery().eq(User::getId, userId).eq(User::getRole, "admin").exists();
+    return Objects.equals(userId, 1L)
+        || this.lambdaQuery().eq(User::getId, userId).eq(User::getRole, "admin").exists();
   }
 
   /**

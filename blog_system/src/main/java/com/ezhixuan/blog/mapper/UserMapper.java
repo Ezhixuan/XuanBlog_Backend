@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Select;
 */
 public interface UserMapper extends BaseMapper<User> {
 
-    @Select("select account from sys_user where id = #{userId}")
+    @Select("select account from sys_user where id = #{userId} and deleted = 0")
     String selectAccountById(long userId);
 }
 
