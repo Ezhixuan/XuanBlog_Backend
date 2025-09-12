@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.ezhixuan.blog.domain.dto.UserEditDTO;
 import com.ezhixuan.blog.domain.dto.UserLoginDTO;
 import com.ezhixuan.blog.domain.dto.UserRegisterDTO;
-import com.ezhixuan.blog.domain.entity.sys.SysUser;
+import com.ezhixuan.blog.domain.entity.SysUser;
 import com.ezhixuan.blog.domain.vo.UserInfoVO;
 
 

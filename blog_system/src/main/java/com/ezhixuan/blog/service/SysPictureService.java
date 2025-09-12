@@ -3,7 +3,7 @@ package com.ezhixuan.blog.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ezhixuan.blog.domain.dto.PictureQueryDTO;
-import com.ezhixuan.blog.domain.entity.sys.SysPicture;
+import com.ezhixuan.blog.domain.entity.SysPicture;
 import com.ezhixuan.blog.handler.picture.PictureUploadVO;
 import com.ezhixuan.blog.handler.picture.UploadModel;
 import org.springframework.web.multipart.MultipartFile;

@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezhixuan.blog.mapper.SysPictureMapper">
 
-    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.sys.SysPicture">
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.SysPicture">
             <id property="id" column="id" />
             <result property="url" column="url" />
             <result property="name" column="name" />

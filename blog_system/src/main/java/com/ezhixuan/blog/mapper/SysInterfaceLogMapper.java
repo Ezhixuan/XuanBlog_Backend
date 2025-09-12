@@ -1,6 +1,6 @@
 package com.ezhixuan.blog.mapper;
 
-import com.ezhixuan.blog.domain.entity.sys.SysInterfaceLog;
+import com.ezhixuan.blog.domain.entity.SysInterfaceLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

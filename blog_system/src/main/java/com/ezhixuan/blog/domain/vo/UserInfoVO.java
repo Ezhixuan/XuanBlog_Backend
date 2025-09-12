@@ -2,7 +2,7 @@ package com.ezhixuan.blog.domain.vo;
 
 import java.util.Date;
 
-import com.ezhixuan.blog.domain.entity.sys.SysUser;
+import com.ezhixuan.blog.domain.entity.SysUser;
 
 import lombok.Data;
 

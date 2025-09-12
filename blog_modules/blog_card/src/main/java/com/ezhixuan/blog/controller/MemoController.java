@@ -1,6 +1,6 @@
 package com.ezhixuan.blog.controller;
 
-import com.ezhixuan.blog.common.BaseResponse;
+import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.dto.MemoCardSubmitDTO;
 import com.ezhixuan.blog.entity.OperationById;

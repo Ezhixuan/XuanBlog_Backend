@@ -5,28 +5,38 @@
 <mapper namespace="com.ezhixuan.blog.mapper.MemoCardMapper">
 
     <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.MemoCard">
-            <id property="id" column="id" />
-            <id property="deckId" column="deck_id" />
-            <result property="front" column="front" />
-            <result property="back" column="back" />
-            <result property="createTime" column="create_time" />
-            <result property="updateTime" column="update_time" />
-            <result property="reviewInterval" column="review_interval" />
-        <result property="nextReviewDate" column="next_review_date"/>
-            <result property="repetitions" column="repetitions" />
-            <result property="quality" column="quality" />
-            <result property="easeFactor" column="ease_factor" />
-        <result property="algorithmVersion" column="algorithm_version" />
-        <result property="stability" column="stability" />
-        <result property="retrievability" column="retrievability" />
-        <result property="difficulty" column="difficulty" />
-        <result property="lastReviewTime" column="last_review_time" />
-        <result property="lapseCount" column="lapse_count" />
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="deckId" column="deck_id" jdbcType="BIGINT"/>
+        <result property="front" column="front" jdbcType="VARCHAR"/>
+        <result property="back" column="back" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="nextReviewDate" column="next_review_date" jdbcType="TIMESTAMP"/>
+        <result property="repetitions" column="repetitions" jdbcType="BIGINT"/>
+        <result property="quality" column="quality" jdbcType="BIGINT"/>
+        <result property="easeFactor" column="ease_factor" jdbcType="DECIMAL"/>
+        <result property="difficulty" column="difficulty" jdbcType="DECIMAL"/>
+        <result property="stability" column="stability" jdbcType="DECIMAL"/>
+        <result property="retrievability" column="retrievability" jdbcType="DECIMAL"/>
+        <result property="lastReviewTime" column="last_review_time" jdbcType="TIMESTAMP"/>
+        <result property="lapseCount" column="lapse_count" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,deck_id,front,back,create_time,update_time,
-        review_interval,next_review_date,repetitions,quality,ease_factor
-        ,algorithm_version,stability,retrievability,difficulty,last_review_time,lapse_count
+        next_review_date,repetitions,quality,ease_factor,
+        difficulty,stability,retrievability,last_review_time,lapse_count
     </sql>
+
+    <!-- 批量更新复习日期 -->
+    <update id="batchUpdateReviewDate">
+        UPDATE memo_card
+        SET next_review_date = #{nextReviewDate},
+            update_time = NOW()
+        WHERE id IN
+        <foreach collection="cardIds" item="cardId" open="(" separator="," close=")">
+            #{cardId}
+        </foreach>
+    </update>
+
 </mapper>

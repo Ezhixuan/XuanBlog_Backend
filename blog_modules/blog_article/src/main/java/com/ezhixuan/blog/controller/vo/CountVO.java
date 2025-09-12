@@ -1,0 +1,22 @@
+package com.ezhixuan.blog.controller.vo;
+
+import lombok.Data;
+
+@Data
+public class CountVO {
+
+    /**
+     * id
+     */
+    private Long id;
+
+    /**
+     * 数量
+     */
+    private int count;
+
+    /**
+     * 名称
+     */
+    private String name;
+}

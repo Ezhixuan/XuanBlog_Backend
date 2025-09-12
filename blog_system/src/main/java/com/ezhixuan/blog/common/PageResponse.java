@@ -1,5 +1,6 @@
 package com.ezhixuan.blog.common;
 
+import com.ezhixuan.blog.entity.BaseResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -1,7 +1,7 @@
 package com.ezhixuan.blog.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.ezhixuan.blog.common.BaseResponse;
+import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.PageResponse;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.dto.MemoCardOperateDTO;

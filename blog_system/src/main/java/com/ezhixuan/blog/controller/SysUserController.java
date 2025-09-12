@@ -3,7 +3,7 @@ package com.ezhixuan.blog.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import com.ezhixuan.blog.common.BaseResponse;
+import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.dto.UserEditDTO;
 import com.ezhixuan.blog.domain.dto.UserLoginDTO;

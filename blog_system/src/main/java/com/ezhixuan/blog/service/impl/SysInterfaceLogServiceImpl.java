@@ -1,7 +1,7 @@
 package com.ezhixuan.blog.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ezhixuan.blog.domain.entity.sys.SysInterfaceLog;
+import com.ezhixuan.blog.domain.entity.SysInterfaceLog;
 import com.ezhixuan.blog.mapper.SysInterfaceLogMapper;
 import com.ezhixuan.blog.service.SysInterfaceLogService;
 import org.springframework.stereotype.Service;

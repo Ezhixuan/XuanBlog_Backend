@@ -3,7 +3,7 @@ package com.ezhixuan.blog.aop;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson2.JSON;
 import com.ezhixuan.blog.annotation.Cache;
-import com.ezhixuan.blog.common.BaseResponse;
+import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.utils.RedisUtil;

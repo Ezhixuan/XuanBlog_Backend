@@ -1,6 +1,6 @@
 package com.ezhixuan.blog.controller;
 
-import com.ezhixuan.blog.common.BaseResponse;
+import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.service.MarkdownService;
 import io.swagger.v3.oas.annotations.Operation;

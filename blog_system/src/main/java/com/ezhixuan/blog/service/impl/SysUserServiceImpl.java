@@ -16,7 +16,7 @@ import com.ezhixuan.blog.domain.dto.UserEditDTO;
 import com.ezhixuan.blog.domain.dto.UserLoginDTO;
 import com.ezhixuan.blog.domain.dto.UserRegisterDTO;
 import com.ezhixuan.blog.domain.dto.UserUpdatePasswordDTO;
-import com.ezhixuan.blog.domain.entity.sys.SysUser;
+import com.ezhixuan.blog.domain.entity.SysUser;
 import com.ezhixuan.blog.domain.enums.RoleEnum;
 import com.ezhixuan.blog.domain.vo.UserInfoVO;
 import com.ezhixuan.blog.exception.BusinessException;

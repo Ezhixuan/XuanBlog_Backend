@@ -1,6 +1,7 @@
 package com.ezhixuan.blog.common;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.exception.ErrorCode;
 import java.util.List;
 

@@ -15,7 +15,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.alibaba.fastjson2.JSON;
 import com.ezhixuan.blog.annotation.Log;
 import com.ezhixuan.blog.constant.InterfaceLogStatusConstant;
-import com.ezhixuan.blog.domain.entity.sys.SysInterfaceLog;
+import com.ezhixuan.blog.domain.entity.SysInterfaceLog;
 import com.ezhixuan.blog.service.SysInterfaceLogService;
 
 import cn.dev33.satoken.stp.StpUtil;

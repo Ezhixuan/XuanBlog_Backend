@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.domain.dto.PictureQueryDTO;
-import com.ezhixuan.blog.domain.entity.sys.SysPicture;
+import com.ezhixuan.blog.domain.entity.SysPicture;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.handler.picture.*;
 import com.ezhixuan.blog.mapper.SysPictureMapper;
