@@ -8,7 +8,7 @@ import com.ezhixuan.blog.controller.dto.ArticleQueryDTO;
 import com.ezhixuan.blog.entity.Article;
 import com.ezhixuan.blog.mapper.ArticleMapper;
 import com.ezhixuan.blog.service.ArticleService;
-import com.ezhixuan.blog.service.SysUserService;
+import com.ezhixuan.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -28,7 +28,7 @@ import static java.util.Objects.nonNull;
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     implements ArticleService {
 
-  private final SysUserService sysUserService;
+  private final UserService userService;
 
   /**
    * 分页查询文章列表
@@ -79,7 +79,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     LambdaQueryWrapper<Article> qw = new LambdaQueryWrapper<>();
     boolean admin = true;
     try {
-      admin = !sysUserService.isAdmin(StpUtil.getLoginIdAsLong());
+      admin = !userService.isAdmin(StpUtil.getLoginIdAsLong());
     } catch (Exception ignored) {
     }
 

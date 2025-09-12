@@ -1,25 +1,23 @@
 package com.ezhixuan.blog.service.impl;
 
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
 import com.ezhixuan.blog.controller.MessageWebSocketServer;
 import com.ezhixuan.blog.domain.WebSocketMessageDTO;
 import com.ezhixuan.blog.handler.message.MessageDTO;
 import com.ezhixuan.blog.handler.message.MessageHandler;
 import com.ezhixuan.blog.handler.message.MessageModel;
 import com.ezhixuan.blog.handler.message.MessageModelConstant;
-import com.ezhixuan.blog.service.SysUserService;
+import com.ezhixuan.blog.service.UserService;
 import com.ezhixuan.blog.service.WebSocketService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WebSocketServiceImpl implements MessageHandler, WebSocketService {
 
     private final MessageWebSocketServer webSocketServer;
-    private final SysUserService userService;
+    private final UserService userService;
     private final ObjectMapper objectMapper;
 
     @Override
