@@ -1,35 +1,48 @@
 package com.ezhixuan.blog.entity;
 
-import java.io.Serializable;
-
 import com.ezhixuan.blog.exception.ErrorCode;
-
 import lombok.Data;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 @Data
 public class BaseResponse<T> implements Serializable {
 
-    private int code;
+  @Serial private static final long serialVersionUID = -5823962481561743284L;
 
-    private T data;
+  /** 消息 */
+  private String message;
 
-    private String message;
+  /** 记录码 */
+  private int code;
 
-    public BaseResponse(int code, T data, String message) {
-        this.code = code;
-        this.data = data;
-        this.message = message;
-    }
+  /** 数据 */
+  private T data;
 
-    public BaseResponse(int code, T data) {
-        this(code, data, "");
-    }
+  public BaseResponse(int code, T data, String message) {
+    this.code = code;
+    this.data = data;
+    this.message = message;
+  }
 
-    public BaseResponse(ErrorCode errorCode) {
-        this(errorCode.getCode(), null, errorCode.getMessage());
-    }
+  public BaseResponse(int code, T data) {
+    this(code, data, "ok");
+  }
 
-    public BaseResponse(ErrorCode errorCode, String message) {
-        this(errorCode.getCode(), null, message);
-    }
+  public BaseResponse(ErrorCode errorCode) {
+    this(errorCode.getCode(), null, errorCode.getMessage());
+  }
+
+  public BaseResponse(T data) {
+    this(0, data);
+  }
+
+  public BaseResponse() {
+    this(0, null, "ok");
+  }
+
+  public BaseResponse(ErrorCode errorCode, String errorMsg) {
+      this(errorCode.getCode(), null, errorMsg);
+  }
 }
