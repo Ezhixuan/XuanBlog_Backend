@@ -4,11 +4,12 @@
     <parent>
         <groupId>com.ezhixuan</groupId>
         <artifactId>blog_modules</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1-beta</version>
     </parent>
 
     <artifactId>blog_card</artifactId>
     <packaging>jar</packaging>
+    <version>0.0.1-beta</version>
 
     <name>blog_card</name>
     <url>http://maven.apache.org</url>
@@ -21,7 +22,7 @@
         <dependency>
             <groupId>com.ezhixuan</groupId>
             <artifactId>blog_system</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${blog.system.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -4,11 +4,12 @@
     <parent>
         <groupId>com.ezhixuan</groupId>
         <artifactId>blog_modules</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1-beta</version>
     </parent>
 
     <artifactId>blog_upload</artifactId>
     <packaging>jar</packaging>
+    <version>0.0.1-beta</version>
 
     <name>blog_upload</name>
     <url>http://maven.apache.org</url>
@@ -21,7 +22,7 @@
         <dependency>
             <groupId>com.ezhixuan</groupId>
             <artifactId>blog_common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!--Minio-->

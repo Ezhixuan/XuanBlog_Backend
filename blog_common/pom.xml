@@ -7,11 +7,11 @@
     <parent>
         <groupId>com.ezhixuan</groupId>
         <artifactId>XuanBlog_Backend</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.2-beta</version>
     </parent>
 
     <artifactId>blog_common</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1-beta</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

@@ -11,21 +11,31 @@
     </parent>
 
     <artifactId>blog_modules</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1-beta</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>blog_card</module>
-        <module>blog_upload</module>
-        <module>blog_message</module>
+        <module>blog_article</module>
         <module>blog_project</module>
+        <module>blog_upload</module>
+        <module>blog_card</module>
+        <module>blog_message</module>
     </modules>
 
     <properties>
+        <blog.article.version>0.0.1-beta</blog.article.version>
+        <blog.card.version>0.0.1-beta</blog.card.version>
+        <blog.upload.version>0.0.1-beta</blog.upload.version>
+        <blog.message.version>0.0.1-beta</blog.message.version>
+        <blog.common.version>0.0.1-beta</blog.common.version>
+        <blog.system.version>0.0.2-beta</blog.system.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+    </dependencies>
 
 
 </project>

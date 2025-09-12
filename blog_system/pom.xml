@@ -4,17 +4,20 @@
     <parent>
         <groupId>com.ezhixuan</groupId>
         <artifactId>XuanBlog_Backend</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.2-beta</version>
     </parent>
 
     <artifactId>blog_system</artifactId>
     <packaging>jar</packaging>
+    <description>blog_system</description>
+    <version>0.0.2-beta</version>
 
     <name>blog_system</name>
     <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <blog.common.version>0.0.1-beta</blog.common.version>
     </properties>
 
     <dependencies>
@@ -22,7 +25,7 @@
         <dependency>
             <groupId>com.ezhixuan</groupId>
             <artifactId>blog_common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${blog.common.version}</version>
         </dependency>
 
         <dependency>
