@@ -1,22 +1,4 @@
-package com.ezhixuan.blog.handler.picture;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
-
-import javax.imageio.ImageIO;
-
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.ezhixuan.blog.exception.BusinessException;
-import com.ezhixuan.blog.exception.ErrorCode;
-import com.ezhixuan.blog.exception.ThrowUtils;
+package com.ezhixuan.blog.utils;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
@@ -25,6 +7,22 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.http.Method;
+import com.ezhixuan.blog.exception.BusinessException;
+import com.ezhixuan.blog.exception.ErrorCode;
+import com.ezhixuan.blog.exception.ThrowUtils;
+import com.ezhixuan.blog.controller.picture.vo.PictureUploadVO;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * 图片处理工具

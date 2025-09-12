@@ -2,7 +2,7 @@ package com.ezhixuan.blog.service.impl;
 
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;
-import com.ezhixuan.blog.handler.picture.PictureUploadDTO;
+import com.ezhixuan.blog.controller.picture.dto.PictureUploadDTO;
 import com.ezhixuan.blog.service.MarkdownService;
 import com.ezhixuan.blog.service.SysPictureService;
 import lombok.RequiredArgsConstructor;

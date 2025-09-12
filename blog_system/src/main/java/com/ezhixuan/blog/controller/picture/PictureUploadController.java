@@ -1,12 +1,12 @@
-package com.ezhixuan.blog.controller;
+package com.ezhixuan.blog.controller.picture;
 
-import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.PageResponse;
 import com.ezhixuan.blog.common.R;
-import com.ezhixuan.blog.domain.dto.PictureQueryDTO;
-import com.ezhixuan.blog.handler.picture.PictureUploadDTO;
-import com.ezhixuan.blog.handler.picture.PictureUploadVO;
-import com.ezhixuan.blog.handler.picture.UploadModel;
+import com.ezhixuan.blog.controller.picture.dto.PictureQueryDTO;
+import com.ezhixuan.blog.entity.BaseResponse;
+import com.ezhixuan.blog.handler.oss.OssModelEnum;
+import com.ezhixuan.blog.controller.picture.dto.PictureUploadDTO;
+import com.ezhixuan.blog.controller.picture.vo.PictureUploadVO;
 import com.ezhixuan.blog.service.SysPictureService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,8 +32,8 @@ public class PictureUploadController {
 
   @GetMapping("/service")
   @Operation(summary = "服务列表")
-  public BaseResponse<List<UploadModel>> getPicServiceList() {
-    return R.success(pictureService.getAvailableType());
+  public PageResponse<OssModelEnum> getPicServiceList() {
+    return R.list(pictureService.getAvailableType());
   }
 
   @PostMapping("/upload")

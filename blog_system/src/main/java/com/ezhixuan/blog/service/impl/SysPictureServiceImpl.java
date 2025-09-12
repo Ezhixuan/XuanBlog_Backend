@@ -6,17 +6,24 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ezhixuan.blog.domain.dto.PictureQueryDTO;
+import com.ezhixuan.blog.controller.picture.dto.PictureUploadDTO;
+import com.ezhixuan.blog.controller.picture.vo.PictureUploadVO;
+import com.ezhixuan.blog.controller.picture.dto.PictureQueryDTO;
 import com.ezhixuan.blog.domain.entity.SysPicture;
 import com.ezhixuan.blog.exception.ErrorCode;
-import com.ezhixuan.blog.handler.picture.*;
+import com.ezhixuan.blog.handler.oss.OssManager;
+import com.ezhixuan.blog.handler.oss.OssModelEnum;
 import com.ezhixuan.blog.mapper.SysPictureMapper;
 import com.ezhixuan.blog.service.SysPictureService;
-import lombok.RequiredArgsConstructor;
+import com.ezhixuan.blog.utils.PictureCommonUtil;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,29 +35,33 @@ import static com.ezhixuan.blog.exception.ThrowUtils.throwIf;
  * @author Ezhixuan
  */
 @Service
-@RequiredArgsConstructor
 public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPicture>
     implements SysPictureService {
 
-  final PictureFactory factory;
+  @Resource private OssManager ossManager;
 
   /**
    * 上传图片文件
    *
-   * @param file       上传的图片文件
-   * @param uploadDTO  图片上传参数
+   * @param file 上传的图片文件
+   * @param uploadDTO 图片上传参数
    * @return String 图片访问URL
    */
   @Override
   public String doUpload(MultipartFile file, PictureUploadDTO uploadDTO) {
     long userId = StpUtil.getLoginIdAsLong();
-    String targetPath = String.format("public/%s/", userId);
+    String targetPath =
+        "public"
+            + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))
+            + File.separator
+            + String.format("%s", userId);
     try {
       String name =
           uploadDTO.getReName()
               ? PictureCommonUtil.reName(file.getOriginalFilename())
               : file.getOriginalFilename();
-      String url = factory.getInstance().doUpload(file.getInputStream(), targetPath, name);
+      String uploadPath = targetPath + File.separator + name;
+      String url = ossManager.getInstance().doUpload(file.getInputStream(), uploadPath);
       PictureUploadVO result = PictureUploadVO.builder().url(url).name(name).build();
       doUpload2Sys(userId, result, uploadDTO);
       return url;
@@ -76,6 +87,17 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
         .convert(item -> BeanUtil.copyProperties(item, PictureUploadVO.class));
   }
 
+  @Override
+  public boolean delete(String pictureUrl) {
+    try {
+      ossManager.doDelete(pictureUrl);
+      remove(Wrappers.<SysPicture>lambdaQuery().eq(SysPicture::getUrl, pictureUrl));
+      return true;
+    } catch (Exception exception) {
+      return false;
+    }
+  }
+
   /**
    * 注册图片上传模型
    *
@@ -84,7 +106,7 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
    */
   @Override
   public boolean register(String model) {
-    return factory.register(model);
+    return ossManager.register(model);
   }
 
   /**
@@ -93,16 +115,16 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
    * @return List<UploadModel> 可用的上传类型列表
    */
   @Override
-  public List<UploadModel> getAvailableType() {
-    return factory.getAvailableType();
+  public List<OssModelEnum> getAvailableType() {
+    return ossManager.getAvailableType();
   }
 
   /**
    * 将上传的图片信息保存到系统数据库中
    *
-   * @param userId        用户ID
-   * @param uploadResult  上传结果
-   * @param uploadDTO     上传参数
+   * @param userId 用户ID
+   * @param uploadResult 上传结果
+   * @param uploadDTO 上传参数
    */
   private void doUpload2Sys(long userId, PictureUploadVO uploadResult, PictureUploadDTO uploadDTO) {
     // 内部方法 传入的参数都经过验证 不需要对uploadResult进行二次验证
