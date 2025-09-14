@@ -5,11 +5,11 @@
 <mapper namespace="com.ezhixuan.blog.mapper.ArticleTagMapper">
 
     <resultMap id="BaseResultMap" type="com.ezhixuan.blog.entity.ArticleTag">
-            <id property="id" column="id" />
-            <result property="name" column="name" />
+            <id property="articleId" column="article_id" />
+            <id property="tagId" column="tag_id" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name
+        article_id,tag_id
     </sql>
 </mapper>

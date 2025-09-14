@@ -1,65 +1,90 @@
 package com.ezhixuan.blog.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.controller.dto.ArticleQueryDTO;
 import com.ezhixuan.blog.entity.Article;
 import com.ezhixuan.blog.mapper.ArticleMapper;
 import com.ezhixuan.blog.service.ArticleService;
-import com.ezhixuan.blog.service.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 /**
- * 文章服务实现类
- *
- * @author Ezhixuan
+ * @author ezhixuan
+ * @description 针对表【article(文章主表)】的数据库操作Service实现
+ * @createDate 2025-09-13 10:40:23
  */
 @Service
-@RequiredArgsConstructor
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     implements ArticleService {
 
-  private final UserService userService;
-
   /**
-   * 分页查询文章列表
+   * 分页查询
    *
-   * @param articleQueryDTO 查询参数
-   * @return IPage<Article> 分页结果
+   * @param articleQueryDTO 查询条件
+   * @return 分页数据
    */
   @Override
-  public IPage<Article> pageList(ArticleQueryDTO articleQueryDTO) {
-    LambdaQueryWrapper<Article> qw = queryWrapper(articleQueryDTO);
-    IPage<Article> iPage = articleQueryDTO.toPage();
-    page(iPage, qw);
-    return iPage;
+  public IPage<Article> page(ArticleQueryDTO articleQueryDTO) {
+    if (isNull(articleQueryDTO)) {
+      return new Page<>();
+    }
+    return page(articleQueryDTO.toPage(), getQueryWrapper(articleQueryDTO));
   }
 
   /**
-   * 根据 id 获取文章信息
+   * 获取文章分类使用数量
    *
-   * @param id 文章id
-   * @return Article 文章实体
+   * @param num 数量
+   * @return 分类使用数量
    */
   @Override
-  public Article getArticleById(Long id) {
-    return getById(id);
+  public Map<Long, Long> getCategoryUseCount(int num) {
+    return baseMapper.selectCategoryUseCount(num);
+  }
+
+  private Wrapper<Article> getQueryWrapper(ArticleQueryDTO articleQueryDTO) {
+    LambdaQueryWrapper<Article> lqw = new LambdaQueryWrapper<>();
+    try {
+      long loginUserId = StpUtil.getLoginIdAsLong();
+      if (!Objects.equals(loginUserId, 1L)) {
+        lqw.eq(Article::getStatus, 1);
+      }
+    } catch (Exception ignored) {
+    }
+    List<Long> categoryIds = articleQueryDTO.getCategoryIds();
+    List<Long> ids = articleQueryDTO.getIds();
+
+    return Wrappers.<Article>lambdaQuery()
+        .eq(
+            nonNull(articleQueryDTO.getProjectId()),
+            Article::getProjectId,
+            articleQueryDTO.getProjectId())
+        .in(!categoryIds.isEmpty(), Article::getCategoryId, categoryIds)
+        .in(!ids.isEmpty(), Article::getId, ids)
+        .like(nonNull(articleQueryDTO.getTitle()), Article::getTitle, articleQueryDTO.getTitle())
+        .like(
+            nonNull(articleQueryDTO.getSummary()),
+            Article::getSummary,
+            articleQueryDTO.getSummary());
   }
 
   /**
-   * 判断项目是否有项目文档
+   * 判断项目下是否有文章
    *
    * @param projectId 项目id
-   * @return boolean
+   * @return 是否有文章
    */
   @Override
   public boolean hasArticle(Long projectId) {
@@ -67,37 +92,5 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
       return false;
     }
     return count(new LambdaQueryWrapper<Article>().eq(Article::getProjectId, projectId)) > 0;
-  }
-
-  /**
-   * 构建文章查询条件
-   *
-   * @param queryDTO 查询参数DTO
-   * @return LambdaQueryWrapper<Article> 查询条件构造器
-   */
-  private LambdaQueryWrapper<Article> queryWrapper(ArticleQueryDTO queryDTO) {
-    LambdaQueryWrapper<Article> qw = new LambdaQueryWrapper<>();
-    boolean admin = true;
-    try {
-      admin = !userService.isAdmin(StpUtil.getLoginIdAsLong());
-    } catch (Exception ignored) {
-    }
-
-    // 根据ID列表查询
-    qw.in(!ObjectUtils.isEmpty(queryDTO.getIds()), Article::getId, queryDTO.getIds());
-    // 根据项目ID查询
-    qw.eq(nonNull(queryDTO.getProjectId()), Article::getProjectId, queryDTO.getProjectId());
-    // 非管理员只能查看已发布的文章
-    qw.eq(admin, Article::getStatus, 1);
-    // 根据标题模糊查询
-    qw.like(nonNull(queryDTO.getTitle()), Article::getTitle, queryDTO.getTitle());
-    // 根据摘要模糊查询
-    qw.like(nonNull(queryDTO.getSummary()), Article::getSummary, queryDTO.getSummary());
-    // 排序
-    qw.orderBy(
-        nonNull(queryDTO.getOrderBy()),
-        !Objects.equals(queryDTO.getOrderBy(), "desc"),
-        Article::getCreateTime);
-    return qw;
   }
 }

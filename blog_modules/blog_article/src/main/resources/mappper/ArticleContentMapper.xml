@@ -7,9 +7,11 @@
     <resultMap id="BaseResultMap" type="com.ezhixuan.blog.entity.ArticleContent">
             <id property="articleId" column="article_id" />
             <result property="content" column="content" />
+            <result property="pictureIds" column="picture_ids" />
+            <result property="updateTime" column="update_time" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        article_id,content
+        article_id,content,picture_ids,update_time
     </sql>
 </mapper>
