@@ -1,22 +1,17 @@
 package com.ezhixuan.blog.controller.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 public class CountVO {
 
-    /**
-     * id
-     */
-    private Long id;
+  @Schema(description = "主键")
+  private Long id;
 
-    /**
-     * 数量
-     */
-    private int count;
+  @Schema(description = "文章数")
+  private Long count;
 
-    /**
-     * 名称
-     */
-    private String name;
+  @Schema(description = "分类名称")
+  private String name;
 }

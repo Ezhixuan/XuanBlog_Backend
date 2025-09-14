@@ -2,14 +2,15 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ezhixuan.blog.mapper.ArticleCategoryMapper">
+<mapper namespace="com.ezhixuan.blog.mapper.TagMapper">
 
-    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.entity.ArticleCategory">
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.entity.Tag">
             <id property="id" column="id" />
             <result property="name" column="name" />
+            <result property="createTime" column="create_time" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name
+        id,name,create_time
     </sql>
 </mapper>

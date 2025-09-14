@@ -2,23 +2,19 @@ package com.ezhixuan.blog.controller;
 
 import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.annotation.Log;
-import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.PageResponse;
 import com.ezhixuan.blog.common.R;
-import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
-import com.ezhixuan.blog.entity.ArticleCategory;
 import com.ezhixuan.blog.controller.vo.CountVO;
-import com.ezhixuan.blog.service.ArticleCategoryService;
+import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
+import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.service.ArticleOperateService;
-import com.ezhixuan.blog.service.LinkArticleCategoryService;
+import com.ezhixuan.blog.service.ArticleQueryService;
+import com.ezhixuan.blog.service.CategoryService;
+import com.ezhixuan.blog.entity.Category;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/category")
@@ -26,14 +22,14 @@ import java.util.stream.Collectors;
 @Tag(name = "categoryController", description = "提供文章分类相关的操作")
 public class ArticleCategoryController {
 
-  private final ArticleCategoryService categoryService;
+  private final CategoryService categoryService;
   private final ArticleOperateService operateService;
-  private final LinkArticleCategoryService linkArticleCategoryService;
+  private final ArticleQueryService queryService;
 
   @Cache(key = RedisKeyConstant.LIST_CATEGORY_KEY)
   @GetMapping
   @Operation(summary = "获取分类列表")
-  public PageResponse<ArticleCategory> getCategoryList() {
+  public PageResponse<Category> getCategoryList() {
     return R.list(categoryService.list());
   }
 
@@ -49,21 +45,15 @@ public class ArticleCategoryController {
   @Cache(key = RedisKeyConstant.LIST_CATEGORY_KEY, operateType = Cache.CacheOperateType.DELETE)
   @PostMapping
   @Operation(summary = "创建分类")
-  public BaseResponse<Void> addCategory(@RequestBody ArticleCategory category) {
+  public BaseResponse<Void> addCategory(@RequestBody Category category) {
     categoryService.save(category);
     return R.success();
   }
 
+  @Cache(key = RedisKeyConstant.COUNT_CATEGORY_KEY)
   @GetMapping("/count")
   @Operation(summary = "分类统计计数")
   public PageResponse<CountVO> getCategoryCount() {
-    Map<Long, String> idNameMap =
-        categoryService.list().stream()
-            .collect(Collectors.toMap(ArticleCategory::getId, ArticleCategory::getName));
-    List<CountVO> countVOS = linkArticleCategoryService.queryCategoryCount();
-    for (CountVO countVO : countVOS) {
-      countVO.setName(idNameMap.get(countVO.getId()));
-    }
-    return R.list(countVOS);
+    return R.list(queryService.getCategoryCountVo(10));
   }
 }

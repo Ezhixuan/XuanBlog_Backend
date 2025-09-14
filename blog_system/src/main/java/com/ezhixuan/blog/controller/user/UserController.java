@@ -3,7 +3,6 @@ package com.ezhixuan.blog.controller.user;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.controller.user.dto.UserEditDTO;
 import com.ezhixuan.blog.controller.user.dto.UserLoginDTO;
@@ -50,7 +49,6 @@ public class UserController {
     return R.success();
   }
 
-  @Cache(key = RedisKeyConstant.USER_INFO_KEY, expireTime = 60L * 60)
   @SaCheckLogin
   @GetMapping("/info")
   @Operation(summary = "获取登录用户信息")
@@ -58,7 +56,6 @@ public class UserController {
       return R.success(userService.getLoginUserVO());
   }
 
-  @Cache(key = RedisKeyConstant.ADMIN_INFO_KEY, expireTime = 60L * 60 * 7)
   @GetMapping("/admin")
   @Operation(summary = "获取管理员用户信息")
   public BaseResponse<UserInfoVO> getAdminUserInfo() {

@@ -1,107 +1,59 @@
 package com.ezhixuan.blog.entity;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-/**
- * 文章表
- * @TableName article
- */
-@TableName(value ="article")
+import java.time.LocalDateTime;
+
 @Data
-public class Article implements Serializable {
-    /**
-     * 主键
-     */
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private Long id;
+@TableName("article")
+public class Article {
+  @Schema(description = "主键")
+  @TableId(value = "id", type = IdType.ASSIGN_ID)
+  private Long id;
 
-    /**
-     * 项目 id
-     */
-    @TableField(value = "project_id")
-    private Long projectId;
+  @Schema(description = "标题")
+  private String title;
 
-    /**
-     * 文章标题
-     */
-    @TableField(value = "title")
-    private String title;
+  @Schema(description = "封面图 FK→picture.id")
+  @TableField("cover_id")
+  private Long coverId;
 
-    /**
-     * 作者ID
-     */
-    @TableField(value = "user_id")
-    private Long userId;
+  @Schema(description = "摘要")
+  private String summary;
 
-    /**
-     * 文章摘要
-     */
-    @TableField(value = "summary")
-    private String summary;
+  @Schema(description = "阅读数")
+  @TableField("view_count")
+  private Integer viewCount;
 
-    /**
-     * 封面图片
-     */
-    @TableField(value = "cover")
-    private String cover;
+  @Schema(description = "点赞数")
+  @TableField("like_count")
+  private Integer likeCount;
 
-    /**
-     * 文章字数
-     */
-    @TableField(value = "word_count")
-    private Integer wordCount;
+  @Schema(description = "字数")
+  @TableField("word_count")
+  private Integer wordCount;
 
-    /**
-     * 浏览量
-     */
-    @TableField(value = "view_count")
-    private Integer viewCount;
+  @Schema(description = "0=草稿 1=发布")
+  private Integer status;
 
-    /**
-     * 点赞数
-     */
-    @TableField(value = "like_count")
-    private Integer likeCount;
+  @Schema(description = "分类 FK→category.id")
+  @TableField("category_id")
+  private Long categoryId;
 
-    /**
-     * 评论数
-     */
-    @TableField(value = "comment_count")
-    private Integer commentCount;
+  @Schema(description = "项目 FK→project.id")
+  @TableField("project_id")
+  private Long projectId;
 
-    /**
-     * 状态：1-已发布，0-草稿
-     */
-    @TableField(value = "status")
-    private Integer status;
+  @Schema(description = "创建时间")
+  @TableField("create_time")
+  private LocalDateTime createTime;
 
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time")
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(value = "update_time")
-    private Date updateTime;
-
-    /**
-     * 是否删除：0-未删除，1-已删除
-     */
-    @TableField(value = "deleted")
-    private Integer deleted;
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+  @Schema(description = "更新时间")
+  @TableField("update_time")
+  private LocalDateTime updateTime;
 }

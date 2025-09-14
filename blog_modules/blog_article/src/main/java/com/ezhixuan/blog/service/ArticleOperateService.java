@@ -2,45 +2,59 @@ package com.ezhixuan.blog.service;
 
 import com.ezhixuan.blog.controller.dto.ArticleSubmitDTO;
 
+/**
+ * 对 article 的增删改操作进行统一规范
+ *
+ * @author Ezhixuan
+ * @version 0.0.2beta
+ */
 public interface ArticleOperateService {
 
-    /**
-     * 上传博客
-     * @author Ezhixuan
-     * @param articleSubmitDTO 提交dto
-     */
-    void doSubmitArticle(ArticleSubmitDTO articleSubmitDTO);
+  /**
+   * 上传文章
+   *
+   * @param submitDTO 提交 dto
+   * @return Long 文章 id
+   */
+  Long submitArticle(ArticleSubmitDTO submitDTO);
 
-    /**
-     * 异步执行更新操作
-     *
-     * @author Ezhixuan
-     * @param articleId 文章 id
-     * @param viewCount 查看次数
-     */
-    void asyncUpdateViewCount(Long articleId, Integer viewCount);
+  /**
+   * 删除文章
+   *
+   * @param articleId 文章 id
+   * @return Boolean 是否成功
+   */
+  boolean deleteArticleById(Long articleId);
 
-    /**
-     * 通过 articleId 删除文章
-     * @author Ezhixuan
-     * @param articleId 文章 articleId
-     * @return Boolean
-     */
-    Boolean deleteArticleById(Long articleId);
+  /**
+   * 删除分类
+   *
+   * @param categoryId 分类 id
+   * @return Boolean 是否成功
+   */
+  boolean deleteCategoryById(Long categoryId);
 
-    /**
-     * 通过 categoryId 删除分类
-     * @author Ezhixuan
-     * @param categoryId 分类 id
-     * @return Boolean
-     */
-    Boolean deleteCategoryById(Long categoryId);
+  /**
+   * 删除标签
+   *
+   * @param tagId 标签 id
+   * @return Boolean 是否成功
+   */
+  boolean deleteTagById(Long tagId);
 
-    /**
-     * 通过 tagId 删除标签
-     * @author Ezhixuan
-     * @param tagId 标签 id
-     * @return Boolean
-     */
-    Boolean deleteTagById(Long tagId);
+  /**
+   * 更新文章浏览量
+   *
+   * @param articleId 文章 id
+   * @param viewCount 浏览量
+   */
+  void updateViewCount(Long articleId, Integer viewCount);
+
+  /**
+   * 设置推荐文章
+   *
+   * @param recommendArticleId 推荐文章 id
+   * @param unRecommendArticleId 取消推荐文章 id
+   */
+  void setRecommendArticle(Long recommendArticleId, Long unRecommendArticleId);
 }

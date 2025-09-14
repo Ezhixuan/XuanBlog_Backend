@@ -1,6 +1,18 @@
 package com.ezhixuan.blog.task;
 
-import static org.springframework.util.CollectionUtils.isEmpty;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ezhixuan.blog.annotation.Log;
+import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
+import com.ezhixuan.blog.entity.ArticleThumb;
+import com.ezhixuan.blog.service.ArticleThumbService;
+import com.ezhixuan.blog.service.ArticleService;
+import com.ezhixuan.blog.utils.RedisUtil;
+import com.ezhixuan.blog.entity.Article;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -8,32 +20,17 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.ezhixuan.blog.annotation.Log;
-import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
-import com.ezhixuan.blog.entity.Article;
-import com.ezhixuan.blog.entity.ArticleThumb;
-import com.ezhixuan.blog.service.ArticleService;
-import com.ezhixuan.blog.service.ArticleThumbService;
-import com.ezhixuan.blog.utils.RedisUtil;
-
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Component
 @RequiredArgsConstructor
 public class ThumbSyncTask {
 
+  private static final String ALL_THUMB_KEY = RedisKeyConstant.ARTICLE_THUMB_PRE_KEY + "*";
     public static String CURRENT_TIME = "currentTime";
     private final RedisUtil redisUtil;
     private final ArticleService articleService;
     private final ArticleThumbService thumbService;
-
-    private static final String ALL_THUMB_KEY = RedisKeyConstant.ARTICLE_THUMB_PRE_KEY + "*";
 
     @PostConstruct
     public void init() {

@@ -37,7 +37,7 @@
         <blog.common.version>0.0.1-beta</blog.common.version>
         <blog.modules.version>0.0.1-beta</blog.modules.version>
         <blog.system.version>0.0.2-beta</blog.system.version>
-        <blog.article.version>0.0.1-beta</blog.article.version>
+        <blog.article.version>0.0.2-beta</blog.article.version>
         <blog.upload.version>0.0.1-beta</blog.upload.version>
         <blog.project.version>0.0.1-beta</blog.project.version>
         <blog.message.version>0.0.1-beta</blog.message.version>

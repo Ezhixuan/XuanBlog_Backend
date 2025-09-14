@@ -6,9 +6,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ezhixuan.blog.controller.picture.dto.PictureQueryDTO;
 import com.ezhixuan.blog.controller.picture.dto.PictureUploadDTO;
 import com.ezhixuan.blog.controller.picture.vo.PictureUploadVO;
-import com.ezhixuan.blog.controller.picture.dto.PictureQueryDTO;
 import com.ezhixuan.blog.domain.entity.SysPicture;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.handler.oss.OssManager;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.ezhixuan.blog.exception.ThrowUtils.throwIf;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * 系统图片服务实现类
@@ -96,6 +97,23 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
     } catch (Exception exception) {
       return false;
     }
+  }
+
+  /**
+   * 通过 id 删除图片
+   *
+   * @param unLivedPictureIds 图片 id 列表
+   */
+  @Override
+  public void deleteById(List<Long> unLivedPictureIds) {
+    if (isEmpty(unLivedPictureIds)) {
+      return;
+    }
+    List<SysPicture> pictureList = listByIds(unLivedPictureIds);
+    if (isEmpty(pictureList)) {
+      return;
+    }
+    pictureList.forEach(picture -> ossManager.doDelete(picture.getUrl()));
   }
 
   /**

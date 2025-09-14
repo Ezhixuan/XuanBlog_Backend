@@ -4,35 +4,36 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ezhixuan.blog.controller.dto.ArticleQueryDTO;
 import com.ezhixuan.blog.entity.Article;
+import java.util.Map;
 
 /**
-* @author ezhixuan
-* @description 针对表【article(文章表)】的数据库操作Service
-* @createDate 2025-03-27 09:45:21
-*/
+ * @author ezhixuan
+ * @description 针对表【article(文章主表)】的数据库操作Service
+ * @createDate 2025-09-13 10:40:23
+ */
 public interface ArticleService extends IService<Article> {
 
-    /**
-     * 分页查询文章列表
-     * @author Ezhixuan
-     * @param articlePageDTO 查询参数
-     * @return IPage<Article>
-     */
-    IPage<Article> pageList(ArticleQueryDTO articlePageDTO);
+  /**
+   * 分页查询
+   *
+   * @param articleQueryDTO 查询条件
+   * @return 分页数据
+   */
+  IPage<Article> page(ArticleQueryDTO articleQueryDTO);
 
-    /**
-     * 根据 id 获取文章信息
-     * @author Ezhixuan
-     * @param id 文章id
-     * @return ArticlePageDTO
-     */
-    Article getArticleById(Long id);
+  /**
+   * 获取文章分类使用数量
+   *
+   * @param num 数量
+   * @return 分类使用数量
+   */
+  Map<Long, Long> getCategoryUseCount(int num);
 
-    /**
-     * 判断项目是否有项目文档
-     * @author Ezhixuan
-     * @param projectId 项目id
-     * @return boolean
-     */
-    boolean hasArticle(Long projectId);
+  /**
+   * 判断项目下是否有文章
+   *
+   * @param projectId 项目id
+   * @return 是否有文章
+   */
+  boolean hasArticle(Long projectId);
 }

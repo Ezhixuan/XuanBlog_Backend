@@ -1,33 +1,39 @@
 package com.ezhixuan.blog.entity;
 
-import java.io.Serializable;
-
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-/**
- * 文章内容
- * @TableName article_content
- */
-@TableName(value ="article_content")
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Data
-public class ArticleContent implements Serializable {
-    /**
-     * 文章id
-     */
-    @TableId(value = "article_id", type = IdType.INPUT)
-    private Long articleId;
+@TableName("article_content")
+public class ArticleContent {
+  @Schema(description = "PK + FK → article.id")
+  @TableId(value = "article_id", type = IdType.INPUT)
+  private Long articleId;
 
-    /**
-     * 文章内容
-     */
-    @TableField(value = "content")
-    private String content;
+  @Schema(description = "正文（MD/HTML）")
+  private String content;
 
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+  @Schema(description = "内容引用的图片 id 数组 [int, ...]")
+  @TableField("picture_ids")
+  private String pictureIds;
+
+  @Schema(description = "更新时间")
+  @TableField("update_time")
+  private LocalDateTime updateTime;
+
+  public List<Long> getPictureIds() {
+      return JSON.parseArray(pictureIds, Long.class);
+  }
+
+  public void setPictureIds(List<Long> pictureIds) {
+      this.pictureIds = JSON.toJSONString(pictureIds);
+  }
 }

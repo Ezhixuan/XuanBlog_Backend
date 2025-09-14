@@ -24,15 +24,16 @@
             <artifactId>blog_upload</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.ezhixuan</groupId>
+            <artifactId>blog_article</artifactId>
+        </dependency>
+
 <!--        <dependency>-->
 <!--            <groupId>com.ezhixuan</groupId>-->
 <!--            <artifactId>blog_message</artifactId>-->
 <!--        </dependency>-->
 
-<!--        <dependency>-->
-<!--            <groupId>com.ezhixuan</groupId>-->
-<!--            <artifactId>blog_article</artifactId>-->
-<!--        </dependency>-->
 
 <!--        <dependency>-->
 <!--            <groupId>com.ezhixuan</groupId>-->

@@ -1,73 +1,66 @@
 package com.ezhixuan.blog.controller.dto;
 
 import com.ezhixuan.blog.common.PageRequest;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-/**
- * 文章分页 DTO
- */
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Schema(description = "文章分页 DTO")
 public class ArticleQueryDTO extends PageRequest {
 
-    /**
-     * 文章标题
-     */
-    private String title;
+  @Schema(description = "文章标题")
+  private String title;
 
-    /**
-     * 文章摘要
-     */
-    private String summary;
+  @Schema(description = "文章摘要")
+  private String summary;
 
-    /**
-     * 分类名称
-     */
-    private String categoryName;
+  @Schema(description = "分类名称")
+  private String categoryName;
 
-    /**
-     * 标签名
-     */
-    private String tagName;
+  @Schema(description = "标签名")
+  private String tagName;
 
-    /**
-     * 根据id查询
-     */
-    private Collection<Long> ids = new ArrayList<>();
+  @Schema(description = "根据id查询")
+  private Collection<Long> ids = new ArrayList<>();
 
-    /**
-     * 标签id
-     */
-    private Collection<Long> tagIds;
+  @Schema(description = "标签id")
+  private Collection<Long> tagIds;
 
-    /**
-     * 菜单id
-     */
-    private Collection<Long> categoryIds;
+  @Schema(description = "菜单id")
+  private Collection<Long> categoryIds;
 
-    /**
-     * 项目 id
-     */
-    private Long projectId;
+  @Schema(description = "项目 id")
+  private Long projectId;
 
-    public List<Long> getTagIds() {
-        if (CollectionUtils.isEmpty(tagIds)) {
-            return Collections.emptyList();
-        }
-        return tagIds.stream().distinct().toList();
+  @Schema(description = "是否需要封面")
+  private Boolean needCover;
+
+  public List<Long> getTagIds() {
+    if (isEmpty(tagIds)) {
+      return List.of();
     }
+    return tagIds.stream().distinct().toList();
+  }
 
-    public List<Long> getCategoryIds() {
-        if (CollectionUtils.isEmpty(categoryIds)) {
-            return Collections.emptyList();
-        }
-        return categoryIds.stream().distinct().toList();
+  public List<Long> getCategoryIds() {
+    if (isEmpty(categoryIds)) {
+      return List.of();
     }
+    return categoryIds.stream().distinct().toList();
+  }
+
+  public List<Long> getIds() {
+    if (isEmpty(ids)) {
+      return List.of();
+    }
+    return ids.stream().distinct().toList();
+  }
 }

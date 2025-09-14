@@ -3,10 +3,10 @@ package com.ezhixuan.blog.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ezhixuan.blog.controller.picture.dto.PictureQueryDTO;
-import com.ezhixuan.blog.domain.entity.SysPicture;
-import com.ezhixuan.blog.handler.oss.OssModelEnum;
 import com.ezhixuan.blog.controller.picture.dto.PictureUploadDTO;
 import com.ezhixuan.blog.controller.picture.vo.PictureUploadVO;
+import com.ezhixuan.blog.domain.entity.SysPicture;
+import com.ezhixuan.blog.handler.oss.OssModelEnum;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -53,4 +53,11 @@ public interface SysPictureService extends IService<SysPicture> {
    * @return 删除成功返回true，否则返回false
    */
   boolean delete(String pictureUrl);
+
+  /**
+   * 删除指定ID的图片文件
+   *
+   * @param unLivedPictureIds 不活跃的图片ID列表
+   */
+  void deleteById(List<Long> unLivedPictureIds);
 }

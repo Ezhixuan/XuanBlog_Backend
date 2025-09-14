@@ -1,30 +1,20 @@
 package com.ezhixuan.blog.entity;
 
-import java.io.Serializable;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-/**
- * 标签表
- * @TableName article_tag
- */
-@TableName(value ="article_tag")
 @Data
-public class ArticleTag implements Serializable {
-    /**
-     * 主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+@TableName("article_tag")
+public class ArticleTag {
+  @Schema(description = "文章 FK")
+  @TableId(value = "article_id", type = IdType.INPUT)
+  private Long articleId;
 
-    /**
-     * 标签名称
-     */
-    @TableField(value = "name")
-    private String name;
+  @Schema(description = "标签 FK")
+  @TableField("tag_id")
+  private Long tagId;
 }

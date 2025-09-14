@@ -1,133 +1,147 @@
 package com.ezhixuan.blog.service.impl;
 
-import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.ezhixuan.blog.aop.CacheInterceptor;
 import com.ezhixuan.blog.controller.dto.ArticleSubmitDTO;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.entity.Article;
-import com.ezhixuan.blog.entity.ArticleContent;
+import com.ezhixuan.blog.exception.BusinessException;
+import com.ezhixuan.blog.exception.ErrorCode;
+import com.ezhixuan.blog.exception.SystemException;
 import com.ezhixuan.blog.service.*;
-import lombok.RequiredArgsConstructor;
+import com.ezhixuan.blog.utils.RedisUtil;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static java.util.Objects.isNull;
 
 /**
- * 文章操作服务实现类
+ * 对 article 进增删改操作实现类
  *
  * @author Ezhixuan
+ * @version 0.0.2beta
  */
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class ArticleOperateServiceImpl implements ArticleOperateService {
 
-  private final ArticleService articleService;
-  private final ArticleContentService contentService;
-  private final ArticleTagService tagService;
-  private final ArticleCategoryService categoryService;
-  private final LinkArticleTagService linkArticleTagService;
-  private final LinkArticleCategoryService linkArticleCategoryService;
-
-  private final CacheInterceptor cacheInterceptor;
+  @Resource private ArticleService articleService;
+  @Resource private ArticleTagService articleTagService;
+  @Resource private ArticleContentService articleContentService;
+  @Resource private CategoryService categoryService;
+  @Resource private TagService tagService;
+  @Resource private RedisUtil redisUtil;
 
   /**
-   * 提交文章（新增或更新）
+   * 上传文章
    *
-   * @param articleSubmitDTO 文章提交数据传输对象
+   * @param submitDTO 提交 dto
+   * @return Long 文章 id
    */
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public void doSubmitArticle(ArticleSubmitDTO articleSubmitDTO) {
-    if (!StringUtils.hasText(articleSubmitDTO.getTitle())) {
-      throw new IllegalArgumentException("博客标题不能为空");
+  public Long submitArticle(ArticleSubmitDTO submitDTO) {
+    if (isNull(submitDTO)) {
+      throw new BusinessException(ErrorCode.PARAMS_ERROR, "提交数据不能为空");
     }
+    Article article = submitDTO.toEntity();
+    articleService.saveOrUpdate(article);
+    Long articleId = article.getId();
+    String content = submitDTO.getContent();
+    List<Long> tagIds = submitDTO.getTagIds();
+    articleTagService.link(articleId, tagIds);
+    articleContentService.link(articleId, content);
 
-    // 设置如果为空默认标签/分类
-    if (CollectionUtils.isEmpty(articleSubmitDTO.getTagIds())) {
-      articleSubmitDTO.setTagIds(Collections.singletonList(tagService.getDefaultId()));
-    }
-    if (isNull(articleSubmitDTO.getCategoryId())) {
-      articleSubmitDTO.setCategoryId(categoryService.getDefaultId());
-    }
-
-    long userId = StpUtil.getLoginIdAsLong();
-    if (Objects.nonNull(articleSubmitDTO.getId())) {
-      boolean exists =
-          articleService
-              .lambdaQuery()
-              .eq(Article::getId, articleSubmitDTO.getId())
-              .eq(Article::getUserId, userId)
-              .exists();
-      if (!exists) {
-        throw new IllegalArgumentException("文章不存在");
-      }
-    }
-
-    submitArticle(articleSubmitDTO, userId);
+    Thread.startVirtualThread(
+        () -> {
+          redisUtil.cleanCache(
+              RedisKeyConstant.COUNT_TAG_KEY,
+              RedisKeyConstant.COUNT_CATEGORY_KEY,
+              RedisKeyConstant.ARTICLE_INFO_PRE_KEY + articleId);
+        });
+    return articleId;
   }
 
   /**
-   * 删除指定ID的文章
+   * 删除文章
    *
-   * @param articleId 文章ID
-   * @return Boolean 是否删除成功
+   * @param articleId 文章 id
+   * @return Boolean 是否成功
    */
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public Boolean deleteArticleById(Long articleId) {
-    requireIdNoNull(articleId);
-    linkArticleCategoryService.removeByArticleId(articleId);
-    linkArticleTagService.removeByArticleId(articleId);
-    return articleService.removeById(articleId);
+  public boolean deleteArticleById(Long articleId) {
+    if (isNull(articleId)) {
+      throw new BusinessException(ErrorCode.PARAMS_ERROR, "文章不存在");
+    }
+    try {
+      articleContentService.unLink(articleId);
+      articleTagService.unLinkByArticleId(articleId);
+    } catch (Exception exception) {
+      log.error("解绑失败{}", articleId);
+      throw new SystemException(ErrorCode.SYSTEM_ERROR);
+    } finally {
+      articleService.removeById(articleId);
+    }
+    return true;
   }
 
   /**
-   * 删除指定ID的分类
+   * 删除分类
    *
-   * @param categoryId 分类ID
-   * @return Boolean 是否删除成功
+   * @param categoryId 分类 id
+   * @return Boolean 是否成功
    */
   @Override
-  @Transactional(rollbackFor = Exception.class)
-  public Boolean deleteCategoryById(Long categoryId) {
-    requireIdNoNull(categoryId);
-    linkArticleCategoryService.removeByCategoryId(categoryId);
+  public boolean deleteCategoryById(Long categoryId) {
+    if (isNull(categoryId)) {
+      throw new BusinessException(ErrorCode.PARAMS_ERROR, "分类不存在");
+    }
+    List<Article> articleList =
+        articleService.list(Wrappers.<Article>lambdaQuery().eq(Article::getCategoryId, categoryId));
+    if (!CollectionUtils.isEmpty(articleList)) {
+      Thread.startVirtualThread(
+          () -> {
+            Long defaultCategoryId = categoryService.getDefaultId();
+            articleList.forEach(article -> article.setCategoryId(defaultCategoryId));
+            articleService.updateBatchById(articleList);
+          });
+    }
     return categoryService.removeById(categoryId);
   }
 
   /**
-   * 删除指定ID的标签
+   * 删除标签
    *
-   * @param tagId 标签ID
-   * @return Boolean 是否删除成功
+   * @param tagId 标签 id
+   * @return Boolean 是否成功
    */
   @Override
-  @Transactional(rollbackFor = Exception.class)
-  public Boolean deleteTagById(Long tagId) {
-    requireIdNoNull(tagId);
-    linkArticleTagService.removeByTagId(tagId);
+  public boolean deleteTagById(Long tagId) {
+    if (isNull(tagId)) {
+      throw new BusinessException(ErrorCode.PARAMS_ERROR, "标签不存在");
+    }
+    articleTagService.unLinkByTagId(tagId);
     return tagService.removeById(tagId);
   }
 
   /**
-   * 异步更新文章浏览量
+   * 更新文章浏览量
    *
-   * @param articleId 文章ID
+   * @param articleId 文章 id
    * @param viewCount 浏览量
    */
   @Override
-  public void asyncUpdateViewCount(Long articleId, Integer viewCount) {
-    requireIdNoNull(articleId);
+  public void updateViewCount(Long articleId, Integer viewCount) {
+    if (isNull(articleId) || isNull(viewCount)) {
+      throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+    }
     Thread.ofVirtual()
         .start(
             () -> {
@@ -139,34 +153,44 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
   }
 
   /**
-   * 执行文章保存或更新的具体操作
+   * 设置推荐文章
    *
-   * @param articleSubmitDTO 文章提交数据传输对象
-   * @param userId 用户ID
+   * @param recommendArticleId 推荐文章 id
+   * @param unRecommendArticleId 取消推荐文章 id
    */
-  public void submitArticle(ArticleSubmitDTO articleSubmitDTO, long userId) {
-    Article article = BeanUtil.copyProperties(articleSubmitDTO, Article.class);
-    article.setUserId(userId);
-    articleService.saveOrUpdate(article);
-    linkArticleTagService.saveAll(article.getId(), articleSubmitDTO.getTagIds());
-    linkArticleCategoryService.save(article.getId(), articleSubmitDTO.getCategoryId());
+  @Override
+  public void setRecommendArticle(Long recommendArticleId, Long unRecommendArticleId) {
+    // 从Redis中获取当前推荐文章列表
+    Object recommendIdsObj = redisUtil.get(RedisKeyConstant.ARTICLE_RECOMMEND_LIST_KEY);
 
-    ArticleContent articleContent = new ArticleContent();
-    articleContent.setArticleId(article.getId());
-    articleContent.setContent(articleSubmitDTO.getContent());
-    contentService.saveOrUpdate(articleContent);
-    cacheInterceptor.cleanLocalCache(RedisKeyConstant.ARTICLE_INFO_PRE_KEY + article.getId());
-  }
-
-  /**
-   * 检查ID是否为空，如果为空则抛出异常
-   *
-   * @param id ID值
-   * @param <T> ID类型
-   */
-  private <T> void requireIdNoNull(T id) {
-    if (isNull(id)) {
-      throw new IllegalArgumentException("id不能为空");
+    // 初始化推荐文章ID列表
+    List<Long> recommendIds;
+    if (Objects.nonNull(recommendIdsObj) && recommendIdsObj instanceof List<?>) {
+      recommendIds = (List<Long>) recommendIdsObj;
+    } else {
+      recommendIds = new ArrayList<>();
     }
+
+    // 如果有需要取消推荐的文章ID，则从列表中移除
+    if (Objects.nonNull(unRecommendArticleId)) {
+      recommendIds.remove(unRecommendArticleId);
+    }
+
+    // 如果有需要推荐的文章ID，则添加到列表中
+    if (Objects.nonNull(recommendArticleId) && !recommendIds.contains(recommendArticleId)) {
+      recommendIds.add(recommendArticleId);
+
+      // 如果推荐文章数量超过5篇且没有指定取消推荐的文章，则移除一篇
+      if (recommendIds.size() > 5 && isNull(unRecommendArticleId)) {
+        // 移除一篇（按ID排序后移除最小的ID）
+        recommendIds.stream()
+            .filter(Objects::nonNull)
+            .min(Long::compareTo)
+            .ifPresent(recommendIds::remove);
+      }
+    }
+
+    // 将更新后的推荐文章列表保存到Redis中
+    redisUtil.set(RedisKeyConstant.ARTICLE_RECOMMEND_LIST_KEY, recommendIds);
   }
 }
