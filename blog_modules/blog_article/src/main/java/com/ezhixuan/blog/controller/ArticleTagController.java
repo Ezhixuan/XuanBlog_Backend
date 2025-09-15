@@ -28,7 +28,7 @@ public class ArticleTagController {
   @Cache(key = RedisKeyConstant.LIST_TAG_KEY)
   @GetMapping
   @Operation(summary = "获取标签列表")
-  public PageResponse<com.ezhixuan.blog.entity.Tag> getTagList() {
+  public PageResponse<com.ezhixuan.blog.domain.entity.Tag> getTagList() {
     return R.list(tagService.list());
   }
 
@@ -36,7 +36,7 @@ public class ArticleTagController {
   @Cache(key = RedisKeyConstant.LIST_TAG_KEY, operateType = Cache.CacheOperateType.DELETE)
   @PostMapping
   @Operation(summary = "新增标签")
-  public BaseResponse<com.ezhixuan.blog.entity.Tag> addTag(@RequestBody com.ezhixuan.blog.entity.Tag tag) {
+  public BaseResponse<com.ezhixuan.blog.domain.entity.Tag> addTag(@RequestBody com.ezhixuan.blog.domain.entity.Tag tag) {
     tagService.save(tag);
     return R.success(tag);
   }

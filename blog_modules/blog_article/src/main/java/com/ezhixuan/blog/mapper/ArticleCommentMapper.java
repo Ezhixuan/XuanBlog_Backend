@@ -1,6 +1,6 @@
 package com.ezhixuan.blog.mapper;
 
-import com.ezhixuan.blog.entity.ArticleComment;
+import com.ezhixuan.blog.domain.entity.ArticleComment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

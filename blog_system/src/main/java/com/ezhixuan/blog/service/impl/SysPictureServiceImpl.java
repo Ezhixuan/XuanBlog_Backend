@@ -53,18 +53,23 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
     long userId = StpUtil.getLoginIdAsLong();
     String targetPath =
         "public"
+            + File.separator
             + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))
             + File.separator
             + String.format("%s", userId);
+    String[] split = Objects.requireNonNull(file.getOriginalFilename()).split("/");
+
     try {
       String name =
           uploadDTO.getReName()
               ? PictureCommonUtil.reName(file.getOriginalFilename())
-              : file.getOriginalFilename();
+              : split[split.length - 1];
       String uploadPath = targetPath + File.separator + name;
       String url = ossManager.getInstance().doUpload(file.getInputStream(), uploadPath);
-      PictureUploadVO result = PictureUploadVO.builder().url(url).name(name).build();
-      doUpload2Sys(userId, result, uploadDTO);
+      if (!existsByUrl(url)) {
+          PictureUploadVO result = PictureUploadVO.builder().url(url).name(name).build();
+          doUpload2Sys(userId, result, uploadDTO);
+      }
       return url;
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -155,5 +160,19 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
     }
     boolean resultSave = this.saveOrUpdate(picture);
     throwIf(!resultSave, ErrorCode.OPERATION_ERROR, "图片上传失败");
+  }
+
+  /**
+   * 检查指定URL的图片是否已存在
+   *
+   * @param url 图片访问URL
+   * @return boolean 如果URL已存在返回true，否则返回false
+   */
+  @Override
+  public boolean existsByUrl(String url) {
+    if (url == null || url.trim().isEmpty()) {
+      return false;
+    }
+    return count(Wrappers.<SysPicture>lambdaQuery().eq(SysPicture::getUrl, url)) > 0;
   }
 }

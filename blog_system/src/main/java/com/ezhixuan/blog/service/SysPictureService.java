@@ -60,4 +60,12 @@ public interface SysPictureService extends IService<SysPicture> {
    * @param unLivedPictureIds 不活跃的图片ID列表
    */
   void deleteById(List<Long> unLivedPictureIds);
+
+  /**
+   * 检查指定URL的图片是否已存在
+   *
+   * @param url 图片访问URL
+   * @return boolean 如果URL已存在返回true，否则返回false
+   */
+  boolean existsByUrl(String url);
 }

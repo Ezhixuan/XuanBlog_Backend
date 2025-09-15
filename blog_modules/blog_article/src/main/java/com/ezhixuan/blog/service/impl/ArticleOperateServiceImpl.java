@@ -3,7 +3,7 @@ package com.ezhixuan.blog.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ezhixuan.blog.controller.dto.ArticleSubmitDTO;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
-import com.ezhixuan.blog.entity.Article;
+import com.ezhixuan.blog.domain.entity.Article;
 import com.ezhixuan.blog.exception.BusinessException;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.SystemException;

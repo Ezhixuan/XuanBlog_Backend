@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.entity;
+package com.ezhixuan.blog.domain.entity;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -29,11 +29,15 @@ public class ArticleContent {
   @TableField("update_time")
   private LocalDateTime updateTime;
 
-  public List<Long> getPictureIds() {
+  public List<Long> getPictureIdList() {
       return JSON.parseArray(pictureIds, Long.class);
   }
 
   public void setPictureIds(List<Long> pictureIds) {
       this.pictureIds = JSON.toJSONString(pictureIds);
+  }
+
+  public void setPictureIds(String pictureIds) {
+      this.pictureIds = pictureIds;
   }
 }

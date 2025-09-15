@@ -1,6 +1,6 @@
 package com.ezhixuan.blog.controller.dto;
 
-import com.ezhixuan.blog.entity.Article;
+import com.ezhixuan.blog.domain.entity.Article;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

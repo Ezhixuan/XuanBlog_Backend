@@ -9,6 +9,9 @@ import io.minio.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
@@ -41,12 +44,13 @@ public class MinioOssImpl extends AbstractObjectStorageService {
 
   /**
    * 上传文件到MinIO<br>
-   * 如果存储桶不存在会自动创建，上传成功后返回文件访问URL
+   * 立即返回文件访问URL，实际上传操作在虚拟线程中异步执行以优化用户体验<br>
+   * 如果URL已存在则直接返回，避免重复上传；如果存储桶不存在会自动创建
    *
    * @param inputStream 文件输入流
    * @param targetPath 目标存储路径
-   * @return String 上传后的文件访问URL
-   * @throws BusinessException 当MinIO配置不正确或上传失败时抛出
+   * @return String 文件访问URL（立即返回，上传异步进行）
+   * @throws BusinessException 当MinIO配置不正确时抛出
    */
   @Override
   public String doUpload(InputStream inputStream, String targetPath) {
@@ -59,29 +63,45 @@ public class MinioOssImpl extends AbstractObjectStorageService {
       throw new BusinessException(ErrorCode.SYSTEM_ERROR, "检查Minio配置");
     }
 
+    // 构造确定的URL
+    String url =
+        String.format(
+            "%s/%s/%s", minioConfig.getMinioDomain(), minioConfig.getMinioBucket(), targetPath);
+
     try {
-      MinioClient minioClient = getMinioClient();
+      // 将输入流转换为字节数组，避免异步执行时流被关闭
+      byte[] fileBytes = inputStreamToBytes(inputStream);
 
-      // 判断 bucket 是否存在
-      if (!minioClient.bucketExists(
-          BucketExistsArgs.builder().bucket(minioConfig.getMinioBucket()).build())) {
-        minioClient.makeBucket(
-            MakeBucketArgs.builder().bucket(minioConfig.getMinioBucket()).build());
-      }
+      // 使用虚拟线程异步执行上传操作
+      Thread.ofVirtual().start(() -> {
+        try {
+          MinioClient minioClient = getMinioClient();
 
-      minioClient.putObject(
-          PutObjectArgs.builder().bucket(minioConfig.getMinioBucket()).object(targetPath).stream(
-                  inputStream, inputStream.available(), -1)
-              .build());
+          // 判断 bucket 是否存在
+          if (!minioClient.bucketExists(
+              BucketExistsArgs.builder().bucket(minioConfig.getMinioBucket()).build())) {
+            minioClient.makeBucket(
+                MakeBucketArgs.builder().bucket(minioConfig.getMinioBucket()).build());
+          }
 
-      String url =
-          String.format(
-              "%s/%s/%s", minioConfig.getMinioDomain(), minioConfig.getMinioBucket(), targetPath);
-      log.info("文件上传成功：{}", url);
+          // 异步上传文件
+          minioClient.putObject(
+              PutObjectArgs.builder().bucket(minioConfig.getMinioBucket()).object(targetPath).stream(
+                      new ByteArrayInputStream(fileBytes), fileBytes.length, -1)
+                  .build());
+
+          log.info("MinIO异步上传成功：{}", url);
+        } catch (Exception e) {
+          log.error("MinIO异步上传失败：{}", url, e);
+        }
+      });
+
+      // 立即返回URL
+      log.info("MinIO文件URL已生成，异步上传中：{}", url);
       return url;
     } catch (Exception e) {
-      log.error("Minio上传文件失败", e);
-      throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件上传失败");
+      log.error("MinIO上传准备失败", e);
+      throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件上传准备失败: " + e.getMessage());
     }
   }
 
@@ -170,6 +190,25 @@ public class MinioOssImpl extends AbstractObjectStorageService {
             .credentials(minioConfig.getMinioAccessKey(), minioConfig.getMinioSecretKey())
             .build();
     return client;
+  }
+
+  /**
+   * 将输入流转换为字节数组<br>
+   * 用于异步上传时避免流被提前关闭的问题
+   *
+   * @param inputStream 文件输入流
+   * @return byte[] 文件字节数组
+   * @throws IOException 当IO操作失败时抛出
+   */
+  private byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
+    try (inputStream; ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+      byte[] buffer = new byte[1024];
+      int bytesRead;
+      while ((bytesRead = inputStream.read(buffer)) != -1) {
+        byteArrayOutputStream.write(buffer, 0, bytesRead);
+      }
+      return byteArrayOutputStream.toByteArray();
+    }
   }
 
   /**

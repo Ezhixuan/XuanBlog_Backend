@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezhixuan.blog.mapper.ArticleContentMapper">
 
-    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.entity.ArticleContent">
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.ArticleContent">
             <id property="articleId" column="article_id" />
             <result property="content" column="content" />
             <result property="pictureIds" column="picture_ids" />

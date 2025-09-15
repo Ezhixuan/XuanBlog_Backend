@@ -1,7 +1,7 @@
 package com.ezhixuan.blog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ezhixuan.blog.entity.Category;
+import com.ezhixuan.blog.domain.entity.Category;
 import java.util.List;
 import java.util.Map;
 

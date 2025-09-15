@@ -4,7 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
-import com.ezhixuan.blog.entity.ArticleThumb;
+import com.ezhixuan.blog.domain.entity.ArticleThumb;
 import com.ezhixuan.blog.exception.BusinessException;
 import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.exception.ThrowUtils;

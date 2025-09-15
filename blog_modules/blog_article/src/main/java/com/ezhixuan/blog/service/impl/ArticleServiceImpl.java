@@ -8,7 +8,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.controller.dto.ArticleQueryDTO;
-import com.ezhixuan.blog.entity.Article;
+import com.ezhixuan.blog.domain.dto.CountDto;
+import com.ezhixuan.blog.domain.entity.Article;
 import com.ezhixuan.blog.mapper.ArticleMapper;
 import com.ezhixuan.blog.service.ArticleService;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
    */
   @Override
   public Map<Long, Long> getCategoryUseCount(int num) {
-    return baseMapper.selectCategoryUseCount(num);
+    Map<Long, CountDto> longCountDtoMap = baseMapper.selectCategoryUseCount(num);
+    return longCountDtoMap.entrySet().stream()
+        .collect(
+            java.util.stream.Collectors.toMap(
+                Map.Entry::getKey, entry -> entry.getValue().getCount()));
   }
 
   private Wrapper<Article> getQueryWrapper(ArticleQueryDTO articleQueryDTO) {

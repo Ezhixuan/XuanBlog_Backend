@@ -94,8 +94,7 @@ public class MarkdownServiceImpl implements MarkdownService {
         }
         return images.stream().collect(Collectors.toMap(image -> {
                     String[] split = Objects.requireNonNull(image.getOriginalFilename()).split("/");
-                    String name = split[split.length - 1];
-                    return name.substring(0, name.lastIndexOf("."));
+                    return split[split.length - 1];
                 },
             image -> pictureService.doUpload(image, uploadDTO), (exist, replace) -> replace));
     }

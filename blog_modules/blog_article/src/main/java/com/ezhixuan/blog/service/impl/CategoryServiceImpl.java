@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.service.CategoryService;
-import com.ezhixuan.blog.entity.Category;
+import com.ezhixuan.blog.domain.entity.Category;
 import com.ezhixuan.blog.mapper.CategoryMapper;
 import org.springframework.stereotype.Service;
 

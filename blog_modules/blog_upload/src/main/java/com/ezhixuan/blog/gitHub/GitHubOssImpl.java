@@ -46,12 +46,13 @@ public class GitHubOssImpl extends AbstractObjectStorageService {
 
   /**
    * 上传文件到GitHub <br>
-   * 通过GitHub API将文件上传到指定仓库的指定路径，并返回通过jsDelivr CDN加速的访问URL
+   * 立即返回通过jsDelivr CDN加速的访问URL，实际上传操作在虚拟线程中异步执行以优化用户体验<br>
+   * 如果URL已存在则直接返回，避免重复上传；如果文件不存在，则异步创建新文件
    *
    * @param inputStream 文件输入流
    * @param targetPath 目标存储路径
-   * @return String 上传后的文件访问URL（通过jsDelivr CDN加速）
-   * @throws BusinessException 当GitHub配置不正确、文件名已存在或上传失败时抛出
+   * @return String 文件访问URL（立即返回，上传异步进行）
+   * @throws BusinessException 当GitHub配置不正确时抛出
    */
   @Override
   public String doUpload(InputStream inputStream, String targetPath) {
@@ -66,39 +67,68 @@ public class GitHubOssImpl extends AbstractObjectStorageService {
     String branch = gitHubConfig.getGithubBranch();
     String token = gitHubConfig.getGithubToken();
 
-    String apiUrl = "https://api.github.com/repos/" + repo + "/contents/" + targetPath;
-
-    // 构造请求体
-    JSONObject body = new JSONObject();
-    body.set("message", "Upload image via Java");
-    body.set("content", toBase64Code(inputStream));
-    body.set("branch", branch);
+    // 构造确定的URL
+    String url = "https://cdn.jsdelivr.net/gh/" + repo + "@" + branch + "/" + targetPath;
 
     try {
-      // 使用RestTemplate发送请求
-      RestTemplate restTemplate = new RestTemplate();
+      // 将输入流转换为字节数组，避免异步执行时流被关闭
+      byte[] fileBytes = inputStreamToBytes(inputStream);
 
-      HttpHeaders headers = new HttpHeaders();
-      headers.set("Authorization", "token " + token);
-      headers.set("Accept", "application/vnd.github.v3+json");
-      headers.setContentType(MediaType.APPLICATION_JSON);
+      // 使用虚拟线程异步执行上传操作
+      Thread.ofVirtual().start(() -> {
+        try {
+          String apiUrl = "https://api.github.com/repos/" + repo + "/contents/" + targetPath;
+          RestTemplate restTemplate = new RestTemplate();
 
-      HttpEntity<String> entity = new HttpEntity<>(body.toString(), headers);
+          // 设置请求头
+          HttpHeaders headers = new HttpHeaders();
+          headers.set("Authorization", "token " + token);
+          headers.set("Accept", "application/vnd.github.v3+json");
+          headers.setContentType(MediaType.APPLICATION_JSON);
 
-      ResponseEntity<String> response =
-          restTemplate.exchange(apiUrl, HttpMethod.PUT, entity, String.class);
+          // 先检查文件是否已存在
+          try {
+            HttpEntity<String> getEntity = new HttpEntity<>(headers);
+            ResponseEntity<String> getResponse =
+                restTemplate.exchange(apiUrl, HttpMethod.GET, getEntity, String.class);
 
-      if (!response.getStatusCode().is2xxSuccessful()) {
-        if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-          throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件名已存在");
+            if (getResponse.getStatusCode().is2xxSuccessful()) {
+              // 文件已存在，记录日志
+              log.info("GitHub异步检查：文件已存在 targetPath={}", targetPath);
+              return;
+            }
+          } catch (Exception e) {
+            // 文件不存在或其他错误，继续创建新文件
+            log.info("GitHub异步检查：文件不存在，将进行创建操作 targetPath={}", targetPath);
+          }
+
+          // 构造请求体（仅用于创建新文件）
+          JSONObject body = new JSONObject();
+          body.set("message", "Upload image via Java");
+          body.set("content", bytesToBase64(fileBytes));
+          body.set("branch", branch);
+
+          HttpEntity<String> entity = new HttpEntity<>(body.toString(), headers);
+
+          ResponseEntity<String> response =
+              restTemplate.exchange(apiUrl, HttpMethod.PUT, entity, String.class);
+
+          if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("GitHub异步上传成功：{}", url);
+          } else {
+            log.error("GitHub异步上传失败 response={}", response);
+          }
+        } catch (Exception e) {
+          log.error("GitHub异步上传失败：{}", url, e);
         }
-        throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败 response=" + response);
-      }
+      });
 
-      return "https://cdn.jsdelivr.net/gh/" + repo + "@" + branch + "/" + targetPath;
+      // 立即返回URL
+      log.info("GitHub文件URL已生成，异步上传中：{}", url);
+      return url;
     } catch (Exception e) {
-      log.error("上传文件到GitHub失败", e);
-      throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
+      log.error("GitHub上传准备失败", e);
+      throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件上传准备失败: " + e.getMessage());
     }
   }
 
@@ -189,25 +219,33 @@ public class GitHubOssImpl extends AbstractObjectStorageService {
   }
 
   /**
-   * 将输入流转换为Base64编码字符串<br>
-   * 用于将文件内容编码为GitHub API所需的格式
+   * 将输入流转换为字节数组<br>
+   * 用于异步上传时避免流被提前关闭的问题
    *
    * @param inputStream 文件输入流
-   * @return String Base64编码的文件内容
-   * @throws RuntimeException 当IO操作失败时抛出
+   * @return byte[] 文件字节数组
+   * @throws IOException 当IO操作失败时抛出
    */
-  private String toBase64Code(InputStream inputStream) {
-    try (inputStream;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-      byte[] bytes = new byte[1024];
+  private byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
+    try (inputStream; ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+      byte[] buffer = new byte[1024];
       int bytesRead;
-      while ((bytesRead = inputStream.read(bytes)) != -1) {
-        byteArrayOutputStream.write(bytes, 0, bytesRead);
+      while ((bytesRead = inputStream.read(buffer)) != -1) {
+        byteArrayOutputStream.write(buffer, 0, bytesRead);
       }
-      return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+      return byteArrayOutputStream.toByteArray();
     }
+  }
+
+  /**
+   * 将字节数组转换为Base64编码字符串<br>
+   * 用于将文件内容编码为GitHub API所需的格式
+   *
+   * @param bytes 文件字节数组
+   * @return String Base64编码的文件内容
+   */
+  private String bytesToBase64(byte[] bytes) {
+    return Base64.getEncoder().encodeToString(bytes);
   }
 
   /**

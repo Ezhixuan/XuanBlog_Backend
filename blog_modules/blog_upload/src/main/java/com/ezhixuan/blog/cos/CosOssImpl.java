@@ -17,6 +17,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
@@ -48,11 +51,14 @@ public class CosOssImpl extends AbstractObjectStorageService {
   }
 
   /**
-   * 上传文件到腾讯云COS
+   * 上传文件到腾讯云COS<br>
+   * 立即返回文件访问URL，实际上传操作在虚拟线程中异步执行以优化用户体验<br>
+   * 如果URL已存在则直接返回，避免重复上传
    *
    * @param inputStream 文件输入流
    * @param targetPath 目标存储路径
-   * @return String 上传后的文件访问URL
+   * @return String 文件访问URL（立即返回，上传异步进行）
+   * @throws BusinessException 当COS配置不正确时抛出
    */
   @Override
   public String doUpload(InputStream inputStream, String targetPath) {
@@ -65,29 +71,45 @@ public class CosOssImpl extends AbstractObjectStorageService {
       throw new BusinessException(ErrorCode.SYSTEM_ERROR, "检查COS配置");
     }
 
+    // 构造确定的URL
+    String url =
+        String.format(
+            "https://%s.cos.%s.myqcloud.com/%s",
+            cosConfig.getCosBucketName(), cosConfig.getCosRegion(), targetPath);
+
     try {
-      COSClient cosClient = getCosClient();
+      // 将输入流转换为字节数组，避免异步执行时流被关闭
+      byte[] fileBytes = inputStreamToBytes(inputStream);
 
-      // 创建上传请求
-      PutObjectRequest putObjectRequest =
-          new PutObjectRequest(cosConfig.getCosBucketName(), targetPath, inputStream, null);
+      // 使用虚拟线程异步执行上传操作
+      Thread.ofVirtual().start(() -> {
+        try {
+          COSClient cosClient = getCosClient();
 
-      // 上传文件
-      PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
+          // 创建上传请求
+          PutObjectRequest putObjectRequest =
+              new PutObjectRequest(cosConfig.getCosBucketName(), targetPath,
+                  new ByteArrayInputStream(fileBytes), null);
 
-      if (putObjectResult == null) {
-        throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件上传失败");
-      }
+          // 异步上传文件
+          PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
 
-      String url =
-          String.format(
-              "https://%s.cos.%s.myqcloud.com/%s",
-              cosConfig.getCosBucketName(), cosConfig.getCosRegion(), targetPath);
-      log.info("文件上传成功：{}", url);
+          if (putObjectResult != null) {
+            log.info("COS异步上传成功：{}", url);
+          } else {
+            log.error("COS异步上传失败，返回结果为null：{}", url);
+          }
+        } catch (Exception e) {
+          log.error("COS异步上传失败：{}", url, e);
+        }
+      });
+
+      // 立即返回URL
+      log.info("COS文件URL已生成，异步上传中：{}", url);
       return url;
     } catch (Exception e) {
-      log.error("COS上传文件失败", e);
-      throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件上传失败");
+      log.error("COS上传准备失败", e);
+      throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件上传准备失败: " + e.getMessage());
     }
   }
 
@@ -174,6 +196,25 @@ public class CosOssImpl extends AbstractObjectStorageService {
     // 生成cos客户端
     client = new COSClient(cred, clientConfig);
     return client;
+  }
+
+  /**
+   * 将输入流转换为字节数组<br>
+   * 用于异步上传时避免流被提前关闭的问题
+   *
+   * @param inputStream 文件输入流
+   * @return byte[] 文件字节数组
+   * @throws IOException 当IO操作失败时抛出
+   */
+  private byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
+    try (inputStream; ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+      byte[] buffer = new byte[1024];
+      int bytesRead;
+      while ((bytesRead = inputStream.read(buffer)) != -1) {
+        byteArrayOutputStream.write(buffer, 0, bytesRead);
+      }
+      return byteArrayOutputStream.toByteArray();
+    }
   }
 
   /**

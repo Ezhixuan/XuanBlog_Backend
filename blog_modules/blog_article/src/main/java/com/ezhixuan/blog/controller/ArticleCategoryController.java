@@ -10,7 +10,7 @@ import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.service.ArticleOperateService;
 import com.ezhixuan.blog.service.ArticleQueryService;
 import com.ezhixuan.blog.service.CategoryService;
-import com.ezhixuan.blog.entity.Category;
+import com.ezhixuan.blog.domain.entity.Category;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

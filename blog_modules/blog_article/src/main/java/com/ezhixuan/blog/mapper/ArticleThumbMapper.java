@@ -1,7 +1,7 @@
 package com.ezhixuan.blog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ezhixuan.blog.entity.ArticleThumb;
+import com.ezhixuan.blog.domain.entity.ArticleThumb;
 
 /**
 * @author ezhixuan

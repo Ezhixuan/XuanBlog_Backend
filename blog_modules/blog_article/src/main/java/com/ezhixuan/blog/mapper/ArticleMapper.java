@@ -1,7 +1,9 @@
 package com.ezhixuan.blog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ezhixuan.blog.entity.Article;
+import com.ezhixuan.blog.domain.dto.CountDto;
+import com.ezhixuan.blog.domain.entity.Article;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.Map;
@@ -13,7 +15,8 @@ import java.util.Map;
  */
 public interface ArticleMapper extends BaseMapper<Article> {
 
+  @MapKey("entityId")
   @Select(
-      "SELECT category_id, count(1) AS use_count FROM article GROUP BY category_id ORDER BY use_count DESC LIMIT #{num}")
-  Map<Long, Long> selectCategoryUseCount(int num);
+      "select category_id as entityId, count(1) as count from article group by entityId order by count desc limit #{num}")
+  Map<Long, CountDto> selectCategoryUseCount(int num);
 }

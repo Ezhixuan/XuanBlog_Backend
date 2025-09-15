@@ -9,7 +9,7 @@ import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.service.PictureUsageService;
 import com.ezhixuan.blog.service.SysPictureService;
 import com.ezhixuan.blog.service.ArticleContentService;
-import com.ezhixuan.blog.entity.ArticleContent;
+import com.ezhixuan.blog.domain.entity.ArticleContent;
 import com.ezhixuan.blog.mapper.ArticleContentMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -78,7 +78,7 @@ public class ArticleContentServiceImpl extends ServiceImpl<ArticleContentMapper,
     if (isNull(articleContent)) {
       return;
     }
-    List<Long> pictureIds = articleContent.getPictureIds();
+    List<Long> pictureIds = articleContent.getPictureIdList();
     removeById(articleId);
     if (CollectionUtils.isEmpty(pictureIds)) {
       return;

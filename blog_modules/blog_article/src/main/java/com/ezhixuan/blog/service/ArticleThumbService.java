@@ -1,7 +1,7 @@
 package com.ezhixuan.blog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ezhixuan.blog.entity.ArticleThumb;
+import com.ezhixuan.blog.domain.entity.ArticleThumb;
 import java.util.Collection;
 
 /**

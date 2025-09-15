@@ -3,9 +3,11 @@ package com.ezhixuan.blog.aop;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson2.JSON;
 import com.ezhixuan.blog.annotation.Cache;
-import com.ezhixuan.blog.entity.BaseResponse;
+import com.ezhixuan.blog.common.PageResVo;
+import com.ezhixuan.blog.common.PageResponse;
 import com.ezhixuan.blog.common.R;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
+import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.utils.RedisUtil;
 import com.ezhixuan.blog.utils.SpELExplainUtil;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -63,6 +65,8 @@ public class CacheInterceptor {
     if (Objects.nonNull(o)) {
       if (aClass.equals(BaseResponse.class)) {
         return R.success(o);
+      } else if (aClass.equals(PageResponse.class)) {
+        return new PageResponse<>((PageResVo) o);
       }
       return aClass.cast(o);
     } else {
@@ -71,6 +75,8 @@ public class CacheInterceptor {
     if (Objects.nonNull(o)) {
       if (aClass.equals(BaseResponse.class)) {
         return R.success(o);
+      } else if (aClass.equals(PageResponse.class)) {
+        return new PageResponse<>((PageResVo) o);
       }
       return o;
     }
