@@ -32,7 +32,7 @@ public class ArticleCoreController {
   @GetMapping
   @Operation(summary = "获取分页文章列表")
   public PageResponse<ArticlePageVO> getArticleListPage(ArticleQueryDTO articleQueryDTO) {
-    return R.list(queryService.pageListByDTO(articleQueryDTO));
+    return R.list(queryService.pageArticleListByDTO(articleQueryDTO));
   }
 
   @Log

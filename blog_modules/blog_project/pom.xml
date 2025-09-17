@@ -10,7 +10,7 @@
     <groupId>com.ezhixuan.blog</groupId>
     <artifactId>blog_project</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.1-beta</version>
+    <version>0.0.2-beta</version>
 
     <name>blog_project</name>
     <url>http://maven.apache.org</url>

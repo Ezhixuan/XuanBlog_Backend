@@ -3,12 +3,13 @@ package com.ezhixuan.blog.controller;
 import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.PageResponse;
 import com.ezhixuan.blog.common.R;
-import com.ezhixuan.blog.domain.dto.ProjectCreateDTO;
-import com.ezhixuan.blog.domain.dto.ProjectEditDTO;
-import com.ezhixuan.blog.domain.dto.ProjectQueryDTO;
-import com.ezhixuan.blog.domain.vo.ProjectLinkArticleVo;
-import com.ezhixuan.blog.domain.vo.ProjectQueryVO;
-import com.ezhixuan.blog.service.ProjectItemService;
+import com.ezhixuan.blog.controller.dto.ProjectCreateDTO;
+import com.ezhixuan.blog.controller.dto.ProjectEditDTO;
+import com.ezhixuan.blog.controller.dto.ProjectQueryDTO;
+import com.ezhixuan.blog.controller.vo.ProjectLinkArticleVo;
+import com.ezhixuan.blog.controller.vo.ProjectQueryVO;
+import com.ezhixuan.blog.service.ProjectQueryService;
+import com.ezhixuan.blog.service.ProjectService;
 import com.ezhixuan.blog.service.ProjectOperateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,12 +23,13 @@ import org.springframework.web.bind.annotation.*;
 public class ProjectController {
 
   private final ProjectOperateService operateService;
-  private final ProjectItemService projectItemService;
+  private final ProjectService projectService;
+  private final ProjectQueryService queryService;
 
   @Operation(summary = "获取项目列表")
   @GetMapping
   public PageResponse<ProjectQueryVO> getProjectList(ProjectQueryDTO queryDTO) {
-    return R.list(operateService.getList(queryDTO));
+    return R.list(queryService.pageProjectListByDTO(queryDTO));
   }
 
   @Operation(summary = "创建项目")
@@ -57,6 +59,6 @@ public class ProjectController {
   @Operation(summary = "获取项目选择列表")
   @GetMapping("/link")
   public PageResponse<ProjectLinkArticleVo> getLinedArticleList() {
-    return R.list(projectItemService.getLinkArticleList());
+    return R.list(projectService.getLinkArticleList());
   }
 }

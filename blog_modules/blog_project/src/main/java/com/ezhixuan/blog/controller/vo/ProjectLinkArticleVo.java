@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.domain.vo;
+package com.ezhixuan.blog.controller.vo;
 
 import lombok.Data;
 

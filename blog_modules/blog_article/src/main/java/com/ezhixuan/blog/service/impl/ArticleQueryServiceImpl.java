@@ -1,5 +1,8 @@
 package com.ezhixuan.blog.service.impl;
 
+import static java.util.Objects.isNull;
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,21 +12,17 @@ import com.ezhixuan.blog.controller.vo.ArticleInfoVO;
 import com.ezhixuan.blog.controller.vo.ArticlePageVO;
 import com.ezhixuan.blog.controller.vo.CountVO;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
-import com.ezhixuan.blog.domain.entity.SysPicture;
 import com.ezhixuan.blog.domain.entity.Article;
 import com.ezhixuan.blog.domain.entity.Category;
+import com.ezhixuan.blog.domain.entity.SysPicture;
 import com.ezhixuan.blog.domain.entity.Tag;
 import com.ezhixuan.blog.service.*;
 import com.ezhixuan.blog.utils.RedisUtil;
 import jakarta.annotation.Resource;
-import org.springframework.aop.framework.AopContext;
-import org.springframework.stereotype.Service;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
-import static org.springframework.util.CollectionUtils.isEmpty;
+import org.springframework.aop.framework.AopContext;
+import org.springframework.stereotype.Service;
 
 /**
  * 文章查询接口实现
@@ -52,7 +51,7 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
    * @return 分页结果，包含ArticlePageVO对象列表
    */
   @Override
-  public IPage<ArticlePageVO> pageListByDTO(ArticleQueryDTO articleQueryDTO) {
+  public IPage<ArticlePageVO> pageArticleListByDTO(ArticleQueryDTO articleQueryDTO) {
     // 参数校验，如果查询条件为空则返回空页面
     if (isNull(articleQueryDTO)) {
       return new Page<>();
@@ -130,12 +129,14 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
 
     // 提取文章ID列表
     List<Long> articleIds = articleList.stream().map(Article::getId).toList();
+    // 提取文章的categoryId列表
+    List<Long> categoryIds = articleList.stream().map(Article::getCategoryId).toList();
 
     // 获取文章与标签的关联关系
     Map<Long, List<Tag>> tagLinked = articleTagService.getLink(articleIds);
 
     // 获取文章与分类的关联关系（分类ID到分类名称的映射）
-    Map<Long, String> categoryLinked = categoryService.getLink(articleIds);
+    Map<Long, String> categoryLinked = categoryService.getLink(categoryIds);
 
     // 提取文章封面ID列表
     List<Long> coverIds = articleList.stream().map(Article::getCoverId).toList();
@@ -292,6 +293,6 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
       articleQueryDTO.setPageSize(num);
       articleQueryDTO.setNeedCover(true);
     }
-    return pageListByDTO(articleQueryDTO).getRecords();
+    return pageArticleListByDTO(articleQueryDTO).getRecords();
   }
 }

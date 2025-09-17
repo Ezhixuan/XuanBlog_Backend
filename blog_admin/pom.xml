@@ -29,6 +29,11 @@
             <artifactId>blog_article</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.ezhixuan.blog</groupId>
+            <artifactId>blog_project</artifactId>
+        </dependency>
+
 <!--        <dependency>-->
 <!--            <groupId>com.ezhixuan</groupId>-->
 <!--            <artifactId>blog_message</artifactId>-->
@@ -38,11 +43,6 @@
 <!--        <dependency>-->
 <!--            <groupId>com.ezhixuan</groupId>-->
 <!--            <artifactId>blog_card</artifactId>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>com.ezhixuan.blog</groupId>-->
-<!--            <artifactId>blog_project</artifactId>-->
 <!--        </dependency>-->
 
         <!-- MacOS DNS resolver -->

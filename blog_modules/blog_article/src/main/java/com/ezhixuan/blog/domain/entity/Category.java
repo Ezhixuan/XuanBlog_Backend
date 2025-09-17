@@ -1,6 +1,8 @@
 package com.ezhixuan.blog.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -10,7 +12,9 @@ import java.time.LocalDateTime;
 @Data
 @TableName("category")
 public class Category {
+
   @Schema(description = "主键")
+  @TableId(value = "id", type = IdType.AUTO)
   private Long id;
 
   @Schema(description = "分类名称")

@@ -21,7 +21,7 @@ public interface ArticleQueryService {
    * @param articleQueryDTO 查询条件
    * @return 包含vo数据
    */
-  IPage<ArticlePageVO> pageListByDTO(ArticleQueryDTO articleQueryDTO);
+  IPage<ArticlePageVO> pageArticleListByDTO(ArticleQueryDTO articleQueryDTO);
 
   /**
    * 获取文章详情

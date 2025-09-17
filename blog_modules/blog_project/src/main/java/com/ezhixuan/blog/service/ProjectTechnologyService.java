@@ -1,37 +1,59 @@
 package com.ezhixuan.blog.service;
 
-import com.ezhixuan.blog.domain.entity.ProjectTechnology;
 import com.baomidou.mybatisplus.extension.service.IService;
-
+import com.ezhixuan.blog.domain.entity.ProjectTechnology;
+import com.ezhixuan.blog.domain.entity.Technology;
 import java.util.List;
+import java.util.Map;
 
 /**
-* @author ezhixuan
-* @description 针对表【project_technology】的数据库操作Service
-* @createDate 2025-07-05 22:13:11
-*/
+ * @author ezhixuan
+ * @description 针对表【link_project_technology】的数据库操作Service
+ * @createDate 2025-07-06 01:36:07
+ */
 public interface ProjectTechnologyService extends IService<ProjectTechnology> {
 
-    /**
-     * 根据技术栈获取 id
-     * @author Ezhixuan
-     * @param technology 技术栈名称
-     * @return 技术栈 id
-     */
-    Long getIdByName(String technology);
+  /**
+   * 获取技术栈 id
+   *
+   * @author Ezhixuan
+   * @param projectId 项目 id
+   * @return List<Long> 技术栈 id
+   */
+  List<Long> queryLink(Long projectId);
 
-    /**
-     * 根据 id 获取名称
-     * @param list  id
-     * @return 名称
-     */
-    List<String> getName(List<?> list);
+  /**
+   * 获取项目 id
+   *
+   * @author Ezhixuan
+   * @param technologyId 技术栈 id
+   * @return List<Long> 项目 id
+   */
+  List<Long> queryProjectId(Long technologyId);
 
-    /**
-     * 新增并返回拼接后的 ids
-     * @author Ezhixuan
-     * @param technologies 技术栈名称
-     * @return ids
-     */
-    List<Long> saveAll(List<String> technologies);
+  /**
+   * 建立连接
+   *
+   * @author Ezhixuan
+   * @param projectId 项目 id
+   * @param technologiesIds 技术栈 id
+   */
+  void saveAll(Long projectId, List<Long> technologiesIds);
+
+  /**
+   * 断开链接
+   *
+   * @author Ezhixuan
+   * @param projectId 项目 id
+   */
+  void removeByProjectId(Long projectId);
+
+  /**
+   * 通过项目id 列表获取关联的技术栈列表
+   *
+   * @param projectIds 项目 id 列表
+   * @since 0.0.2beta
+   * @return Map<Long,List<Technology>> 项目 id -> 技术栈列表
+   */
+  Map<Long, List<Technology>> queryLink(List<Long> projectIds);
 }

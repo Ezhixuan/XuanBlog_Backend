@@ -6,10 +6,11 @@
 
     <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.ProjectTechnology">
             <id property="id" column="id" />
-            <result property="name" column="name" />
+            <id property="project_id" column="project_id" />
+            <id property="technology_id" column="technology_id" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name
+        id,project_id,technology_id
     </sql>
 </mapper>

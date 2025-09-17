@@ -1,4 +1,4 @@
-package com.ezhixuan.blog.domain.dto;
+package com.ezhixuan.blog.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

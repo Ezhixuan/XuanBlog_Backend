@@ -1,6 +1,6 @@
 package com.ezhixuan.blog.mapper;
 
-import com.ezhixuan.blog.domain.entity.ProjectItem;
+import com.ezhixuan.blog.domain.entity.Project;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2025-07-05 22:13:11
 * @Entity com.ezhixuan.blog.domain.entity.ProjectItem
 */
-public interface ProjectItemMapper extends BaseMapper<ProjectItem> {
+public interface ProjectMapper extends BaseMapper<Project> {
 
 }
 
