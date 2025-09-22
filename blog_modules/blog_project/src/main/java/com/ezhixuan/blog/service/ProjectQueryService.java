@@ -2,9 +2,9 @@ package com.ezhixuan.blog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ezhixuan.blog.controller.dto.ProjectQueryDTO;
+import com.ezhixuan.blog.controller.vo.ProjectDocVO;
 import com.ezhixuan.blog.controller.vo.ProjectQueryVO;
 import com.ezhixuan.blog.domain.entity.Project;
-
 import java.util.List;
 
 /**
@@ -38,4 +38,12 @@ public interface ProjectQueryService {
    * @return ProjectQueryVO 项目查询视图对象列表
    */
   List<ProjectQueryVO> convertToPageVO(List<Project> projectList);
+
+  /**
+   * 获取项目文章列表
+   *
+   * @param id 项目ID
+   * @return ProjectDocVO 项目文章列表
+   */
+  List<ProjectDocVO> getProjectArticleDocList(Long id);
 }

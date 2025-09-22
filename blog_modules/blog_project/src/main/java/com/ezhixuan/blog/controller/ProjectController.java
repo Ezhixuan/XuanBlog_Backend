@@ -1,16 +1,18 @@
 package com.ezhixuan.blog.controller;
 
-import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.PageResponse;
 import com.ezhixuan.blog.common.R;
+import com.ezhixuan.blog.controller.dto.ProjectArticleDocArtDTO;
 import com.ezhixuan.blog.controller.dto.ProjectCreateDTO;
 import com.ezhixuan.blog.controller.dto.ProjectEditDTO;
 import com.ezhixuan.blog.controller.dto.ProjectQueryDTO;
+import com.ezhixuan.blog.controller.vo.ProjectDocVO;
 import com.ezhixuan.blog.controller.vo.ProjectLinkArticleVo;
 import com.ezhixuan.blog.controller.vo.ProjectQueryVO;
+import com.ezhixuan.blog.entity.BaseResponse;
+import com.ezhixuan.blog.service.ProjectOperateService;
 import com.ezhixuan.blog.service.ProjectQueryService;
 import com.ezhixuan.blog.service.ProjectService;
-import com.ezhixuan.blog.service.ProjectOperateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +60,20 @@ public class ProjectController {
 
   @Operation(summary = "获取项目选择列表")
   @GetMapping("/link")
-  public PageResponse<ProjectLinkArticleVo> getLinedArticleList() {
+  public PageResponse<ProjectLinkArticleVo> getLinkedArticleList() {
     return R.list(projectService.getLinkArticleList());
+  }
+
+  @Operation(summary = "获取项目文章列表")
+  @GetMapping("/{id}/articles")
+  public PageResponse<ProjectDocVO> getProjectArticleDocList(@PathVariable Long id) {
+    return R.list(queryService.getProjectArticleDocList(id));
+  }
+
+  @Operation(summary = "构建文章列表布局")
+  @PutMapping("/{docId}/sort")
+  public BaseResponse<Boolean> updateArticleSort(
+      @PathVariable Long docId, @RequestBody ProjectArticleDocArtDTO articleDocArtDTO) {
+    return R.success(operateService.buildArticleSort(docId, articleDocArtDTO));
   }
 }

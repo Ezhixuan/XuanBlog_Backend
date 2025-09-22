@@ -23,6 +23,7 @@ public class ArticleInfoVO extends ArticlePageVO {
     this.setWordCount(pageVO.getWordCount());
     this.setViewCount(pageVO.getViewCount());
     this.setLikeCount(pageVO.getLikeCount());
+    this.setProjectId(pageVO.getProjectId());
     this.setStatus(pageVO.getStatus());
     this.setCreateTime(pageVO.getCreateTime());
     this.setUpdateTime(pageVO.getUpdateTime());

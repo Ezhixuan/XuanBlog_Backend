@@ -4,19 +4,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ezhixuan.blog.controller.dto.ProjectQueryDTO;
+import com.ezhixuan.blog.controller.vo.ProjectArticleDocVO;
+import com.ezhixuan.blog.controller.vo.ProjectDocVO;
 import com.ezhixuan.blog.controller.vo.ProjectQueryVO;
-import com.ezhixuan.blog.domain.entity.Article;
-import com.ezhixuan.blog.domain.entity.Project;
-import com.ezhixuan.blog.domain.entity.Technology;
-import com.ezhixuan.blog.service.ArticleService;
-import com.ezhixuan.blog.service.ProjectQueryService;
-import com.ezhixuan.blog.service.ProjectService;
-import com.ezhixuan.blog.service.ProjectTechnologyService;
+import com.ezhixuan.blog.domain.entity.*;
+import com.ezhixuan.blog.service.*;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -31,6 +32,8 @@ public class ProjectQueryServiceImpl implements ProjectQueryService {
 
   @Resource private ProjectService projectService;
   @Resource private ProjectTechnologyService projectTechnologyService;
+  @Resource private ProjectDocService projectDocService;
+  @Resource private ProjDocArtService projectDocArtService;
   @Resource private ArticleService articleService;
 
   /**
@@ -78,7 +81,7 @@ public class ProjectQueryServiceImpl implements ProjectQueryService {
   @Override
   public List<ProjectQueryVO> convertToPageVO(List<Project> projectList) {
     if (isEmpty(projectList)) {
-      return Collections.emptyList();
+      return emptyList();
     }
     List<ProjectQueryVO> projectQueryVOS = projectList.stream().map(ProjectQueryVO::new).toList();
     // 获取项目 id
@@ -93,15 +96,141 @@ public class ProjectQueryServiceImpl implements ProjectQueryService {
           // todo view
           // 技术栈
           List<Technology> technologyList =
-              projectIdToTechnologyMap.getOrDefault(
-                  projectQueryVO.getId(), Collections.emptyList());
+              projectIdToTechnologyMap.getOrDefault(projectQueryVO.getId(), emptyList());
           List<String> nameList = technologyList.stream().map(Technology::getName).toList();
           projectQueryVO.setTechnologies(nameList);
           // 包含文章
           projectQueryVO.setHasArticles(
               projectIdToHasArticleMap.getOrDefault(projectQueryVO.getId(), false));
         });
-    return null;
+    return projectQueryVOS;
+  }
+
+  /**
+   * 获取项目文章列表
+   *
+   * @param projectId 项目ID
+   * @return ProjectDocVO 项目文章列表
+   */
+  @Override
+  public List<ProjectDocVO> getProjectArticleDocList(Long projectId) {
+    if (isNull(projectId)) {
+      return emptyList();
+    }
+    // 获取项目下的所有文章信息
+    List<Article> articleList =
+        articleService.list(
+            Wrappers.<Article>lambdaQuery()
+                .eq(Article::getProjectId, projectId)
+                .orderByAsc(Article::getCreateTime));
+    if (isEmpty(articleList)) {
+      return emptyList();
+    }
+    List<ProjectDoc> docList =
+        projectDocService.list(
+            Wrappers.<ProjectDoc>lambdaQuery().eq(ProjectDoc::getProjectId, projectId));
+    // 获取 docIds
+    if (isEmpty(docList)) {
+      return getDefaultDocVO(articleList);
+    }
+    List<Long> docIds = docList.stream().map(ProjectDoc::getId).toList();
+    List<ProjDocArt> artList = projectDocArtService.listByIds(docIds);
+
+    // 将 articleList 转换成 map
+    Map<Long, Article> articleIdToArticleMap =
+        articleList.stream().collect(Collectors.toMap(Article::getId, Function.identity()));
+    // 将 docList 转换成 map
+    Map<Long, ProjectDoc> projectDocIdToDocMap =
+        docList.stream().collect(Collectors.toMap(ProjectDoc::getId, Function.identity()));
+
+    return getDocVo(artList, articleIdToArticleMap, projectDocIdToDocMap);
+  }
+
+  private List<ProjectDocVO> getDocVo(
+      List<ProjDocArt> artList,
+      Map<Long, Article> articleIdToArticleMap,
+      Map<Long, ProjectDoc> projectDocIdToDocMap) {
+    if (isEmpty(artList)) {
+      // 如果 artList 为空那么需要构建 doc 后再补一个默认的
+      List<ProjectDocVO> projectDocVOList =
+          new ArrayList<>(
+              projectDocIdToDocMap.values().stream()
+                  .map(
+                      projectDoc -> {
+                        ProjectDocVO projectDocVO = new ProjectDocVO();
+                        projectDocVO.setId(projectDoc.getId());
+                        projectDocVO.setTitle(projectDoc.getTitle());
+                        projectDocVO.setCreateTime(projectDoc.getCreateTime());
+                        return projectDocVO;
+                      })
+                  .toList());
+      projectDocVOList.addAll(getDefaultDocVO(articleIdToArticleMap.values().stream().toList()));
+      return projectDocVOList;
+    }
+
+    List<ProjectDocVO> projectDocVOList =
+        new ArrayList<>(
+            artList.stream().collect(Collectors.groupingBy(ProjDocArt::getDocId)).values().stream()
+                .map(
+                    artStreamList -> {
+                      ProjectDoc projectDoc =
+                          projectDocIdToDocMap.get(artStreamList.getFirst().getDocId());
+                      ProjectDocVO projectDocVO = new ProjectDocVO();
+                      projectDocVO.setId(projectDoc.getId());
+                      projectDocVO.setTitle(projectDoc.getTitle());
+                      projectDocVO.setCreateTime(projectDoc.getCreateTime());
+                      Map<Long, Integer> articleIdToSortOrderMap =
+                          artStreamList.stream()
+                              .collect(
+                                  Collectors.toMap(
+                                      ProjDocArt::getArticleId, ProjDocArt::getSortOrder));
+                      Set<Long> articleIds = articleIdToSortOrderMap.keySet();
+                      List<ProjectArticleDocVO> articleList =
+                          articleIds.stream()
+                              .map(
+                                  articleId -> {
+                                    ProjectArticleDocVO articleDocVO = new ProjectArticleDocVO();
+                                    articleDocVO.setId(articleId);
+                                    // 每次拿都是删除
+                                    Article article = articleIdToArticleMap.remove(articleId);
+                                    if (nonNull(article)) {
+                                      articleDocVO.setTitle(article.getTitle());
+                                    } else {
+                                      return null;
+                                    }
+                                    articleDocVO.setSortOrder(
+                                        articleIdToSortOrderMap.get(articleId));
+                                    return articleDocVO;
+                                  })
+                              .filter(Objects::nonNull)
+                              .toList();
+                      projectDocVO.setArticles(articleList);
+                      return projectDocVO;
+                    })
+                .toList());
+    if (!isEmpty(articleIdToArticleMap)) {
+      List<ProjectDocVO> defaultDcoVO =
+          getDefaultDocVO(articleIdToArticleMap.values().stream().toList());
+      projectDocVOList.addAll(defaultDcoVO);
+    }
+    return projectDocVOList;
+  }
+
+  private List<ProjectDocVO> getDefaultDocVO(List<Article> articleList) {
+    ProjectDocVO projectDocVO = new ProjectDocVO();
+    projectDocVO.setId(0L);
+    projectDocVO.setTitle("项目文档");
+    int sort = 0;
+    List<ProjectArticleDocVO> articleDocVOList = new ArrayList<>(articleList.size());
+    for (Article article : articleList) {
+      ProjectArticleDocVO projectArticleDocVO = new ProjectArticleDocVO();
+      projectArticleDocVO.setId(article.getId());
+      projectArticleDocVO.setTitle(article.getTitle());
+      projectArticleDocVO.setSortOrder(sort++);
+      articleDocVOList.add(projectArticleDocVO);
+    }
+    projectDocVO.setArticles(articleDocVOList);
+    return Collections.singletonList(projectDocVO);
   }
 
   /**
