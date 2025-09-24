@@ -18,12 +18,12 @@ public class UserInfoVO {
     /**
      * 用户账号
      */
-    private String userAccount;
+    private String account;
 
     /**
      * 用户名
      */
-    private String username;
+    private String name;
 
     /**
      * 头像地址
@@ -52,8 +52,8 @@ public class UserInfoVO {
 
     public UserInfoVO(User user) {
         this.id = user.getId();
-        this.userAccount = user.getAccount();
-        this.username = user.getName();
+        this.account = user.getAccount();
+        this.name = user.getName();
         this.avatar = user.getAvatar();
         this.profile = user.getProfile();
         this.email = user.getEmail();

@@ -13,4 +13,17 @@
     <sql id="Base_Column_List">
         doc_id,article_id,sort_order
     </sql>
+    <update id="compactSortOrder">
+         <![CDATA[
+        UPDATE proj_doc_art p
+            JOIN (SELECT article_id,
+                         (@rank := @rank + 10) AS new_sort
+                  FROM (SELECT article_id
+                        FROM proj_doc_art
+                        WHERE doc_id = #{docId}
+                        ORDER BY sort_order, article_id) ordered,
+                       (SELECT @rank := 0) r) t ON t.article_id = p.article_id
+        SET p.sort_order = t.new_sort
+        ]]>
+    </update>
 </mapper>

@@ -11,9 +11,7 @@ import com.ezhixuan.blog.service.ProjDocArtService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Objects;
 
 import static java.util.Objects.isNull;
 
@@ -51,43 +49,41 @@ public class ProjDocArtServiceImpl extends ServiceImpl<ProjDocArtMapper, ProjDoc
   @Transactional(rollbackFor = Exception.class)
   public void link(Long docId, ProjectArticleDocArtDTO articleDocArtDTO) {
     if (isNull(docId) || isNull(articleDocArtDTO)) {
-      throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+      throw new BusinessException(ErrorCode.PARAMS_ERROR);
     }
     Long articleId = articleDocArtDTO.getArticleId();
     if (isNull(articleId)) {
-      throw new BusinessException(ErrorCode.PARAMS_ERROR, "未指定文章");
-    }
-    List<ProjDocArt> docArtList =
-        list(Wrappers.<ProjDocArt>lambdaQuery().eq(ProjDocArt::getDocId, docId));
-    Integer sortOrder = articleDocArtDTO.getSortOrder();
-    sortOrder = isNull(sortOrder) ? (docArtList.size() + 1) * 10 : sortOrder;
-    ProjDocArt projDocArt = new ProjDocArt();
-    // 查询是否已存在关联
-      ProjDocArt existingLink = getOne(
-              Wrappers.<ProjDocArt>lambdaQuery()
-                      .eq(ProjDocArt::getDocId, docId)
-                      .eq(ProjDocArt::getArticleId, articleId)
-      );
-      if (isNull(existingLink)) {
-          projDocArt.setDocId(docId);
-          projDocArt.setArticleId(articleDocArtDTO.getArticleId());
-          projDocArt.setSortOrder(sortOrder);
-      } else {
-          projDocArt = existingLink;
+      throw new BusinessException(ErrorCode.PARAMS_ERROR);
       }
 
-    // 获取之前的所有数据进行排序
-    docArtList.add(projDocArt);
-    List<ProjDocArt> sortedList =
-        docArtList.stream().sorted(Comparator.comparingInt(ProjDocArt::getSortOrder)).toList();
-    List<ProjDocArt> needUpdateList = new ArrayList<>();
-    for (int i = 0; i < sortedList.size(); i++) {
-      ProjDocArt projDocArtInForLoop = sortedList.get(i);
-      if (projDocArtInForLoop.getSortOrder() != i * 10) {
-        projDocArtInForLoop.setSortOrder(i * 10);
-        needUpdateList.add(projDocArtInForLoop);
-      }
-    }
-    saveOrUpdateBatch(needUpdateList);
+    lambdaQuery()
+        .eq(ProjDocArt::getArticleId, articleId)
+        .oneOpt()
+        .ifPresent(
+            projDocArt -> {
+              // 如果存在
+              if (Objects.equals(projDocArt.getDocId(), docId)
+                  && (Objects.equals(projDocArt.getSortOrder(), articleDocArtDTO.getSortOrder() - 1)
+                      || Objects.equals(
+                          projDocArt.getSortOrder(), articleDocArtDTO.getSortOrder() + 1))) {
+                throw new BusinessException(ErrorCode.SUCCESS);
+              }
+              removeById(articleId);
+            });
+
+    //link
+    ProjDocArt docArt = new ProjDocArt();
+    docArt.setArticleId(articleId);
+    docArt.setDocId(docId);
+    docArt.setSortOrder(articleDocArtDTO.getSortOrder());
+    save(docArt);
+    // async sort
+      Thread.startVirtualThread(() -> {
+          lambdaQuery()
+                  .eq(ProjDocArt::getDocId, docId)
+                  .orderByAsc(ProjDocArt::getSortOrder)
+                  .last("FOR UPDATE");
+          int rows = this.baseMapper.compactSortOrder(docId);
+      });
   }
 }

@@ -133,8 +133,8 @@ public class ProjectQueryServiceImpl implements ProjectQueryService {
     if (isEmpty(docList)) {
       return getDefaultDocVO(articleList);
     }
-    List<Long> docIds = docList.stream().map(ProjectDoc::getId).toList();
-    List<ProjDocArt> artList = projectDocArtService.listByIds(docIds);
+    List<Long> articleIds = articleList.stream().map(Article::getId).toList();
+    List<ProjDocArt> artList = projectDocArtService.listByIds(articleIds);
 
     // 将 articleList 转换成 map
     Map<Long, Article> articleIdToArticleMap =

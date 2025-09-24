@@ -16,5 +16,5 @@ public class ProjectArticleDocArtDTO {
   private Long articleId;
 
   @Schema(description = "排序")
-  private Integer sortOrder;
+  private Integer sortOrder = 0;
 }

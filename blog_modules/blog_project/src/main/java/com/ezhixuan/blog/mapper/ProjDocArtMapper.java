@@ -2,6 +2,7 @@ package com.ezhixuan.blog.mapper;
 
 import com.ezhixuan.blog.domain.entity.ProjDocArt;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author ezhixuan
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface ProjDocArtMapper extends BaseMapper<ProjDocArt> {
 
+    int compactSortOrder(@Param("docId") Long docId);
 }
 
 
