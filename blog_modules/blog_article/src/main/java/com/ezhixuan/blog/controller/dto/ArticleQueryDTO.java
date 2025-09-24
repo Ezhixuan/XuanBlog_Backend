@@ -32,30 +32,16 @@ public class ArticleQueryDTO extends PageRequest {
   private Collection<Long> ids = new ArrayList<>();
 
   @Schema(description = "标签id")
-  private Collection<Long> tagIds;
+  private Long tagId;
 
   @Schema(description = "菜单id")
-  private Collection<Long> categoryIds;
+  private Long categoryId;
 
   @Schema(description = "项目 id")
   private Long projectId;
 
   @Schema(description = "是否需要封面")
   private Boolean needCover;
-
-  public List<Long> getTagIds() {
-    if (isEmpty(tagIds)) {
-      return List.of();
-    }
-    return tagIds.stream().distinct().toList();
-  }
-
-  public List<Long> getCategoryIds() {
-    if (isEmpty(categoryIds)) {
-      return List.of();
-    }
-    return categoryIds.stream().distinct().toList();
-  }
 
   public List<Long> getIds() {
     if (isEmpty(ids)) {

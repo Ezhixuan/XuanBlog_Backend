@@ -68,7 +68,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
       }
     } catch (Exception ignored) {
     }
-    List<Long> categoryIds = articleQueryDTO.getCategoryIds();
     List<Long> ids = articleQueryDTO.getIds();
 
     return Wrappers.<Article>lambdaQuery()
@@ -76,7 +75,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
             nonNull(articleQueryDTO.getProjectId()),
             Article::getProjectId,
             articleQueryDTO.getProjectId())
-        .in(!categoryIds.isEmpty(), Article::getCategoryId, categoryIds)
+        .eq(
+            nonNull(articleQueryDTO.getCategoryId()),
+            Article::getCategoryId,
+            articleQueryDTO.getCategoryId())
         .in(!ids.isEmpty(), Article::getId, ids)
         .like(nonNull(articleQueryDTO.getTitle()), Article::getTitle, articleQueryDTO.getTitle())
         .like(

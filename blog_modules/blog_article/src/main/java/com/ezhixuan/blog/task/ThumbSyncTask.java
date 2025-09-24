@@ -1,13 +1,12 @@
 package com.ezhixuan.blog.task;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.ezhixuan.blog.annotation.Log;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
-import com.ezhixuan.blog.domain.entity.ArticleThumb;
-import com.ezhixuan.blog.service.ArticleThumbService;
-import com.ezhixuan.blog.service.ArticleService;
-import com.ezhixuan.blog.utils.RedisUtil;
 import com.ezhixuan.blog.domain.entity.Article;
+import com.ezhixuan.blog.domain.entity.ArticleThumb;
+import com.ezhixuan.blog.service.ArticleService;
+import com.ezhixuan.blog.service.ArticleThumbService;
+import com.ezhixuan.blog.utils.RedisUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,125 +26,134 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class ThumbSyncTask {
 
   private static final String ALL_THUMB_KEY = RedisKeyConstant.ARTICLE_THUMB_PRE_KEY + "*";
-    public static String CURRENT_TIME = "currentTime";
-    private final RedisUtil redisUtil;
-    private final ArticleService articleService;
-    private final ArticleThumbService thumbService;
+  public static String CURRENT_TIME = "currentTime";
+  private final RedisUtil redisUtil;
+  private final ArticleService articleService;
+  private final ArticleThumbService thumbService;
 
-    @PostConstruct
-    public void init() {
-        updateCurrentTimeTask();
-    }
+  @PostConstruct
+  public void init() {
+    updateCurrentTimeTask();
+  }
 
-    /**
-     * 定时更新时间以便任务统计
-     *
-     * @author Ezhixuan
-     */
-    @Scheduled(cron = "0 0 0 * * *")
-    public void updateCurrentTimeTask() {
-        LocalDate localDate = LocalDate.now();
-        CURRENT_TIME = localDate.format(DateTimeFormatter.ofPattern("MM:dd"));
-    }
+  /**
+   * 定时更新时间以便任务统计
+   *
+   * @author Ezhixuan
+   */
+  @Scheduled(cron = "0 0 0 * * *")
+  public void updateCurrentTimeTask() {
+    LocalDate localDate = LocalDate.now();
+    CURRENT_TIME = localDate.format(DateTimeFormatter.ofPattern("MM:dd"));
+  }
 
-    /**
-     * 每小时统计一次 Thumb
-     *
-     * @author Ezhixuan
-     */
-    @Log
-    @Scheduled(fixedRate = 1000L * 60 * 60)
-    @Transactional(rollbackFor = Exception.class)
-    public void syncThumb2DB() {
-        String tempKey = RedisKeyConstant.ARTICLE_THUMB_TEMP_PRE_KEY + CURRENT_TIME;
-        Map<Object, Object> entries = redisUtil.getRedisTemplate().opsForHash().entries(tempKey);
-        if (isEmpty(entries))
-            return;
+  /**
+   * 每小时统计一次 Thumb
+   *
+   * @author Ezhixuan
+   */
+  @Scheduled(fixedRate = 1000L * 60 * 60)
+  @Transactional(rollbackFor = Exception.class)
+  public void syncThumb2DB() {
+    String tempKey = RedisKeyConstant.ARTICLE_THUMB_TEMP_PRE_KEY + CURRENT_TIME;
+    Map<Object, Object> entries = redisUtil.getRedisTemplate().opsForHash().entries(tempKey);
+    if (isEmpty(entries)) return;
 
-        List<Article> articleList =
-            articleService.list(Wrappers.<Article>lambdaQuery().in(Article::getId, entries.keySet()));
+    List<Article> articleList =
+        articleService.list(Wrappers.<Article>lambdaQuery().in(Article::getId, entries.keySet()));
 
-        articleList.forEach(article -> {
-            article.setLikeCount(
-                article.getLikeCount() + Integer.parseInt(entries.get(article.getId().toString()).toString()));
+    articleList.forEach(
+        article -> {
+          article.setLikeCount(
+              article.getLikeCount()
+                  + Integer.parseInt(entries.get(article.getId().toString()).toString()));
         });
 
-        articleService.updateBatchById(articleList);
-        redisUtil.cleanCaches(tempKey);
+    articleService.updateBatchById(articleList);
+    redisUtil.cleanCaches(tempKey);
+  }
+
+  @Scheduled(fixedRate = 1000L * 60 * 60)
+  @Transactional(rollbackFor = Exception.class)
+  public void syncThumbUser2DB() {
+    List<String> keys = redisUtil.scan(ALL_THUMB_KEY);
+    if (isEmpty(keys)) {
+      return;
     }
 
-    @Log
-    @Scheduled(fixedRate = 1000L * 60 * 60)
-    @Transactional(rollbackFor = Exception.class)
-    public void syncThumbUser2DB() {
-        List<String> keys = redisUtil.scan(ALL_THUMB_KEY);
-        if (isEmpty(keys)) {
-            return;
-        }
+    List<Long> articleIds =
+        keys.stream()
+            .map(key -> Long.valueOf(key.replace(RedisKeyConstant.ARTICLE_THUMB_PRE_KEY, "")))
+            .toList();
 
-        List<Long> articleIds = keys.stream()
-                .map(key -> Long.valueOf(key.replace(RedisKeyConstant.ARTICLE_THUMB_PRE_KEY, "")))
-                .toList();
+    if (isEmpty(articleIds)) {
+      return;
+    }
 
-        if (isEmpty(articleIds)) {
-            return;
-        }
+    Map<Object, List<ArticleThumb>> dbThumbsMap =
+        thumbService
+            .list(Wrappers.<ArticleThumb>lambdaQuery().in(ArticleThumb::getArticleId, articleIds))
+            .stream()
+            .collect(Collectors.groupingBy(ArticleThumb::getArticleId));
 
-        Map<Object, List<ArticleThumb>> dbThumbsMap =
-                thumbService.list(Wrappers.<ArticleThumb>lambdaQuery().in(ArticleThumb::getArticleId, articleIds)).stream()
-                        .collect(Collectors.groupingBy(ArticleThumb::getArticleId));
+    List<ArticleThumb> waitAddList = new ArrayList<>();
+    List<ArticleThumb> waitRemoveList = new ArrayList<>();
 
-        List<ArticleThumb> waitAddList = new ArrayList<>();
-        List<ArticleThumb> waitRemoveList = new ArrayList<>();
+    keys.forEach(
+        key -> {
+          Long articleId = Long.valueOf(key.replace(RedisKeyConstant.ARTICLE_THUMB_PRE_KEY, ""));
+          Map<Object, Object> redisEntries = redisUtil.getRedisTemplate().opsForHash().entries(key);
 
-        keys.forEach(key -> {
-            Long articleId = Long.valueOf(key.replace(RedisKeyConstant.ARTICLE_THUMB_PRE_KEY, ""));
-            Map<Object, Object> redisEntries = redisUtil.getRedisTemplate().opsForHash().entries(key);
+          Set<Long> redisLikedUserIds =
+              redisEntries.entrySet().stream()
+                  .filter(entry -> Integer.valueOf(1).equals(entry.getValue()))
+                  .map(entry -> Long.valueOf(entry.getKey().toString()))
+                  .collect(Collectors.toSet());
 
-            Set<Long> redisLikedUserIds = redisEntries.entrySet().stream()
-                    .filter(entry -> Integer.valueOf(1).equals(entry.getValue()))
-                    .map(entry -> Long.valueOf(entry.getKey().toString()))
-                    .collect(Collectors.toSet());
+          List<ArticleThumb> dbArticleThumbs =
+              dbThumbsMap.getOrDefault(articleId, Collections.emptyList());
+          Map<Object, ArticleThumb> dbUserIdMap =
+              dbArticleThumbs.stream()
+                  .collect(Collectors.toMap(ArticleThumb::getUserId, Function.identity()));
+          Set<Object> dbUserIds = dbUserIdMap.keySet();
 
-            List<ArticleThumb> dbArticleThumbs = dbThumbsMap.getOrDefault(articleId, Collections.emptyList());
-            Map<Object, ArticleThumb> dbUserIdMap = dbArticleThumbs.stream()
-                    .collect(Collectors.toMap(ArticleThumb::getUserId, Function.identity()));
-            Set<Object> dbUserIds = dbUserIdMap.keySet();
+          redisLikedUserIds.stream()
+              .filter(userId -> !dbUserIds.contains(userId))
+              .forEach(
+                  userId -> {
+                    ArticleThumb newThumb = new ArticleThumb();
+                    newThumb.setArticleId(articleId);
+                    newThumb.setUserId(userId);
+                    waitAddList.add(newThumb);
+                  });
 
-            redisLikedUserIds.stream()
-                    .filter(userId -> !dbUserIds.contains(userId))
-                    .forEach(userId -> {
-                        ArticleThumb newThumb = new ArticleThumb();
-                        newThumb.setArticleId(articleId);
-                        newThumb.setUserId(userId);
-                        waitAddList.add(newThumb);
-                    });
-
-            dbUserIds.stream()
-                    .filter(userId -> !redisLikedUserIds.contains(userId))
-                    .forEach(userId -> waitRemoveList.add(dbUserIdMap.get(userId)));
+          dbUserIds.stream()
+              .filter(userId -> !redisLikedUserIds.contains(userId))
+              .forEach(userId -> waitRemoveList.add(dbUserIdMap.get(userId)));
         });
 
-        if (!isEmpty(waitAddList)) {
-            thumbService.saveBatch(waitAddList);
-        }
-        if (!isEmpty(waitRemoveList)) {
-            thumbService.removeBatchByIds(waitRemoveList);
-        }
+    if (!isEmpty(waitAddList)) {
+      thumbService.saveBatch(waitAddList);
     }
-
-    @Log
-    @PostConstruct
-    @Scheduled(fixedRate = 1000L * 60 * 60 * 24 * 7)
-    public void syncThumbUser2Redis() {
-        redisUtil.cleanCaches(ALL_THUMB_KEY);
-        List<Long> articleIds =
-            articleService.list(Wrappers.<Article>lambdaQuery().orderByDesc(Article::getLikeCount).last("limit 20"))
-                .stream().map(Article::getId).toList();
-        if (isEmpty(articleIds)) {
-            return;
-        }
-        thumbService.syncToRedis(articleIds);
+    if (!isEmpty(waitRemoveList)) {
+      thumbService.removeBatchByIds(waitRemoveList);
     }
+  }
 
+  @PostConstruct
+  @Scheduled(fixedRate = 1000L * 60 * 60 * 24 * 7)
+  public void syncThumbUser2Redis() {
+    redisUtil.cleanCaches(ALL_THUMB_KEY);
+    List<Long> articleIds =
+        articleService
+            .list(
+                Wrappers.<Article>lambdaQuery().orderByDesc(Article::getLikeCount).last("limit 20"))
+            .stream()
+            .map(Article::getId)
+            .toList();
+    if (isEmpty(articleIds)) {
+      return;
+    }
+    thumbService.syncToRedis(articleIds);
+  }
 }

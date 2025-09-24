@@ -59,7 +59,6 @@ public class ArticleCoreController {
     return R.success(operateService.deleteArticleById(id));
   }
 
-  @Log
   @PutMapping("/thumb/{id}")
   @Operation(summary = "点赞/取消点赞")
   public BaseResponse<Boolean> doThumb(@PathVariable("id") Long id) {

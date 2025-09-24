@@ -110,7 +110,7 @@ public class ArticleThumbServiceImpl extends ServiceImpl<ArticleThumbMapper, Art
    */
   private boolean setThumb(Long articleId) {
     ThrowUtils.throwIf(!StpUtil.isLogin(), ErrorCode.NOT_LOGIN_ERROR, "如果喜欢本篇文章,请您登入后进行点赞");
-    String loginUserId = StpUtil.getLoginIdAsString();
+    Long loginUserId = StpUtil.getLoginIdAsLong();
     return redisUtil
         .getRedisTemplate()
         .execute(

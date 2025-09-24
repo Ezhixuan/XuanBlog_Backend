@@ -51,9 +51,11 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
       throw new BusinessException(ErrorCode.PARAMS_ERROR, "提交数据不能为空");
     }
     Article article = submitDTO.toEntity();
+    String content = submitDTO.getContent();
+    int wordCount = parseWordCount(content);
+    article.setWordCount(wordCount);
     articleService.saveOrUpdate(article);
     Long articleId = article.getId();
-    String content = submitDTO.getContent();
     List<Long> tagIds = submitDTO.getTagIds();
     articleTagService.link(articleId, tagIds);
     articleContentService.link(articleId, content);
@@ -66,6 +68,36 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
               RedisKeyConstant.ARTICLE_INFO_PRE_KEY + articleId);
         });
     return articleId;
+  }
+
+  /**
+   * 解析Markdown文本的字数 该方法通过去除Markdown格式标记来计算纯文本字数
+   *
+   * @param markdown 原始Markdown格式文本
+   * @return 解析后纯文本的字符数
+   */
+  private int parseWordCount(String markdown) {
+    // 去除代码块
+    markdown = markdown.replaceAll("(?s)```.*?```", "");
+    // 去除行内代码
+    markdown = markdown.replaceAll("`[^`]*`", "");
+    // 去除图片
+    markdown = markdown.replaceAll("!\\[.*?]\\(.*?\\)", "");
+    // 去除链接
+    markdown = markdown.replaceAll("\\[([^]]+)]\\([^)]+\\)", "$1");
+    // 去除标题符号
+    markdown = markdown.replaceAll("(?m)^#{1,6}\\s*", "");
+    // 去除加粗、斜体
+    markdown = markdown.replaceAll("[*_]{1,2}([^*_]+)[*_]{1,2}", "$1");
+    // 去除引用符号
+    markdown = markdown.replaceAll("(?m)^>\\s*", "");
+    // 去除列表符号
+    markdown = markdown.replaceAll("(?m)^[-*+]\\s+", "");
+    markdown = markdown.replaceAll("(?m)^\\d+\\.\\s+", "");
+    // 去除 HTML 标签
+    markdown = markdown.replaceAll("<[^>]+>", "");
+    markdown = markdown.trim();
+    return markdown.replaceAll("\\s+", "").length();
   }
 
   /**

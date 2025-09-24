@@ -59,8 +59,8 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
     }
 
     // 如果查询条件中包含标签ID，则获取与这些标签关联的文章ID，并添加到查询条件中
-    if (!isEmpty(articleQueryDTO.getTagIds())) {
-      List<Long> articleIds = articleTagService.getLinkedArticleIds(articleQueryDTO.getTagIds());
+    if (!isNull(articleQueryDTO.getTagId())) {
+      List<Long> articleIds = articleTagService.getLinkedArticleIds(Collections.singletonList(articleQueryDTO.getTagId()));
       articleQueryDTO.getIds().addAll(articleIds);
     }
 
