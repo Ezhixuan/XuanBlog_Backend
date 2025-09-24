@@ -38,7 +38,7 @@ public class PictureUploadController {
 
   @PostMapping("/upload")
   @Operation(summary = "上传图片")
-  public BaseResponse<String> upload(
+  public BaseResponse<PictureUploadVO> upload(
       @RequestParam("file") MultipartFile file, PictureUploadDTO uploadDTO) {
     return R.success(pictureService.doUpload(file, uploadDTO));
   }

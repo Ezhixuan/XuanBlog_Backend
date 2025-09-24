@@ -1,7 +1,5 @@
 package com.ezhixuan.blog.service.impl;
 
-import com.ezhixuan.blog.exception.ErrorCode;
-import com.ezhixuan.blog.exception.ThrowUtils;
 import com.ezhixuan.blog.controller.picture.dto.PictureUploadDTO;
 import com.ezhixuan.blog.service.MarkdownService;
 import com.ezhixuan.blog.service.SysPictureService;
@@ -21,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.springframework.util.CollectionUtils.newHashMap;
 
@@ -30,16 +29,6 @@ import static org.springframework.util.CollectionUtils.newHashMap;
 public class MarkdownServiceImpl implements MarkdownService {
 
     private final SysPictureService pictureService;
-
-    /*
-     todo Ezhixuan : 目前只接受 Markdown 文件,后续可以考虑扩增
-     */
-    private static final String FILE_TYPE_X_WEB = "text/x-web-markdown";
-    private static final String FILE_TYPE_X = "text/x-markdown";
-
-    private boolean checkFileType(String fileType) {
-        return FILE_TYPE_X.equals(fileType) || FILE_TYPE_X_WEB.equals(fileType);
-    }
 
     /**
      * 上传 Markdown 文件
@@ -52,7 +41,9 @@ public class MarkdownServiceImpl implements MarkdownService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String upload(MultipartFile file, List<MultipartFile> images) {
-        ThrowUtils.throwIf(Objects.isNull(file) || !checkFileType(file.getContentType()), ErrorCode.PARAMS_ERROR);
+        if (isNull(file)) {
+            return "";
+        }
         String content = readContent(file);
         if (isEmpty(images)) {
             return content;
@@ -96,7 +87,8 @@ public class MarkdownServiceImpl implements MarkdownService {
                     String[] split = Objects.requireNonNull(image.getOriginalFilename()).split("/");
                     return split[split.length - 1];
                 },
-            image -> pictureService.doUpload(image, uploadDTO), (exist, replace) -> replace));
+            image -> pictureService.doUpload(image, uploadDTO).getUrl()
+        ));
     }
 
     @SneakyThrows

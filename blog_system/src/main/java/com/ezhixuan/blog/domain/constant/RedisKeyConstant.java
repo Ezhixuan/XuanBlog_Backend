@@ -8,7 +8,7 @@ public interface RedisKeyConstant {
   /* article */
   String ARTICLE_INFO_PRE_KEY = BLOG_PREFIX + "article:info:";
   String ARTICLE_THUMB_PRE_KEY = BLOG_PREFIX + "article:thumb:";
-  String ARTICLE_THUMB_TEMP_PRE_KEY = BLOG_PREFIX + "article:thumb:temp:";
+  String ARTICLE_THUMB_TEMP_PRE_KEY = BLOG_PREFIX + "temp:article:thumb:";
   String LIST_TAG_KEY = BLOG_PREFIX + "list:tag";
   String LIST_CATEGORY_KEY = BLOG_PREFIX + "list:category";
   String COUNT_CATEGORY_KEY = BLOG_PREFIX + "count:category";

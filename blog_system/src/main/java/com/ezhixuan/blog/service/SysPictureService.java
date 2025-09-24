@@ -32,11 +32,11 @@ public interface SysPictureService extends IService<SysPicture> {
   /**
    * 上传图片文件
    *
-   * @param file 上传的图片文件
+   * @param file      上传的图片文件
    * @param uploadDTO 图片上传参数
    * @return String 图片访问URL
    */
-  String doUpload(MultipartFile file, PictureUploadDTO uploadDTO);
+  PictureUploadVO doUpload(MultipartFile file, PictureUploadDTO uploadDTO);
 
   /**
    * 获取图片列表

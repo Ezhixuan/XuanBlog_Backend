@@ -10,7 +10,6 @@ import com.ezhixuan.blog.controller.picture.dto.PictureQueryDTO;
 import com.ezhixuan.blog.controller.picture.dto.PictureUploadDTO;
 import com.ezhixuan.blog.controller.picture.vo.PictureUploadVO;
 import com.ezhixuan.blog.domain.entity.SysPicture;
-import com.ezhixuan.blog.exception.ErrorCode;
 import com.ezhixuan.blog.handler.oss.OssManager;
 import com.ezhixuan.blog.handler.oss.OssModelEnum;
 import com.ezhixuan.blog.mapper.SysPictureMapper;
@@ -27,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
-import static com.ezhixuan.blog.exception.ThrowUtils.throwIf;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
@@ -44,12 +42,12 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
   /**
    * 上传图片文件
    *
-   * @param file 上传的图片文件
+   * @param file      上传的图片文件
    * @param uploadDTO 图片上传参数
    * @return String 图片访问URL
    */
   @Override
-  public String doUpload(MultipartFile file, PictureUploadDTO uploadDTO) {
+  public PictureUploadVO doUpload(MultipartFile file, PictureUploadDTO uploadDTO) {
     long userId = StpUtil.getLoginIdAsLong();
     String targetPath =
         "public"
@@ -66,11 +64,11 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
               : split[split.length - 1];
       String uploadPath = targetPath + File.separator + name;
       String url = ossManager.getInstance().doUpload(file.getInputStream(), uploadPath);
+      PictureUploadVO result = PictureUploadVO.builder().url(url).name(name).build();
       if (!existsByUrl(url)) {
-          PictureUploadVO result = PictureUploadVO.builder().url(url).name(name).build();
           doUpload2Sys(userId, result, uploadDTO);
       }
-      return url;
+      return result;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -158,8 +156,8 @@ public class SysPictureServiceImpl extends ServiceImpl<SysPictureMapper, SysPict
     if (Objects.nonNull(picId)) {
       picture.setId(picId);
     }
-    boolean resultSave = this.saveOrUpdate(picture);
-    throwIf(!resultSave, ErrorCode.OPERATION_ERROR, "图片上传失败");
+    this.saveOrUpdate(picture);
+    uploadResult.setId(picture.getId());
   }
 
   /**
