@@ -44,7 +44,6 @@ public class UserController {
   @PostMapping("/logout")
   @Operation(summary = "用户登出")
   public BaseResponse<String> doLogout() {
-    StpUtil.checkLogin();
     StpUtil.logout();
     return R.success();
   }

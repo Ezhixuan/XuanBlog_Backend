@@ -1,6 +1,5 @@
 package com.ezhixuan.blog.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.ezhixuan.blog.controller.dto.ProjectArticleDocArtDTO;
 import com.ezhixuan.blog.controller.dto.ProjectCreateDTO;
 import com.ezhixuan.blog.controller.dto.ProjectEditDTO;
@@ -40,7 +39,7 @@ public class ProjectOperateServiceImpl implements ProjectOperateService {
   @Transactional(rollbackFor = Exception.class)
   public ProjectQueryVO save(ProjectCreateDTO createDTO) {
     List<Long> technologiesIds = technologyService.saveAll(createDTO.getTechnologies());
-    Project project = BeanUtil.copyProperties(createDTO, Project.class);
+    Project project = createDTO.toEntity();
     project.setCreateTime(LocalDateTime.now());
     projectService.save(project);
     projectTechnologyService.saveAll(project.getId(), technologiesIds);
@@ -56,7 +55,7 @@ public class ProjectOperateServiceImpl implements ProjectOperateService {
   @Override
   public ProjectQueryVO edit(ProjectEditDTO editDTO) {
     List<Long> technologiesIds = technologyService.saveAll(editDTO.getTechnologies());
-    Project project = BeanUtil.copyProperties(editDTO, Project.class);
+    Project project = editDTO.toEntity();
     projectService.updateById(project);
     projectTechnologyService.saveAll(project.getId(), technologiesIds);
     return queryService.convertToPageVO(project);

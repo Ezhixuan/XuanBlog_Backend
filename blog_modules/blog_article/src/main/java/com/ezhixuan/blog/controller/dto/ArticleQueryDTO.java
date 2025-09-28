@@ -6,10 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -29,7 +26,7 @@ public class ArticleQueryDTO extends PageRequest {
   private String tagName;
 
   @Schema(description = "根据id查询")
-  private Collection<Long> ids = new ArrayList<>();
+  private List<Long> ids = new ArrayList<>();
 
   @Schema(description = "标签id")
   private Long tagId;
@@ -42,11 +39,4 @@ public class ArticleQueryDTO extends PageRequest {
 
   @Schema(description = "是否需要封面")
   private Boolean needCover;
-
-  public List<Long> getIds() {
-    if (isEmpty(ids)) {
-      return List.of();
-    }
-    return ids.stream().distinct().toList();
-  }
 }

@@ -75,7 +75,7 @@ public class ArticleThumbServiceImpl extends ServiceImpl<ArticleThumbMapper, Art
    */
   @Override
   public void syncToRedis(Collection<Long> articleIds) {
-    Map<Object, Object> articleUserIdMap =
+    Map<Long, Long> articleUserIdMap =
         list(Wrappers.<ArticleThumb>lambdaQuery().in(ArticleThumb::getArticleId, articleIds))
             .stream()
             .collect(Collectors.toMap(ArticleThumb::getArticleId, ArticleThumb::getUserId));
@@ -85,7 +85,10 @@ public class ArticleThumbServiceImpl extends ServiceImpl<ArticleThumbMapper, Art
     articleIds.forEach(
         articleId -> {
           String thumbKey = RedisKeyConstant.ARTICLE_THUMB_PRE_KEY + articleId;
-          Object userId = articleUserIdMap.get(articleId);
+          Long userId = articleUserIdMap.get(articleId);
+          if (isNull(userId)) {
+              return;
+          }
           redisUtil.hSet(thumbKey, userId.toString(), 1);
         });
   }

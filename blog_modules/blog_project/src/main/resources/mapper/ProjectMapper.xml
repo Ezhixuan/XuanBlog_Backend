@@ -5,20 +5,20 @@
 <mapper namespace="com.ezhixuan.blog.mapper.ProjectMapper">
 
     <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.Project">
-            <id property="id" column="id" />
-            <result property="title" column="title" />
-            <result property="description" column="description" />
-            <result property="long_description" column="long_description" />
-            <result property="image" column="image" />
-            <result property="technologies" column="technologies" />
-            <result property="url" column="url" />
-            <result property="liveUrl" column="liveUrl" />
-            <result property="createTime" column="create_time" />
-            <result property="featured" column="featured" />
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="longDescription" column="long_description"/>
+        <result property="image" column="image"/>
+        <result property="url" column="url"/>
+        <result property="indexArtId" column="index_art_id"/>
+        <result property="liveUrl" column="live_url"/>
+        <result property="createTime" column="create_time"/>
+        <result property="featured" column="featured"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,title,description,long_description,image,technologies,
-        url,liveUrl,create_time,featured
+        id,title,description,long_description,image,technologies,index_art_id,
+        url,live_url,create_time,featured
     </sql>
 </mapper>

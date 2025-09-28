@@ -1,5 +1,6 @@
 package com.ezhixuan.blog.controller.dto;
 
+import com.ezhixuan.blog.domain.entity.Project;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -28,4 +29,19 @@ public class ProjectCreateDTO {
 
     @Schema(description = "源码链接")
     private String liveUrl;
+
+    @Schema(description = "是否精选")
+    private boolean featured;
+
+    public Project toEntity() {
+        Project project = new Project();
+        project.setTitle(title);
+        project.setDescription(description);
+        project.setLongDescription(longDescription);
+        project.setImage(image);
+        project.setUrl(url);
+        project.setLiveUrl(liveUrl);
+        project.setFeatured(featured);
+        return project;
+    }
 }

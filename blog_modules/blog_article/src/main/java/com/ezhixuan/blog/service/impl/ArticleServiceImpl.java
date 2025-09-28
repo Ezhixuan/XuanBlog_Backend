@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ezhixuan.blog.common.PageRequest;
 import com.ezhixuan.blog.controller.dto.ArticleQueryDTO;
 import com.ezhixuan.blog.domain.dto.CountDto;
 import com.ezhixuan.blog.domain.entity.Article;
@@ -84,7 +85,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         .like(
             nonNull(articleQueryDTO.getSummary()),
             Article::getSummary,
-            articleQueryDTO.getSummary());
+            articleQueryDTO.getSummary())
+        .orderBy(
+            nonNull(articleQueryDTO.getOrderBy()),
+            Objects.equals(articleQueryDTO.getOrderBy(), PageRequest.ASC),
+            Article::getCreateTime);
   }
 
   /**

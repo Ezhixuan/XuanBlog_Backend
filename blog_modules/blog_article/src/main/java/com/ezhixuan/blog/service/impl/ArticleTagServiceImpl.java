@@ -2,19 +2,16 @@ package com.ezhixuan.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ezhixuan.blog.service.ArticleTagService;
-import com.ezhixuan.blog.service.TagService;
 import com.ezhixuan.blog.domain.entity.ArticleTag;
 import com.ezhixuan.blog.domain.entity.Tag;
 import com.ezhixuan.blog.mapper.ArticleTagMapper;
+import com.ezhixuan.blog.service.ArticleTagService;
+import com.ezhixuan.blog.service.TagService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -50,8 +47,24 @@ public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, Article
       return;
     }
     // 数据绑定
+    // 1. 查询已绑定的标签数据
+    Set<Long> linkedTagIds =
+        new HashSet<>(
+            listObjs(
+                Wrappers.<ArticleTag>lambdaQuery()
+                    .select(ArticleTag::getTagId)
+                    .eq(ArticleTag::getArticleId, articleId)));
+    Set<Long> livedTagIds = tags.stream().map(Tag::getId).collect(Collectors.toSet());
+    tagIds =
+        tagIds.stream()
+            .filter(tagId -> !linkedTagIds.contains(tagId))
+            .filter(livedTagIds::contains)
+            .toList();
+    if (isEmpty(tagIds)) {
+      return;
+    }
     List<ArticleTag> articleTagList =
-        tags.stream().map(Tag::getId).toList().stream()
+        tagIds.stream()
             .map(
                 tagId -> {
                   ArticleTag articleTag = new ArticleTag();

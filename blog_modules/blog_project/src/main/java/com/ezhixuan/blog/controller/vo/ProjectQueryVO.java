@@ -51,6 +51,9 @@ public class ProjectQueryVO {
     @Schema(description = "是否包含文章")
     private boolean hasArticles;
 
+    @Schema(description = "首页文章 id")
+    private Long indexArtId;
+
     public ProjectQueryVO(Project project) {
         this.id = project.getId();
         this.title = project.getTitle();
@@ -61,5 +64,6 @@ public class ProjectQueryVO {
         this.liveUrl = project.getLiveUrl();
         this.createTime = project.getCreateTime();
         this.featured = project.getFeatured();
+        this.indexArtId = project.getIndexArtId();
     }
 }
