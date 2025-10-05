@@ -145,6 +145,12 @@
                 <version>${knife4j.version}</version>
             </dependency>
 
+            <!-- 校验模块 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-validation</artifactId>
+            </dependency>
+
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
