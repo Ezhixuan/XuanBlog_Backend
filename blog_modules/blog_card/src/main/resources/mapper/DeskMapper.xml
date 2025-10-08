@@ -2,16 +2,14 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ezhixuan.blog.mapper.MemoDecksMapper">
+<mapper namespace="com.ezhixuan.blog.mapper.DeskMapper">
 
-    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.MemoDecks">
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.Desk">
             <id property="id" column="id" />
             <result property="name" column="name" />
-            <result property="createTime" column="create_time" />
-            <result property="updateTime" column="update_time" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,create_time,update_time
+        id,name
     </sql>
 </mapper>
