@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ezhixuan.blog.controller.dto.ArticleQueryDTO;
 import com.ezhixuan.blog.controller.vo.ArticleInfoVO;
 import com.ezhixuan.blog.controller.vo.ArticlePageVO;
+import com.ezhixuan.blog.controller.vo.ArticleTitleVO;
 import com.ezhixuan.blog.controller.vo.CountVO;
 import java.util.List;
 
@@ -62,4 +63,11 @@ public interface ArticleQueryService {
    * @return 推荐文章
    */
   List<ArticlePageVO> getRecommendedList(int num);
+
+  /**
+   * 获取推荐文章ID列表
+   *
+   * @return 推荐文章ID列表
+   */
+  List<ArticleTitleVO> getRecommendedArticle();
 }

@@ -1,23 +1,21 @@
 package com.ezhixuan.blog.utils;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.TypeReference;
+import jakarta.annotation.Resource;
+import lombok.Data;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.TypeReference;
-
-import jakarta.annotation.Resource;
-import lombok.Data;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class RedisUtil {
@@ -81,10 +79,7 @@ public class RedisUtil {
                 if (innerData.isList()) {
                     TypeReference<List<?>> typeReference = new TypeReference<>() {};
                     List<?> list = JSON.parseObject(objJsonString, typeReference.getType());
-                    return list.stream().map(item -> {
-                        JSONObject item1 = (JSONObject)item;
-                        return item1.toJavaObject(elementClass);
-                    }).toList();
+                    return list.stream().map(item -> JSONObject.parseObject(String.valueOf(item), elementClass)).toList();
                 } else {
                     return JSON.parseObject(objJsonString, elementClass);
                 }

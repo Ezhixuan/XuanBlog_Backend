@@ -1,5 +1,6 @@
 package com.ezhixuan.blog.service;
 
+import com.ezhixuan.blog.controller.dto.ArticleRecommendDTO;
 import com.ezhixuan.blog.controller.dto.ArticleSubmitDTO;
 
 /**
@@ -53,8 +54,7 @@ public interface ArticleOperateService {
   /**
    * 设置推荐文章
    *
-   * @param recommendArticleId 推荐文章 id
-   * @param unRecommendArticleId 取消推荐文章 id
+   * @param recommendDTO 推荐文章 dto
    */
-  void setRecommendArticle(Long recommendArticleId, Long unRecommendArticleId);
+  void setRecommendArticle(ArticleRecommendDTO recommendDTO);
 }

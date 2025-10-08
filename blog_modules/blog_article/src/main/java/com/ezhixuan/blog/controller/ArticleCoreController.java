@@ -3,17 +3,19 @@ package com.ezhixuan.blog.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.annotation.Log;
-import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.common.PageResponse;
 import com.ezhixuan.blog.common.R;
-import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.controller.dto.ArticleQueryDTO;
+import com.ezhixuan.blog.controller.dto.ArticleRecommendDTO;
 import com.ezhixuan.blog.controller.dto.ArticleSubmitDTO;
 import com.ezhixuan.blog.controller.vo.ArticleInfoVO;
 import com.ezhixuan.blog.controller.vo.ArticlePageVO;
-import com.ezhixuan.blog.service.ArticleThumbService;
+import com.ezhixuan.blog.controller.vo.ArticleTitleVO;
+import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
+import com.ezhixuan.blog.entity.BaseResponse;
 import com.ezhixuan.blog.service.ArticleOperateService;
 import com.ezhixuan.blog.service.ArticleQueryService;
+import com.ezhixuan.blog.service.ArticleThumbService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -68,7 +70,19 @@ public class ArticleCoreController {
   @GetMapping("/recommend")
   @Operation(summary = "获取推荐文章列表")
   public PageResponse<ArticlePageVO> getRecommendedList() {
-      return R.list(queryService.getRecommendedList(5));
+    return R.list(queryService.getRecommendedList(5));
   }
 
+  @PostMapping("/recommend")
+  @Operation(summary = "推荐文章")
+  public BaseResponse<Void> doRecommend(@RequestBody ArticleRecommendDTO recommendDTO) {
+    operateService.setRecommendArticle(recommendDTO);
+    return R.success();
+  }
+
+  @GetMapping("recommend/title")
+  @Operation(summary = "获取已推荐的文章 id")
+  public PageResponse<ArticleTitleVO> getRecommendedArticle() {
+    return R.list(queryService.getRecommendedArticle());
+  }
 }

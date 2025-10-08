@@ -7,6 +7,7 @@ import com.ezhixuan.blog.annotation.Cache;
 import com.ezhixuan.blog.controller.dto.ArticleQueryDTO;
 import com.ezhixuan.blog.controller.vo.ArticleInfoVO;
 import com.ezhixuan.blog.controller.vo.ArticlePageVO;
+import com.ezhixuan.blog.controller.vo.ArticleTitleVO;
 import com.ezhixuan.blog.controller.vo.CountVO;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.domain.entity.Article;
@@ -296,4 +297,26 @@ public class ArticleQueryServiceImpl implements ArticleQueryService {
     }
     return pageArticleListByDTO(articleQueryDTO).getRecords();
   }
+
+    /**
+     * 获取推荐文章ID列表
+     *
+     * @return 推荐文章ID列表
+     */
+    @Override
+    public List<ArticleTitleVO> getRecommendedArticle() {
+        Object recommendIdsObj = redisUtil.get(RedisKeyConstant.ARTICLE_RECOMMEND_LIST_KEY);
+        if (Objects.nonNull(recommendIdsObj) && recommendIdsObj instanceof List<?> recommendIds) {
+            List<Long> articleIds = recommendIds.stream()
+                    .filter(id -> id instanceof Long)
+                    .map(id -> (Long) id)
+                    .toList();
+            if (isEmpty(articleIds)) {
+                return List.of();
+            }
+            List<Article> articleList = articleService.listByIds(articleIds);
+            return articleList.stream().map(article -> ArticleTitleVO.of(article.getId(), article.getTitle())).toList();
+        }
+        return List.of();
+    }
 }

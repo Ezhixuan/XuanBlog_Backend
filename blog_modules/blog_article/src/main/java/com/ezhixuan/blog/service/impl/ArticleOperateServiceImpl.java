@@ -1,6 +1,7 @@
 package com.ezhixuan.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ezhixuan.blog.controller.dto.ArticleRecommendDTO;
 import com.ezhixuan.blog.controller.dto.ArticleSubmitDTO;
 import com.ezhixuan.blog.domain.constant.RedisKeyConstant;
 import com.ezhixuan.blog.domain.entity.Article;
@@ -187,11 +188,12 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
   /**
    * 设置推荐文章
    *
-   * @param recommendArticleId 推荐文章 id
-   * @param unRecommendArticleId 取消推荐文章 id
+   * @param recommendDTO 推荐文章 dto
    */
   @Override
-  public void setRecommendArticle(Long recommendArticleId, Long unRecommendArticleId) {
+  public void setRecommendArticle(ArticleRecommendDTO recommendDTO) {
+    Long recommendId = recommendDTO.getRecommendId();
+    Long unRecommendId = recommendDTO.getUnRecommendId();
     // 从Redis中获取当前推荐文章列表
     Object recommendIdsObj = redisUtil.get(RedisKeyConstant.ARTICLE_RECOMMEND_LIST_KEY);
 
@@ -204,16 +206,16 @@ public class ArticleOperateServiceImpl implements ArticleOperateService {
     }
 
     // 如果有需要取消推荐的文章ID，则从列表中移除
-    if (Objects.nonNull(unRecommendArticleId)) {
-      recommendIds.remove(unRecommendArticleId);
+    if (Objects.nonNull(recommendDTO.getUnRecommendId())) {
+      recommendIds.remove(recommendDTO.getUnRecommendId());
     }
 
     // 如果有需要推荐的文章ID，则添加到列表中
-    if (Objects.nonNull(recommendArticleId) && !recommendIds.contains(recommendArticleId)) {
-      recommendIds.add(recommendArticleId);
+    if (Objects.nonNull(recommendId) && !recommendIds.contains(recommendId)) {
+      recommendIds.add(recommendId);
 
       // 如果推荐文章数量超过5篇且没有指定取消推荐的文章，则移除一篇
-      if (recommendIds.size() > 5 && isNull(unRecommendArticleId)) {
+      if (recommendIds.size() > 5 && isNull(unRecommendId)) {
         // 移除一篇（按ID排序后移除最小的ID）
         recommendIds.stream()
             .filter(Objects::nonNull)
