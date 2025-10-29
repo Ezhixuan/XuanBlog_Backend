@@ -9,16 +9,17 @@
             <result property="front" column="front" />
             <result property="back" column="back" />
             <result property="context" column="context" />
+            <result property="interval" column="interval" />
             <result property="EF" column="EF" />
             <result property="nextTime" column="next_time" />
             <result property="parentId" column="parent_id" />
-            <result property="deskId" column="desk_id" />
+            <result property="deckId" column="deck_id" />
             <result property="reps" column="reps" />
             <result property="lapses" column="lapses" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,front,back,context,EF,next_time,
-        parent_id,desk_id,reps,lapses
+        id,front,back,context,interval,EF,next_time,
+        parent_id,deck_id,reps,lapses
     </sql>
 </mapper>

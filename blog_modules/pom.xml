@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>blog_modules</artifactId>
-    <version>0.0.1-beta</version>
+    <version>0.0.2-beta</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -24,7 +24,7 @@
 
     <properties>
         <blog.article.version>0.0.2-beta</blog.article.version>
-        <blog.card.version>0.0.1-beta</blog.card.version>
+        <blog.card.version>0.0.2-beta</blog.card.version>
         <blog.upload.version>0.0.1-beta</blog.upload.version>
         <blog.message.version>0.0.1-beta</blog.message.version>
         <blog.common.version>0.0.1-beta</blog.common.version>

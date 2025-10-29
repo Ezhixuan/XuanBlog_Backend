@@ -20,8 +20,12 @@ public class Card {
   @Schema(description = "标准答案")
   private String back;
 
-  @Schema(description = "辅助记忆信息（图片/助记/音频等）")
+  @Schema(description = "辅助记忆信息（图片/助记'/音频等）")
   private String context;
+
+  @Schema(description = "间隔（SM-2 算法）")
+  @TableField("`interval`")
+  private Double interval;
 
   @Schema(description = "简易度因子（SM-2 算法）")
   private Double EF;
@@ -35,8 +39,8 @@ public class Card {
   private Long parentId;
 
   @Schema(description = "所属卡片集 ID")
-  @TableField("desk_id")
-  private Long deskId;
+  @TableField("deck_id")
+  private Long deckId;
 
   @Schema(description = "累计复习次数")
   private Long reps;

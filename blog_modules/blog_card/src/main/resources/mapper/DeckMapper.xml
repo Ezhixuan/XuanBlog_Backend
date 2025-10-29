@@ -2,14 +2,15 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ezhixuan.blog.mapper.DeskMapper">
+<mapper namespace="com.ezhixuan.blog.mapper.DeckMapper">
 
-    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.Desk">
+    <resultMap id="BaseResultMap" type="com.ezhixuan.blog.domain.entity.Deck">
             <id property="id" column="id" />
             <result property="name" column="name" />
+            <result property="privateDeck" column="private"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name
+        id,name, private
     </sql>
 </mapper>
